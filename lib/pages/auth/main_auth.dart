@@ -34,7 +34,7 @@ class _MainAuthPageState extends State<MainAuthPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Theme.of(context).primaryColor,
+      color: Colors.white,
       child: StreamBuilder(
         stream: _isLoadingStream.stream,
         builder: (_, snap) => _loadPageView(snap),
