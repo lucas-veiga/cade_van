@@ -1,6 +1,5 @@
+import 'package:cade_van/pages/auth/main_auth.dart';
 import 'package:flutter/material.dart';
-
-import './pages/auth_page.dart';
 
 void main() => runApp(MyApp());
 
@@ -13,7 +12,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: LoginScreen3(),
+      home: MainAuthPage(),
     );
   }
 }
