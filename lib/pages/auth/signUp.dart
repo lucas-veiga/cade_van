@@ -23,17 +23,14 @@ class SignUp extends StatelessWidget {
                 icon: Icon(Icons.drive_eta),
                 text: 'Responsável',
               ),
-              Tab(
-                icon: Icon(Icons.card_travel),
-                text: "Transportador"
-                ),
+              Tab(icon: Icon(Icons.card_travel), text: "Transportador"),
             ],
           ),
         ),
         body: TabBarView(
           children: <Widget>[
-            ResponsibleTab(),
-            DriverTab(),
+            SingleChildScrollView(child: ResponsibleTab()),
+            SingleChildScrollView(child: DriverTab()),
           ],
         ),
       ),
