@@ -16,7 +16,15 @@ class SignUp extends StatelessWidget {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.transparent,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () => _pageController.animateToPage(
+              1,
+              duration: Duration(milliseconds: 800),
+              curve: Curves.bounceOut,
+            ),
+          ),
+          backgroundColor: Colors.indigo,
           bottom: TabBar(
             tabs: <Widget>[
               Tab(
