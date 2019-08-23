@@ -20,7 +20,7 @@ class SignUp extends StatelessWidget {
           bottom: TabBar(
             tabs: <Widget>[
               Tab(
-                icon: Icon(Icons.drive_eta),
+                icon: Icon(Icons.face),
                 text: 'Responsável',
               ),
               Tab(
