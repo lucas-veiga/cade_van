@@ -58,7 +58,7 @@ class ResponsibleTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             Row(
@@ -108,7 +108,7 @@ class ResponsibleTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -158,7 +158,7 @@ class ResponsibleTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             Row(
@@ -209,7 +209,7 @@ class ResponsibleTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -298,9 +298,6 @@ class ResponsibleTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
-              height: 10,
-            )
           ],
         ),
       ),

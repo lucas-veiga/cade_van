@@ -58,7 +58,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -108,7 +108,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -158,7 +158,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             Row(
@@ -208,7 +208,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -258,7 +258,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             Row(
@@ -309,7 +309,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 24.0,
             ),
             new Row(
@@ -398,7 +398,7 @@ class DriverTab extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(
+            SizedBox(
               height: 10,
             )
           ],
