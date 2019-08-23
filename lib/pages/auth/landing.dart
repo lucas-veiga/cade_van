@@ -13,7 +13,7 @@ class LandingPage extends StatelessWidget {
       body: new Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
-          color: Colors.redAccent,
+          color: Theme.of(context).primaryColor,
         ),
         child: new Column(
           children: <Widget>[
@@ -98,7 +98,7 @@ class LandingPage extends StatelessWidget {
                                 "LOGIN",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                    color: Colors.redAccent,
+                                    color: Theme.of(context).primaryColor,
                                     fontWeight: FontWeight.bold),
                               ),
                             ),
