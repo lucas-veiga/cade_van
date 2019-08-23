@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class SignUp extends StatelessWidget {
@@ -8,8 +10,8 @@ class SignUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: new Container(
+    return Scaffold(
+      body: new Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.white,

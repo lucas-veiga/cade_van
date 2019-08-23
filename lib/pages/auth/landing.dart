@@ -8,9 +8,9 @@ class LandingPage extends StatelessWidget {
   LandingPage(this._pageController);
 
   @override
-  SingleChildScrollView build(BuildContext context) {
-    return SingleChildScrollView(
-      child: new Container(
+  Scaffold build(BuildContext context) {
+    return Scaffold(
+      body: new Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.redAccent,

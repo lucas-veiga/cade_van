@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class SignIn extends StatelessWidget {
@@ -7,9 +9,9 @@ class SignIn extends StatelessWidget {
   SignIn(this._pageController, this._isLoadingStream);
 
   @override
-  SingleChildScrollView build(BuildContext context) {
-    return SingleChildScrollView(
-      child: new Container(
+  Scaffold build(BuildContext context) {
+    return Scaffold(
+      body: new Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.white,
