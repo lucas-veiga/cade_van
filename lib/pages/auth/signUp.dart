@@ -23,7 +23,10 @@ class SignUp extends StatelessWidget {
                 icon: Icon(Icons.drive_eta),
                 text: 'Responsável',
               ),
-              Tab(icon: Icon(Icons.card_travel), text: "Transportador"),
+              Tab(
+                icon: Icon(Icons.airport_shuttle),
+                text: "Transportador",
+              ),
             ],
           ),
         ),
