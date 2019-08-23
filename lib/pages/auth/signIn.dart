@@ -11,33 +11,24 @@ class SignIn extends StatelessWidget {
   @override
   Scaffold build(BuildContext context) {
     return Scaffold(
-      body: new Container(
+      body: Container(
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           color: Colors.white,
         ),
-        child: new Column(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              padding: EdgeInsets.all(120.0),
-              child: Center(
-                child: Icon(
-                  Icons.headset_mic,
-                  color: Colors.redAccent,
-                  size: 50.0,
-                ),
-              ),
-            ),
-            new Row(
+            Row(
               children: <Widget>[
-                new Expanded(
-                  child: new Padding(
+                Expanded(
+                  child: Padding(
                     padding: const EdgeInsets.only(left: 40.0),
-                    child: new Text(
+                    child: Text(
                       "EMAIL",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
+                        color: Theme.of(context).accentColor,
                         fontSize: 15.0,
                       ),
                     ),
@@ -52,7 +43,7 @@ class SignIn extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                      color: Colors.redAccent,
+                      color: Theme.of(context).accentColor,
                       width: 0.5,
                       style: BorderStyle.solid),
                 ),
@@ -87,7 +78,7 @@ class SignIn extends StatelessWidget {
                       "SENHA",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
+                        color: Theme.of(context).accentColor,
                         fontSize: 15.0,
                       ),
                     ),
@@ -102,7 +93,7 @@ class SignIn extends StatelessWidget {
               decoration: BoxDecoration(
                 border: Border(
                   bottom: BorderSide(
-                      color: Colors.redAccent,
+                      color: Theme.of(context).accentColor,
                       width: 0.5,
                       style: BorderStyle.solid),
                 ),
@@ -139,7 +130,7 @@ class SignIn extends StatelessWidget {
                       "Recuperar senha",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.redAccent,
+                        color: Theme.of(context).accentColor,
                         fontSize: 15.0,
                       ),
                       textAlign: TextAlign.end,
@@ -160,7 +151,7 @@ class SignIn extends StatelessWidget {
                       shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0),
                       ),
-                      color: Colors.redAccent,
+                      color: Theme.of(context).accentColor,
                       onPressed: () => {},
                       child: new Container(
                         padding: const EdgeInsets.symmetric(

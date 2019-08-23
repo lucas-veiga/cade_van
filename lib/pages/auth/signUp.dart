@@ -40,8 +40,8 @@ class SignUp extends StatelessWidget {
         ),
         body: TabBarView(
           children: <Widget>[
-            SingleChildScrollView(child: ResponsibleTab()),
-            SingleChildScrollView(child: DriverTab()),
+            ResponsibleTab(),
+            DriverTab(),
           ],
         ),
       ),
