@@ -1,9 +1,11 @@
-import 'package:cade_van/pages/auth/main_auth.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+import './pages/auth/main_auth.dart';
+import './routes.dart';
 
-class MyApp extends StatelessWidget {
+void main() => runApp(CadeVan());
+
+class CadeVan extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -13,6 +15,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.indigo,
       ),
       home: MainAuthPage(),
+      routes: Routes.availableRoutes,
     );
   }
 }

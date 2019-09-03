@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import '../../routes.dart';
 
 class SignIn extends StatelessWidget {
   final PageController _pageController;
@@ -152,7 +153,7 @@ class SignIn extends StatelessWidget {
                         borderRadius: new BorderRadius.circular(30.0),
                       ),
                       color: Theme.of(context).accentColor,
-                      onPressed: () => {},
+                      onPressed: () => Navigator.pushReplacementNamed(context, Routes.HOME_PAGE),
                       child: new Container(
                         padding: const EdgeInsets.symmetric(
                           vertical: 20.0,
@@ -163,7 +164,7 @@ class SignIn extends StatelessWidget {
                           children: <Widget>[
                             new Expanded(
                               child: Text(
-                                "LOGIN",
+                                "ENTRAR",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: Colors.white,

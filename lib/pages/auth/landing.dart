@@ -95,7 +95,7 @@ class LandingPage extends StatelessWidget {
                           children: <Widget>[
                             new Expanded(
                               child: Text(
-                                "LOGIN",
+                                "ENTRAR",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                     color: Theme.of(context).primaryColor,
