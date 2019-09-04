@@ -12,8 +12,11 @@ class HomePage extends StatelessWidget {
       itemCount: 10,
       itemBuilder:
           (BuildContext ctx, int i) =>
-            DefaultPadding(
-              child: ChildItem(),
+            InkWell(
+              onTap: () => print('eaeaee'),
+              child: DefaultPadding(
+                child: ChildItem(),
+              ),
             ),
     );
   }

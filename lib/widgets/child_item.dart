@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import '../models/child.dart';
 
 class ChildItem extends StatelessWidget {
+  final bool showAvatar;
+
+  ChildItem([this.showAvatar = true]);
+
   @override
   Row build(BuildContext context) {
     return Row(
       children: <Widget>[
-        CircleAvatar(
+        if (showAvatar) CircleAvatar(
           radius: 40,
         ),
-        SizedBox(width: 10),
+        if (showAvatar) SizedBox(width: 10),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

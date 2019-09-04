@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './home_page.dart';
+import './map_page.dart';
 
 class MainTab extends StatelessWidget {
   @override
@@ -12,7 +13,7 @@ class MainTab extends StatelessWidget {
         body: TabBarView(
           children: <Widget>[
             HomePage(),
-            Container(color: Colors.blue),
+            MapPage(),
             Container(color: Colors.amber),
           ],
         ),
