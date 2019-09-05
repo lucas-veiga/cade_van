@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../widgets/child_item.dart';
 import '../widgets/custom_divider.dart';
 import '../utils/default_padding.dart';
+import './child_detail_page.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -13,9 +14,13 @@ class HomePage extends StatelessWidget {
       itemBuilder:
           (BuildContext ctx, int i) =>
             InkWell(
-              onTap: () => print('eaeaee'),
+              onTap: () => Navigator.push(context, PageRouteBuilder(
+//                transitionDuration: Duration(milliseconds: 10000),
+                transitionDuration: Duration(milliseconds: 700),
+                pageBuilder: (BuildContext ctx, _, __) => ChildDetailPage(i),
+              )),
               child: DefaultPadding(
-                child: ChildItem(),
+                child: ChildItem(i),
               ),
             ),
     );

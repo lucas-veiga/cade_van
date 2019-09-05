@@ -4,15 +4,18 @@ import '../models/child.dart';
 
 class ChildItem extends StatelessWidget {
   final bool showAvatar;
-
-  ChildItem([this.showAvatar = true]);
+  final int index;
+  ChildItem(this.index, [this.showAvatar = true]);
 
   @override
   Row build(BuildContext context) {
     return Row(
       children: <Widget>[
-        if (showAvatar) CircleAvatar(
-          radius: 40,
+        Hero(
+          tag: 'child_avatar_$index',
+          child: CircleAvatar(
+            radius: 40,
+          ),
         ),
         if (showAvatar) SizedBox(width: 10),
         Expanded(

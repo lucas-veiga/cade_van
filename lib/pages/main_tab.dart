@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
 import './home_page.dart';
 import './map_page.dart';
 
@@ -9,6 +11,24 @@ class MainTab extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {},
+            ),
+          ],
+        ),
+        floatingActionButton: SpeedDial(
+          animatedIcon: AnimatedIcons.menu_close,
+          children: [
+            SpeedDialChild(
+              backgroundColor: Colors.green,
+              child: Icon(Icons.add),
+              label: 'Nova Conta'
+            ),
+          ],
+        ),
         bottomNavigationBar: _buildTabBar(context),
         body: TabBarView(
           children: <Widget>[

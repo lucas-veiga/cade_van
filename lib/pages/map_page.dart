@@ -24,7 +24,7 @@ class MapPage extends StatelessWidget {
             child: ListView.separated(
               itemCount: 5,
               separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
-              itemBuilder: (BuildContext ctx, int i) => ChildItem(false),
+              itemBuilder: (BuildContext ctx, int i) => ChildItem(i, false),
             ),
           ),
         ),
