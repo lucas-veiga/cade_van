@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+
+import '../../resource/auth_resource.dart';
 import '../../routes.dart';
+import '../../models/user.dart';
 
 class SignIn extends StatelessWidget {
+  final AuthResource _authResource = AuthResource();
+  final User _user = User.empty();
   final PageController _pageController;
   final StreamController<bool> _isLoadingStream;
-
   SignIn(this._pageController, this._isLoadingStream);
 
   @override
@@ -65,6 +69,7 @@ class SignIn extends StatelessWidget {
                   children: <Widget>[
                     new Expanded(
                       child: TextField(
+                        onChanged: (value) => _user.email = value,
                         textAlign: TextAlign.left,
                         decoration: InputDecoration(
                           border: InputBorder.none,
@@ -115,6 +120,7 @@ class SignIn extends StatelessWidget {
                   children: <Widget>[
                     new Expanded(
                       child: TextField(
+                        onChanged: (value) => _user.password = value,
                         obscureText: true,
                         textAlign: TextAlign.left,
                         decoration: InputDecoration(
@@ -162,7 +168,7 @@ class SignIn extends StatelessWidget {
                           borderRadius: new BorderRadius.circular(30.0),
                         ),
                         color: Theme.of(context).accentColor,
-                        onPressed: () => Navigator.pushReplacementNamed(context, Routes.HOME_PAGE),
+                        onPressed: () => _login(context),
                         child: new Container(
                           padding: const EdgeInsets.symmetric(
                             vertical: 20.0,
@@ -193,5 +199,10 @@ class SignIn extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _login(BuildContext context) async {
+    await _authResource.login(_user);
+    Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
   }
 }

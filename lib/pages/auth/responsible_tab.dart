@@ -1,306 +1,85 @@
 import 'package:flutter/material.dart';
 
+import 'package:dio/dio.dart';
+
+import '../../models/user.dart';
+import '../../widgets/default_button.dart';
+import '../../resource/auth_resource.dart';
+import '../../routes.dart';
+import '../../utils/default_padding.dart';
+import '../../utils/validations.dart';
+
 class ResponsibleTab extends StatelessWidget {
+  final AuthResource _authResource = AuthResource();
+
+  final User _user = User.empty();
+  static final GlobalKey<FormState> _formKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return DefaultPadding(
       child: SingleChildScrollView(
-        child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              height: 20,
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new Padding(
-                    padding: const EdgeInsets.only(left: 40.0),
-                    child: new Text(
-                      "NOME",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).accentColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context).accentColor,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                ),
-              ),
-              padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-              child: new Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  new Expanded(
-                    child: TextField(
-                      textAlign: TextAlign.left,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Mateus Gomes',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 40.0),
-                    child: Text(
-                      "EMAIL",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).accentColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              width: MediaQuery.of(context).size.width,
-              margin: EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context).accentColor,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                ),
-              ),
-              padding: EdgeInsets.only(left: 0.0, right: 10.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: TextField(
-                      textAlign: TextAlign.left,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'mateus7532@gmail.com',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new Padding(
-                    padding: const EdgeInsets.only(left: 40.0),
-                    child: new Text(
-                      "TELEFONE",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).accentColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context).accentColor,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                ),
-              ),
-              padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-              child: new Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  new Expanded(
-                    child: TextField(
-                      textAlign: TextAlign.left,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '(61) 99878 7528',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 40.0),
-                    child: Text(
-                      "SENHA",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).accentColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context).accentColor,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                ),
-              ),
-              padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-              child: new Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  new Expanded(
-                    child: TextField(
-                      obscureText: true,
-                      textAlign: TextAlign.left,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '*********',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 24.0,
-            ),
-            new Row(
-              children: <Widget>[
-                new Expanded(
-                  child: new Padding(
-                    padding: const EdgeInsets.only(left: 40.0),
-                    child: new Text(
-                      "CONFIRMAR SENHA",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).accentColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(left: 40.0, right: 40.0, top: 10.0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                      color: Theme.of(context).accentColor,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                ),
-              ),
-              padding: const EdgeInsets.only(left: 0.0, right: 10.0),
-              child: new Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  new Expanded(
-                    child: TextField(
-                      obscureText: true,
-                      textAlign: TextAlign.left,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '*********',
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            new Container(
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 30.0),
-              alignment: Alignment.center,
-              child: new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new FlatButton(
-                      shape: new RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(30.0),
-                      ),
-                      color: Theme.of(context).accentColor,
-                      onPressed: () => {},
-                      child: new Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 20.0,
-                          horizontal: 20.0,
-                        ),
-                        child: new Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            new Expanded(
-                              child: Text(
-                                "CADASTRAR",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              _buildNameField(),
+              _buildEmailField(),
+              _buildPhoneField(),
+              _buildPassword(),
+              SizedBox(height: 70),
+              DefaultButton(text: 'CRIAR CONTA', function: () => _submit(context)),
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  TextFormField _buildNameField() =>
+    TextFormField(
+      onSaved: (value) => _user.name = value,
+      decoration: InputDecoration(
+        labelText: 'Nome',
+      ),
+    );
+
+  TextFormField _buildEmailField() =>
+    TextFormField(
+      onSaved: (value) => _user.email = value,
+      decoration: InputDecoration(
+        labelText: 'E-mail',
+      ),
+    );
+
+  TextFormField _buildPhoneField() =>
+    TextFormField(
+      onSaved: (value) => _user.phone = value,
+      decoration: InputDecoration(
+        labelText: 'Telefone',
+      ),
+    );
+
+  TextFormField _buildPassword() =>
+    TextFormField(
+      onSaved: (value) => _user.password = value,
+      decoration: InputDecoration(
+        labelText: 'Senha',
+      ),
+    );
+
+  void _submit(BuildContext context) async {
+    _formKey.currentState.save();
+    _user.type = UserTypeEnum.RESPONSIBLE;
+    try {
+      await _authResource.createUser(_user);
+      final res = await _authResource.login(_user);
+      print('RES -> $res');
+      Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
+    } on DioError catch(err) {
+      print('response -> \n${err}');
+      print('data -> \n${err.response.data}');
+      print('headers -> \n${err.response.headers}');
+    }
   }
 }
