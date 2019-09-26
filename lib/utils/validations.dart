@@ -13,6 +13,10 @@ abstract class Validations {
     }) {
         final String returnMessage = _buildReturnMessage('Campo tem que no mínimo $minLength', customMessage);
 
+        if (isFieldEmpty(input: input) != null) {
+          return ('Preencha o campo');
+        }
+
         if (input.length < minLength) return returnMessage;
         return null;
     }
@@ -29,11 +33,28 @@ abstract class Validations {
         return null;
     }
 
+    static String isTelefoneValid(final String input, [final String customMessage]) {
+      final String returnMessage = _buildReturnMessage('Telefone invalido', customMessage);
+
+      if (isFieldEmpty(input: input) != null) {
+        return ('Preencha o campo');
+      }
+
+      if (isGreaterThan(input: input, minLength: 10) != null) {
+        return returnMessage;
+      }
+      return null;
+    }
+
     static String isEmailValid({
         @required String input,
         String customMessage,
     }) {
         final String returnMessage = _buildReturnMessage('E-Mail invalido', customMessage);
+
+        if (isFieldEmpty(input: input) != null) {
+          return ('Preencha o campo');
+        }
 
         if (!_regexEmail.hasMatch(input)) return returnMessage;
         return null;

@@ -25,10 +25,12 @@ dependencies:
   cupertino_icons: ^0.1.2
 
   dio: ^2.1.16
-
+  flutter_masked_text: ^0.8.0
   flutter_speed_dial: ^1.2.1
   flutter_svg: ^0.14.0
+  shared_preferences: ^0.5.3+4
   simple_animations: ^1.3.3
+  catcher: ^0.2.4
 
 dev_dependencies:
   flutter_test:

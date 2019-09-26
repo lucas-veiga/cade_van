@@ -44,13 +44,13 @@ class User {
     StringBuffer buffer = StringBuffer();
     buffer.write('User: ');
     buffer.write('{ ');
-    buffer.write('email: $email, ');
-    buffer.write('password: $password, ');
-    buffer.write('name: $name, ');
-    buffer.write('phone: $phone, ');
-    buffer.write('cpf: $cpf, ');
-    buffer.write('nickname: $nickname, ');
-    buffer.write('type: $type');
+    buffer.write('email: "$email", ');
+    buffer.write('password: "$password", ');
+    buffer.write('name: "$name", ');
+    buffer.write('phone: "$phone", ');
+    buffer.write('cpf: "$cpf", ');
+    buffer.write('nickname: "$nickname", ');
+    buffer.write('type: "$type"');
     buffer.write(' }');
     return buffer.toString();
   }

@@ -202,7 +202,6 @@ class SignIn extends StatelessWidget {
   }
 
   Future<void> _login(BuildContext context) async {
-    await _authResource.login(_user);
-    Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
+//    await _authResource.login(_user, context);
   }
 }

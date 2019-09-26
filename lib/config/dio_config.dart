@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 
 class DioConfig extends Dio {
-   factory DioConfig() {
+   factory DioConfig.withInterceptors() {
      return Dio()
      ..interceptors.add(
        InterceptorsWrapper(
@@ -11,4 +11,7 @@ class DioConfig extends Dio {
        ),
      );
    }
+
+   static Dio dioDefault() =>
+     Dio();
 }
