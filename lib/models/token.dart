@@ -1,11 +1,16 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-
 class Token {
   Header header;
   Payload payload;
   String jwtEncoded;
+
+  Token(final String sharedPreferencesToken) {
+    final decoded = json.decode(sharedPreferencesToken);
+    header = Header.fromJSON(decoded['header']);
+    payload = Payload(decoded['payload']);
+    jwtEncoded = decoded['jwtEncoded'];
+  }
 
   Token.fromJSON(String token) {
     if (token.contains('Bearer')) {
@@ -61,7 +66,7 @@ class Header {
   Header(this.alg);
 
   Header.fromJSON(dynamic json):
-    alg = json['alg'].toString();
+      alg = json['alg'].toString();
 
   static Map<String, dynamic> toJSON(final Header header) =>
     {
@@ -78,10 +83,9 @@ class Payload {
   final String sub;
   final DateTime exp;
 
-  Payload({
-    @required this.exp,
-    @required this.sub,
-  });
+  Payload(final dynamic sharedPreferencesToken):
+      this.sub = sharedPreferencesToken['sub'],
+      this.exp = DateTime.parse(sharedPreferencesToken['exp']);
 
   Payload.fromJSON(dynamic json):
       sub = json['sub'],

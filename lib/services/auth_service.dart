@@ -20,6 +20,17 @@ class AuthService {
     }
   }
 
+  Future<bool> canEnter() async {
+//    return false;
+      final preferences = await SharedPreferences.getInstance();
+      final token = Token(preferences.getString(TOKEN_KEY));
+      if (token == null) {
+        return false;
+      }
+
+      return token.payload.exp.isAfter(DateTime.now());
+  }
+
   void logout() {
 
   }

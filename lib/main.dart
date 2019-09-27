@@ -1,7 +1,8 @@
 import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
-import './pages/auth/main_auth.dart';
+import './services/startup_service.dart';
+import './stateful_wrapper.dart';
 import './routes.dart';
 import './config/catcher_config.dart';
 
@@ -17,7 +18,8 @@ void main() {
 }
 
 class CadeVan extends StatelessWidget {
-  // This widget is the root of your application.
+  final StartUpService _startUpService = StartUpService();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,7 +28,14 @@ class CadeVan extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
-      home: MainAuthPage(),
+      home: StatefulWrapper(
+        onInit: _startUpService.beforeAppInit,
+        child: StreamBuilder<StartupState>(
+          stream: _startUpService.startupStatus.stream,
+          builder: (BuildContext ctx, AsyncSnapshot<StartupState> snap) =>
+            _startUpService.handlePageLanding(snap),
+        ),
+      ),
       routes: Routes.availableRoutes,
     );
   }
