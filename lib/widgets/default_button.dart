@@ -4,7 +4,7 @@ class DefaultButton extends StatelessWidget {
   final String text;
   final Function function;
 
-  static final EdgeInsets defaultPadding = const EdgeInsets.symmetric(vertical: 20);
+  static final EdgeInsets defaultPadding = const EdgeInsets.symmetric(vertical: 15);
   static final RoundedRectangleBorder defaultShape = RoundedRectangleBorder(
     borderRadius: new BorderRadius.circular(30.0),
   );
