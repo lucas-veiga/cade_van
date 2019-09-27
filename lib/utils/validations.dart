@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+import './cpf.dart';
+
 abstract class Validations {
     static final RegExp _regexEmail =
         RegExp(r'^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$');
@@ -69,6 +71,17 @@ abstract class Validations {
         return null;
     }
 
+    static String isCPFValid(final String input, {final String customMessage}) {
+        final String returnMessage = _buildReturnMessage('CPF invalido', customMessage);
+
+        if (isFieldEmpty(input: input) != null) {
+          return ('Preencha o campo');
+        }
+
+        if (!CPFUtils.validarCPF(input)) return returnMessage;
+        return null;
+    }
+
     static bool _isStringEmpty(String input) {
         if (input == null) return true;
         if (input.isEmpty) return true;
@@ -80,3 +93,4 @@ abstract class Validations {
         return customMessage;
     }
 }
+

@@ -15,6 +15,7 @@ import '../../widgets/default_button.dart';
 
 class ResponsibleTab extends StatelessWidget {
   final AuthResource _authResource = AuthResource();
+  final CustomMask _customMask = CustomMask();
   final Toast _toast = Toast();
   final User _user = User.empty();
   static final GlobalKey<FormState> _formKey = GlobalKey();
@@ -32,10 +33,10 @@ class ResponsibleTab extends StatelessWidget {
                 height: 250,
                 fit: BoxFit.cover,
               ),
-              _buildNameField(),
-              _buildEmailField(),
-              _buildPhoneField(),
-              _buildPassword(),
+              _buildNameField,
+              _buildEmailField,
+              _buildPhoneField,
+              _buildPassword,
               SizedBox(height: 20),
               DefaultButton(text: 'CRIAR CONTA', function: () => _submit(context)),
             ],
@@ -45,7 +46,7 @@ class ResponsibleTab extends StatelessWidget {
     );
   }
 
-  TextFormField _buildNameField() =>
+  TextFormField get _buildNameField =>
     TextFormField(
       onSaved: (value) => _user.name = value,
       validator: (value) => Validations.defaultValidator(value, 3),
@@ -54,7 +55,7 @@ class ResponsibleTab extends StatelessWidget {
       ),
     );
 
-  TextFormField _buildEmailField() =>
+  TextFormField get _buildEmailField =>
     TextFormField(
       onSaved: (value) => _user.email = value,
       keyboardType: TextInputType.emailAddress,
@@ -64,18 +65,18 @@ class ResponsibleTab extends StatelessWidget {
       ),
     );
 
-  TextFormField _buildPhoneField() =>
+  TextFormField get _buildPhoneField =>
     TextFormField(
-      controller: CustomMask().telefone(),
-      onSaved: (value) => _user.phone = CustomMask().removeTelefoneMask(value),
+      controller: _customMask.telefone(),
+      onSaved: (value) => _user.phone = _customMask.removeTelefoneMask(value),
       keyboardType: TextInputType.number,
-      validator: Validations.isTelefoneValid,
+      validator: (value) => Validations.isTelefoneValid(_customMask.removeTelefoneMask(value)),
       decoration: InputDecoration(
         labelText: 'Telefone com DDD',
       ),
     );
 
-  TextFormField _buildPassword() =>
+  TextFormField get _buildPassword =>
     TextFormField(
       onSaved: (value) => _user.password = value,
       obscureText: true,
