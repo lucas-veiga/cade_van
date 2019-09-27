@@ -1,5 +1,7 @@
 import 'package:meta/meta.dart';
 
+enum UserTypeEnum { DRIVER, RESPONSIBLE }
+
 class User {
   String email;
   String password;
@@ -33,6 +35,10 @@ class User {
     };
 
   static String _getType(final UserTypeEnum type) {
+    if (type == null) {
+      return null;
+    }
+
     if (type == UserTypeEnum.DRIVER) {
       return 'driver';
     }
@@ -54,9 +60,4 @@ class User {
     buffer.write(' }');
     return buffer.toString();
   }
-}
-
-enum UserTypeEnum {
-  DRIVER,
-  RESPONSIBLE,
 }

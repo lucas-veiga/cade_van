@@ -108,7 +108,7 @@ class DriverTab extends StatelessWidget {
       await _authResource.createUser(_user);
       await _authResource.login(_user, context);
     } on ResourceException catch(err) {
-      _toast.show(err.msg, context, type: ToastType.ERROR);
+      _toast.show(err.msg, context);
     }
   }
 }
