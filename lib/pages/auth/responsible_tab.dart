@@ -29,7 +29,7 @@ class ResponsibleTab extends StatelessWidget {
           child: Column(
             children: <Widget>[
               SvgPicture.asset(
-                'assets/images/back_to_school_bg.svg',
+                'assets/images/responsible_image.svg',
                 height: 250,
                 fit: BoxFit.cover,
               ),

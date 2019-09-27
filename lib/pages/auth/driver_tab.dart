@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 import '../../utils/toast.dart';
 import '../../utils/default_padding.dart';
 import '../../utils/validations.dart';
@@ -26,6 +28,11 @@ class DriverTab extends StatelessWidget {
           key: _formKey,
           child: Column(
             children: <Widget>[
+              SvgPicture.asset(
+                'assets/images/driver_image.svg',
+                height: 250,
+                fit: BoxFit.cover,
+              ),
               _buildNameField,
               _buildNickNameField,
               _buildEmailField,

@@ -23,6 +23,8 @@ class SignIn extends StatelessWidget {
 
   @override
   WillPopScope build(BuildContext context) {
+    final _height = MediaQuery.of(context).size.height;
+
     return WillPopScope(
       onWillPop: () {
         _pageController.animateToPage(
@@ -33,23 +35,21 @@ class SignIn extends StatelessWidget {
         return Future.value(false);
       },
       child: Scaffold(
+        backgroundColor: Colors.white,
         body: DefaultPadding(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    'INSERT IMAGE HERE',
-                    style: TextStyle(
-                      fontSize: 40,
-                    ),
-                  ),
-                  _buildEmailField,
-                  _buildPasswordField,
-                  SizedBox(height: 20),
-                  DefaultButton(text: 'ENTRAR', function: () => _submit(context)),
-                ],
+          child: Padding(
+            padding: EdgeInsets.only(top: _height / 2),
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: <Widget>[
+                    _buildEmailField,
+                    _buildPasswordField,
+                    SizedBox(height: 20),
+                    DefaultButton(text: 'ENTRAR', function: () => _submit(context)),
+                  ],
+                ),
               ),
             ),
           ),
