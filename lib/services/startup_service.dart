@@ -8,12 +8,14 @@ import '../pages/splash_screen.dart';
 import '../pages/auth/main_auth.dart';
 
 import './auth_service.dart';
+import '../services/responsible_service.dart';
 
 enum StartupState { BUSY, ERROR, HOME_PAGE, AUTH_PAGE }
 
 class StartUpService {
-  final StreamController<StartupState> startupStatus = StreamController<StartupState>();
+  final StreamController<StartupState> startupStatus = StreamController.broadcast();
   final AuthService _authService = AuthService();
+  final ResponsibleService _responsibleService = ResponsibleService();
 
   Widget handlePageLanding(final AsyncSnapshot<StartupState> snap) {
     print('Iniciando handlePageLanding');
@@ -38,17 +40,17 @@ class StartUpService {
       switch (res) {
         case true: {
           startupStatus.add(StartupState.HOME_PAGE);
-          startupStatus.close();
+          _responsibleService.getResponsible()
+            .then((res) => print('RES -> $res'));
           break;
         }
         case false: {
           startupStatus.add(StartupState.AUTH_PAGE);
-          startupStatus.close();
           break;
         }
         default: {
           startupStatus.add(StartupState.AUTH_PAGE);
-          startupStatus.close();
+          break;
         }
       }
     } catch(err, stack) {

@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 class Token {
+  static const String TOKEN_KEY = 'TOKEN';
+
   Header header;
   Payload payload;
   String jwtEncoded;

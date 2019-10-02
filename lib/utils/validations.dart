@@ -15,7 +15,7 @@ abstract class Validations {
     }) {
         final String returnMessage = _buildReturnMessage('Campo tem que no mínimo $minLength', customMessage);
 
-        if (isFieldEmpty(input: input) != null) {
+        if (isRequired(input: input) != null) {
           return ('Preencha o campo');
         }
 
@@ -25,7 +25,7 @@ abstract class Validations {
 
     /// Message de retorno padrão:
     /// Preencha o campo
-    static String isFieldEmpty({
+    static String isRequired({
         @required String input,
         String customMessage,
     }) {
@@ -38,7 +38,7 @@ abstract class Validations {
     static String isTelefoneValid(final String input, [final String customMessage]) {
       final String returnMessage = _buildReturnMessage('Telefone invalido', customMessage);
 
-      if (isFieldEmpty(input: input) != null) {
+      if (isRequired(input: input) != null) {
         return ('Preencha o campo');
       }
 
@@ -54,7 +54,7 @@ abstract class Validations {
     }) {
         final String returnMessage = _buildReturnMessage('E-Mail invalido', customMessage);
 
-        if (isFieldEmpty(input: input) != null) {
+        if (isRequired(input: input) != null) {
           return ('Preencha o campo');
         }
 
@@ -63,7 +63,7 @@ abstract class Validations {
     }
 
     static String defaultValidator(String input, int minLength) {
-        String empty = isFieldEmpty(input: input);
+        String empty = isRequired(input: input);
         String greater = isGreaterThan(input: input, minLength: minLength);
 
         if (empty != null) return empty;
@@ -74,7 +74,7 @@ abstract class Validations {
     static String isCPFValid(final String input, {final String customMessage}) {
         final String returnMessage = _buildReturnMessage('CPF invalido', customMessage);
 
-        if (isFieldEmpty(input: input) != null) {
+        if (isRequired(input: input) != null) {
           return ('Preencha o campo');
         }
 

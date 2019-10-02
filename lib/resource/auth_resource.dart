@@ -8,10 +8,10 @@ import '../services/auth_service.dart';
 import '../config/dio_config.dart';
 import '../models/user.dart';
 import './resource_exception.dart';
-import '../utils/apit.dart';
+import '../environments/environment.dart';
 
 class AuthResource {
-  static final String resourceUrl = '${API.API_URL}';
+  static final String resourceUrl = '${Environment.API_URL}';
   static final String auth = 'http://localhost:8080';
 
   final AuthService _authService = AuthService();

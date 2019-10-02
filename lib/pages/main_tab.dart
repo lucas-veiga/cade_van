@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import '../routes.dart';
 import './home_page.dart';
 import './map_page.dart';
 
@@ -23,9 +24,10 @@ class MainTab extends StatelessWidget {
           animatedIcon: AnimatedIcons.menu_close,
           children: [
             SpeedDialChild(
+              onTap: () => Navigator.pushNamed(context, Routes.CHILD_FORM),
               backgroundColor: Colors.green,
               child: Icon(Icons.add),
-              label: 'Nova Conta'
+              label: 'Nova Criança'
             ),
           ],
         ),

@@ -1,17 +1,20 @@
 import 'package:dio/dio.dart';
+import '../utils/token.dart';
 
 class DioConfig extends Dio {
-   factory DioConfig.withInterceptors() {
-     return Dio()
-     ..interceptors.add(
-       InterceptorsWrapper(
-         onRequest: (RequestOptions options) async {
-           options.headers.addAll({'Authorization': 'Bearer NAO TEM AINDA'});
-         }
-       ),
-     );
-   }
+  static final TokenUtil _tokenUtil = TokenUtil();
 
-   static Dio dioDefault() =>
-     Dio();
+  static Dio withInterceptors() =>
+    Dio()
+      ..interceptors.add(
+        InterceptorsWrapper(
+          onRequest: (RequestOptions options) async {
+            final token = await _tokenUtil.getToken();
+            options.headers.addAll({'Authorization': 'Bearer ${token.jwtEncoded}'});
+          }
+        ),
+      );
+
+  static Dio dioDefault() =>
+    Dio();
 }
