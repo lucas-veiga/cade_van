@@ -7,6 +7,7 @@ import '../pages/main_tab.dart';
 import '../pages/splash_screen.dart';
 import '../pages/auth/main_auth.dart';
 
+import '../provider/user_provider.dart';
 import './auth_service.dart';
 import '../services/responsible_service.dart';
 
@@ -32,16 +33,16 @@ class StartUpService {
     }
   }
 
-  Future<void> beforeAppInit() async {
+  Future<void> beforeAppInit(final UserProvider userProvider) async {
     startupStatus.add(StartupState.BUSY);
 //    await Future.delayed(Duration(seconds: 5));
     try {
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
+          final user = await _responsibleService.getResponsible();
+          userProvider.currentUser = user;
           startupStatus.add(StartupState.HOME_PAGE);
-          _responsibleService.getResponsible()
-            .then((res) => print('RES -> $res'));
           break;
         }
         case false: {

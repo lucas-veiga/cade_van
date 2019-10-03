@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 import '../utils/default_padding.dart';
@@ -11,6 +12,7 @@ import '../services/child_service.dart';
 
 import '../widgets/default_button.dart';
 import '../models/child.dart';
+import '../provider/user_provider.dart';
 
 class ChildFormPage extends StatelessWidget {
   static final GlobalKey<FormState> _formKey = GlobalKey();
@@ -19,9 +21,11 @@ class ChildFormPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+
     return Scaffold(
       bottomNavigationBar: DefaultPadding(
-        child: DefaultButton(text: 'SALVAR', function: _submit),
+        child: DefaultButton(text: 'SALVAR', function: () => _submit(userProvider)),
       ),
       body: DefaultPadding(
         child: SingleChildScrollView(
@@ -85,11 +89,11 @@ class ChildFormPage extends StatelessWidget {
       ),
     );
 
-  Future _submit() async {
+  Future _submit(final UserProvider userProvider) async {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
     try {
-      await _childService.saveChild(_child);
+      await _childService.saveChild(_child, userProvider.user.id);
     } on ServiceException catch(err) {
 
     }

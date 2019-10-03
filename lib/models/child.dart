@@ -21,6 +21,27 @@ class Child {
     @required this.driverId
   });
 
+  Child.fromJSON(final dynamic json):
+      id = json['id'],
+      name = json['name'],
+      school = json['school'],
+      birthDate = json['birthDate'],
+      period = json['period'],
+      responsibleId = json['responsibleId'],
+      driverCode = json['driverCode'],
+      driverId = json['driverId'];
+
+  static Map<String, dynamic> toJSON(final Child child) =>
+    {
+      'id': child.id,
+      'name': child.name,
+      'school': child.school,
+      'birthDate': child.birthDate,
+      'period': child.period,
+      'responsibleId': child.responsibleId,
+      'driverCode': child.driverCode,
+    };
+
   Child.empty();
 
   @override
