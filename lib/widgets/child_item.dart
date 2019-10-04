@@ -5,13 +5,15 @@ import '../models/child.dart';
 class ChildItem extends StatelessWidget {
   final bool showAvatar;
   final int index;
-  ChildItem(this.index, [this.showAvatar = true]);
+  final Child _child;
+
+  ChildItem(this._child, this.index, [this.showAvatar = true]);
 
   @override
   Row build(BuildContext context) {
     return Row(
       children: <Widget>[
-        Hero(
+        if (showAvatar) Hero(
           tag: 'child_avatar_$index',
           child: CircleAvatar(
             radius: 40,
@@ -22,9 +24,9 @@ class ChildItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text('Marios Antonius'),
+              Text(_child.name),
               Text(
-                'Centro de Ensino Medio 01 de Sobradinho',
+                _child.school,
                 style: TextStyle(
                   color: Colors.grey
                 ),

@@ -12,8 +12,16 @@ class ChildResource {
 
   final Dio _dio = DioConfig.withInterceptors();
 
-  Future<Child> saveChild(final Child child) async {
-    final res = await _dio.post(resourceUrl, data: json.encode(Child.toJSON(child)));
-    return Child.fromJSON(res.data);
+  Future<void> saveChild(final Child child) async {
+    print('POST Request to $resourceUrl');
+    print('BODY: $child');
+    await _dio.post(resourceUrl, data: json.encode(Child.toJSON(child)));
+  }
+
+  Future<List<Child>> getAllChildren() async {
+    print('GET Request to $resourceUrl');
+    final res = await _dio.get(resourceUrl);
+    final untypedList =  res.data.map((item) => Child.fromJSON(item)).toList();
+    return List<Child>.from(untypedList);
   }
 }

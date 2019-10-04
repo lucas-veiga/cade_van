@@ -1,28 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../widgets/child_item.dart';
 import '../widgets/custom_divider.dart';
+
+import '../models/child.dart';
 import '../utils/default_padding.dart';
 import './child_detail_page.dart';
+import '../provider/child_provider.dart';
 
 class HomePage extends StatelessWidget {
   @override
-  ListView build(BuildContext context) {
-    return ListView.separated(
-      separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
-      itemCount: 10,
-      itemBuilder:
-          (BuildContext ctx, int i) =>
+  Consumer build(BuildContext context) {
+    return Consumer<ChildProvider>(
+      builder: (_, final ChildProvider provider, __) =>
+        ListView.separated(
+          separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
+          itemCount: provider.children.length,
+          itemBuilder:
+            (_, int i) =>
             InkWell(
-              onTap: () => Navigator.push(context, PageRouteBuilder(
-//                transitionDuration: Duration(milliseconds: 10000),
-                transitionDuration: Duration(milliseconds: 700),
-                pageBuilder: (BuildContext ctx, _, __) => ChildDetailPage(i),
-              )),
+              onTap: () => _navigateToChildDetail(context, i, provider.children[i]),
               child: DefaultPadding(
-                child: ChildItem(i),
+                child: ChildItem(provider.children[i], i),
               ),
             ),
+        ),
     );
   }
+
+  void _navigateToChildDetail(final BuildContext context, final int i, final Child child) =>
+    Navigator.push(context, PageRouteBuilder(
+      transitionDuration: Duration(milliseconds: 700),
+      pageBuilder: (_, __, ___) => ChildDetailPage(i),
+    ));
 }

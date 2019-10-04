@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cade_van/services/child_service.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
@@ -7,7 +8,9 @@ import '../pages/main_tab.dart';
 import '../pages/splash_screen.dart';
 import '../pages/auth/main_auth.dart';
 
+import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
+
 import './auth_service.dart';
 import '../services/responsible_service.dart';
 
@@ -17,6 +20,7 @@ class StartUpService {
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
   final AuthService _authService = AuthService();
   final ResponsibleService _responsibleService = ResponsibleService();
+  final ChildService _childService = ChildService();
 
   Widget handlePageLanding(final AsyncSnapshot<StartupState> snap) {
     print('Iniciando handlePageLanding');
@@ -33,15 +37,15 @@ class StartUpService {
     }
   }
 
-  Future<void> beforeAppInit(final UserProvider userProvider) async {
+  Future<void> beforeAppInit(final UserProvider userProvider, final ChildProvider childProvider) async {
     startupStatus.add(StartupState.BUSY);
 //    await Future.delayed(Duration(seconds: 5));
     try {
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
-          final user = await _responsibleService.getResponsible();
-          userProvider.currentUser = user;
+          await _responsibleService.setCurrentUser(userProvider);
+          await _childService.setAllChildren(childProvider);
           startupStatus.add(StartupState.HOME_PAGE);
           break;
         }

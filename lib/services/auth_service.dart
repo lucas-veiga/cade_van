@@ -21,6 +21,7 @@ class AuthService {
   Future<bool> canEnter() async {
 //    return false;
       final preferences = await SharedPreferences.getInstance();
+//      final tokenStr = preferences.remove(Token.TOKEN_KEY);
       final tokenStr = preferences.getString(Token.TOKEN_KEY);
       if (tokenStr == null) return false;
       final token = Token(tokenStr);

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../provider/child_provider.dart';
 import '../widgets/child_item.dart';
 import '../widgets/custom_divider.dart';
 import '../utils/default_padding.dart';
@@ -21,10 +23,13 @@ class MapPage extends StatelessWidget {
           child: Container(
             width: 170,
             height: 200,
-            child: ListView.separated(
-              itemCount: 5,
-              separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
-              itemBuilder: (BuildContext ctx, int i) => ChildItem(i, false),
+            child: Consumer<ChildProvider>(
+              builder: (_, final ChildProvider provider, __) =>
+                ListView.separated(
+                  itemCount: provider.children.length,
+                  separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
+                  itemBuilder: (BuildContext ctx, int i) => ChildItem(provider.children[i], i, false),
+                ),
             ),
           ),
         ),

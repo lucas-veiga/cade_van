@@ -10,22 +10,21 @@ import '../utils/mask.dart';
 import '../services/service_exception.dart';
 import '../services/child_service.dart';
 
+import '../provider/child_provider.dart';
 import '../widgets/default_button.dart';
 import '../models/child.dart';
-import '../provider/user_provider.dart';
 
 class ChildFormPage extends StatelessWidget {
   static final GlobalKey<FormState> _formKey = GlobalKey();
   final Child _child = Child.empty();
   final ChildService _childService = ChildService();
-
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+  final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
 
     return Scaffold(
       bottomNavigationBar: DefaultPadding(
-        child: DefaultButton(text: 'SALVAR', function: () => _submit(userProvider)),
+        child: DefaultButton(text: 'SALVAR', function: () => _submit(childProvider, context)),
       ),
       body: DefaultPadding(
         child: SingleChildScrollView(
@@ -89,11 +88,13 @@ class ChildFormPage extends StatelessWidget {
       ),
     );
 
-  Future _submit(final UserProvider userProvider) async {
+  Future _submit(final ChildProvider childProvider, final BuildContext context) async {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
     try {
-      await _childService.saveChild(_child, userProvider.user.id);
+      await _childService.saveChild(_child);
+      await _childService.setAllChildren(childProvider);
+      Navigator.pop(context);
     } on ServiceException catch(err) {
 
     }
@@ -111,6 +112,7 @@ class BirthDate extends StatefulWidget {
 }
 
 class _BirthDateState extends State<BirthDate> {
+  final CustomMask _customMask = CustomMask();
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +120,7 @@ class _BirthDateState extends State<BirthDate> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         _buildBirthDateButton(context),
-        if (widget._child.birthDate != null) Text(CustomMask().date(widget._child.birthDate)),
+        if (widget._child.birthDate != null) Text(_customMask.date(widget._child.birthDate)),
       ],
     );
   }
