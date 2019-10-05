@@ -1,12 +1,17 @@
 import 'dart:convert';
 
-import 'package:cade_van/provider/user_provider.dart';
+import 'package:flutter/material.dart';
+
 import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
+import '../services/child_service.dart';
 import '../services/auth_service.dart';
+
+import '../provider/user_provider.dart';
+import '../provider/child_provider.dart';
+
 import '../config/dio_config.dart';
 import '../models/user.dart';
 import './resource_exception.dart';
@@ -18,8 +23,10 @@ class AuthResource {
   static final String auth = 'http://localhost:8080';
 
   final AuthService _authService = AuthService();
-  final Dio _dio = DioConfig.dioDefault();
   final ResponsibleService _responsibleService = ResponsibleService();
+  final ChildService _childService = ChildService();
+
+  final Dio _dio = DioConfig.dioDefault();
 
   Future<void> createUser(final User user) async {
     print('POST Request to $resourceUrl');
@@ -45,19 +52,23 @@ class AuthResource {
   }
 
   Future<void> login(final User user, final BuildContext context) async {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+
     final map = {
       'login': user.email,
       'password': user.password,
     };
 
     try {
-      final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+
       final userJson = json.encode(map);
       final res = await _dio.post('$auth/login', data: userJson);
       final token = res.headers.value('authorization');
 
       await _authService.login(token, context);
       await _responsibleService.setCurrentUser(userProvider);
+      await _childService.setAllChildren(childProvider);
     } on DioError catch(err, stack) {
       if (err.response == null) {
         Catcher.reportCheckedError(err, stack);

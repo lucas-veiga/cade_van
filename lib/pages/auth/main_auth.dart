@@ -13,8 +13,7 @@ class MainAuthPage extends StatefulWidget {
 }
 
 class _MainAuthPageState extends State<MainAuthPage> {
-  static final StreamController<bool> _isLoadingStream =
-      StreamController<bool>();
+  static final StreamController<bool> _isLoadingStream = StreamController<bool>.broadcast();
 
   static final PageController _pageController =
       PageController(initialPage: MainAuthPage.landPage);

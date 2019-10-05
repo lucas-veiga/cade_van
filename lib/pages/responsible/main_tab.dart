@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
+import './home_tab.dart';
+import './map_tab.dart';
+
 import '../../routes.dart';
-import 'home_tab.dart';
-import 'map_tab.dart';
+import '../../services/auth_service.dart';
 
 class MainTab extends StatelessWidget {
+  final AuthService _authService = AuthService();
+  
   @override
   DefaultTabController build(BuildContext context) {
     return DefaultTabController(
@@ -21,6 +25,12 @@ class MainTab extends StatelessWidget {
               child: Icon(Icons.add),
               label: 'Nova Criança'
             ),
+            SpeedDialChild(
+              onTap: () => _authService.logout(context),
+              backgroundColor: Colors.red,
+              child: Icon(Icons.close),
+              label: 'Sair'
+            )
           ],
         ),
         bottomNavigationBar: _buildTabBar(context),
