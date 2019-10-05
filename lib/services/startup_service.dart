@@ -4,7 +4,7 @@ import 'package:cade_van/services/child_service.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
-import '../pages/main_tab.dart';
+import '../pages/responsible/main_tab.dart';
 import '../pages/splash_screen.dart';
 import '../pages/auth/main_auth.dart';
 

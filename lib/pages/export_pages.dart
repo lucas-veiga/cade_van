@@ -1,4 +1,4 @@
 library export_pages;
 
-export './main_tab.dart';
-export './child_form_page.dart';
+export 'responsible/main_tab.dart';
+export 'responsible/child_form_page.dart';

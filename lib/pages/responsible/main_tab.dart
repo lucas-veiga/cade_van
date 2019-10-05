@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import '../routes.dart';
-import './home_page.dart';
-import './map_page.dart';
+import '../../routes.dart';
+import 'home_tab.dart';
+import 'map_tab.dart';
 
 class MainTab extends StatelessWidget {
   @override
@@ -12,14 +12,6 @@ class MainTab extends StatelessWidget {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        appBar: AppBar(
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.menu),
-              onPressed: () {},
-            ),
-          ],
-        ),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
           children: [
@@ -34,8 +26,8 @@ class MainTab extends StatelessWidget {
         bottomNavigationBar: _buildTabBar(context),
         body: TabBarView(
           children: <Widget>[
-            HomePage(),
-            MapPage(),
+            HomeTab(),
+            MapTab(),
             Container(color: Colors.amber),
           ],
         ),

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/child_item.dart';
-import '../widgets/custom_divider.dart';
+import '../../widgets/child_item.dart';
+import '../../widgets/custom_divider.dart';
 
-import '../models/child.dart';
-import '../utils/default_padding.dart';
-import './child_detail_page.dart';
-import '../provider/child_provider.dart';
+import '../../models/child.dart';
+import '../../utils/default_padding.dart';
+import 'child_detail_page.dart';
+import '../../provider/child_provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomeTab extends StatelessWidget {
   @override
   Consumer build(BuildContext context) {
     return Consumer<ChildProvider>(

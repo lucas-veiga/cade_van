@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../utils/default_padding.dart';
-import '../widgets/fade_in.dart';
+import '../../utils/default_padding.dart';
+import '../../widgets/fade_in.dart';
 
 class ChildDetailPage extends StatelessWidget {
   final int index;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/child_provider.dart';
-import '../widgets/child_item.dart';
-import '../widgets/custom_divider.dart';
-import '../utils/default_padding.dart';
+import '../../provider/child_provider.dart';
+import '../../widgets/child_item.dart';
+import '../../widgets/custom_divider.dart';
+import '../../utils/default_padding.dart';
 
-class MapPage extends StatelessWidget {
+class MapTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
