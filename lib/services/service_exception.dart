@@ -1,10 +1,16 @@
 class ServiceException implements Exception {
   final String msg;
-
-  ServiceException(this.msg);
+  final dynamic err;
+  
+  ServiceException(this.msg, [ this.err ]);
 
   @override
   String toString() {
-    return this.msg;
+    StringBuffer buffer = StringBuffer();
+    buffer.write('ServiceException: { ');
+    buffer.write('customMessage: "$msg", ');
+    buffer.write('error: "$err"');
+    buffer.write(' }');
+    return buffer.toString();
   }
 }
