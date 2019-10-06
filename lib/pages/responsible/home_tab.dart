@@ -15,7 +15,7 @@ class HomeTab extends StatelessWidget {
     return Consumer<ChildProvider>(
       builder: (_, final ChildProvider provider, __) =>
         ListView.separated(
-          separatorBuilder: (BuildContext ctx, int i) => CustomDivider(),
+          separatorBuilder: (BuildContext ctx, int i) => CustomDivider(height: 0),
           itemCount: provider.children.length,
           itemBuilder:
             (_, int i) =>
