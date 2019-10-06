@@ -1,4 +1,4 @@
-package com.example.cade_van;
+package com.cade.cade_van_mobidle;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
