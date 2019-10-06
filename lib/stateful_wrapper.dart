@@ -19,6 +19,7 @@ class _StatefulWrapperState extends State<StatefulWrapper> {
     widget.onInit();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return widget.child;

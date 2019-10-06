@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../utils/validations.dart';
-import '../../utils/toast.dart';
+import '../../widgets/toast.dart';
 import '../../utils/default_padding.dart';
 
 import '../../resource/auth_resource.dart';

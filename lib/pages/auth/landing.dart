@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './main_auth.dart';
+import '../../environments/environment.dart';
 
 class LandingPage extends StatelessWidget {
   final PageController _pageController;
@@ -23,7 +24,7 @@ class LandingPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    "Cadê a Van",
+                    Environment.APP_NAME,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 40,
