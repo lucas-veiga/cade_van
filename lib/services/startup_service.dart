@@ -37,11 +37,14 @@ class StartUpService {
     _requestPermission(context);
     switch (snap.data) {
       case StartupState.BUSY:
+        print('SETTING SPLASH SCREEN');
         return SplashScreen();
-      case StartupState.AUTH_PAGE:
-        return MainAuthPage();
       case StartupState.HOME_PAGE:
+        print('SETTING HOME PAGE');
         return MainTab();
+      case StartupState.AUTH_PAGE:
+        print('SETTING AUTH PAGE');
+        return MainAuthPage();
       default:
         return MainAuthPage();
     }
@@ -59,14 +62,17 @@ class StartUpService {
           await _responsibleService.setCurrentUser(userProvider, userLocation: userLocation);
           await _childService.setAllChildren(childProvider);
           startupStatus.add(StartupState.HOME_PAGE);
+          print('Adding HOME PAGE');
           break;
         }
         case false: {
           startupStatus.add(StartupState.AUTH_PAGE);
+          print('Adding AUTH PAGE - false');
           break;
         }
         default: {
           startupStatus.add(StartupState.AUTH_PAGE);
+          print('Adding AUTH PAGE - default');
           break;
         }
       }

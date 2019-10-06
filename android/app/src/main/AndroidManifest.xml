@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cade.cade_van_mobidle">
+    package="com.cade.cade_van_mobile">
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -16,7 +16,13 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="cade_van"
         android:icon="@mipmap/ic_launcher">
-        <activity
+
+        <!--GOOGLE MAPS API-KEY-->
+        <meta-data android:name="com.google.android.geo.API_KEY"
+          android:value="AIzaSyAh3peGhYWplXDgzaI_ixCf9IOjqOcZ1Us"/>
+        <!--###################-->
+
+      <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
