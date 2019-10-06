@@ -25,13 +25,40 @@ class _MapTabState extends State<MapTab> {
     _createMarkerImageFromAsset(context);
     _addMarker(user);
 
-    return GoogleMap(
-      markers: _markers,
-      onMapCreated: (final GoogleMapController controller) => _controller.complete(controller),
-      initialCameraPosition: CameraPosition(
-        target: LatLng(user.userLocation.latitude, user.userLocation.longitude),
-        zoom: 15,
-      ),
+    return Stack(
+      children: <Widget>[
+        GoogleMap(
+          markers: _markers,
+          onMapCreated: (final GoogleMapController controller) => _controller.complete(controller),
+          initialCameraPosition: CameraPosition(
+            target: LatLng(user.userLocation.latitude, user.userLocation.longitude),
+            zoom: 15,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 30),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'Status do Motorista: ',
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+                Text(
+                  'Em movimento',
+                  style: TextStyle(
+                    color: Colors.green,
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -50,7 +77,7 @@ class _MapTabState extends State<MapTab> {
 
   void _createMarkerImageFromAsset(final BuildContext context) {
     final ImageConfiguration imageConfiguration =
-      createLocalImageConfiguration(context);
+    createLocalImageConfiguration(context);
     BitmapDescriptor.fromAssetImage(
       imageConfiguration,
       'assets/images/school_bus.png',
