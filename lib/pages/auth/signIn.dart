@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/toast.dart';
@@ -84,7 +85,8 @@ class SignIn extends StatelessWidget {
     _formKey.currentState.save();
     try {
       await _authService.login(_user, context);
-    } on ResourceException catch(err) {
+    } on ResourceException catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
       _toast.show(err.msg, context);
     }
   }

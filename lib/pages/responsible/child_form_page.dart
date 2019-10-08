@@ -1,3 +1,4 @@
+import 'package:catcher/catcher_plugin.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -6,8 +7,9 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../../utils/default_padding.dart';
 import '../../utils/validations.dart';
 import '../../utils/mask.dart';
+import '../../widgets/toast.dart';
 
-import '../../services/service_exception.dart';
+import '../../resource/resource_exception.dart';
 import '../../services/child_service.dart';
 
 import '../../provider/child_provider.dart';
@@ -18,6 +20,8 @@ class ChildFormPage extends StatelessWidget {
   static final GlobalKey<FormState> _formKey = GlobalKey();
   final Child _child = Child.empty();
   final ChildService _childService = ChildService();
+  final Toast _toast = Toast();
+
   @override
   Widget build(BuildContext context) {
   final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
@@ -95,8 +99,9 @@ class ChildFormPage extends StatelessWidget {
       await _childService.saveChild(_child);
       await _childService.setAllChildren(childProvider);
       Navigator.pop(context);
-    } on ServiceException catch(err) {
-
+    } on ResourceException catch(err, stack) {
+        _toast.show(err.msg, context);
+        Catcher.reportCheckedError(err, stack);
     }
   }
 }

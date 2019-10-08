@@ -84,9 +84,9 @@ class AuthService {
 
   void _handleHomePage(final User userFromServer, final BuildContext context) {
     if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
-      Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
+      Navigator.pushReplacementNamed(context, Routes.HOME_RESPONSIBLE_PAGE);
     } else if (userFromServer.type == UserTypeEnum.DRIVER) {
-      throw ServiceException('IMPLIMENTAR TELA DRIVER');
+      Navigator.pushReplacementNamed(context, Routes.HOME_DRIVER_PAGE);
     } else {
       throw ServiceException('UserType Not Found');
     }

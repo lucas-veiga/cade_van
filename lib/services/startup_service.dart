@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:location/location.dart';
 import 'package:catcher/core/catcher.dart';
 
-import '../pages/responsible/main_tab.dart';
+import '../pages/responsible/main_responsible_tab.dart';
+import '../pages/driver/main_driver_tab.dart';
 import '../pages/splash_screen.dart';
 import '../pages/auth/main_auth.dart';
 
@@ -22,7 +23,7 @@ import '../widgets/modal.dart';
 import '../environments/environment.dart';
 import '../utils/application_color.dart';
 
-enum StartupState { BUSY, ERROR, HOME_PAGE, AUTH_PAGE }
+enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
 class StartUpService {
   final AuthService _authService = AuthService();
@@ -40,9 +41,11 @@ class StartUpService {
       case StartupState.BUSY:
         print('SETTING SPLASH SCREEN');
         return SplashScreen();
-      case StartupState.HOME_PAGE:
+      case StartupState.HOME_RESPONSIBLE_PAGE:
         print('SETTING HOME PAGE');
-        return MainTab();
+        return MainResponsibleTab();
+      case StartupState.HOME_DRIVER_PAGE:
+        return MainDriverTab();
       case StartupState.AUTH_PAGE:
         print('SETTING AUTH PAGE');
         return MainAuthPage();
@@ -141,17 +144,21 @@ class StartUpService {
   }
 
   Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider) async {
-    final userLocation = await _location.getLocation();
-    final user = await _userService.setCurrentUserFromServer(userProvider, userLocation: userLocation);
-    await _childService.setAllChildren(childProvider);
+    try {
+      final userLocation = await _location.getLocation();
+      final user = await _userService.setCurrentUserFromServer(userProvider, userLocation: userLocation);
+      await _childService.setAllChildren(childProvider);
 
-    if (user.type == UserTypeEnum.RESPONSIBLE) {
-      startupStatus.add(StartupState.HOME_PAGE);
-    } else if (user.type == UserTypeEnum.DRIVER) {
-      throw ServiceException('Implementar TELA DRIVER');
-    } else {
-      throw ServiceException('Nenhum UserType encontrado');
+      if (user.type == UserTypeEnum.RESPONSIBLE) {
+        startupStatus.add(StartupState.HOME_RESPONSIBLE_PAGE);
+      } else if (user.type == UserTypeEnum.DRIVER) {
+        startupStatus.add(StartupState.HOME_DRIVER_PAGE);
+      } else {
+        throw ServiceException('Nenhum UserType encontrado');
+      }
+      print('Adding HOME PAGE');
+    } catch (err, stack) {
+      Catcher.reportCheckedError(err, stack);
     }
-    print('Adding HOME PAGE');
   }
 }

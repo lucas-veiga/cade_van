@@ -3,26 +3,23 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
-import './home_tab.dart';
-import './map_tab.dart';
-
 import '../../routes.dart';
 import '../../services/auth_service.dart';
 
-class MainTab extends StatefulWidget {
+class MainDriverTab extends StatefulWidget {
   @override
-  _MainTabState createState() => _MainTabState();
+  _MainDriverTabState createState() => _MainDriverTabState();
 }
 
-class _MainTabState extends State<MainTab> with TickerProviderStateMixin {
+class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateMixin {
   TabController _tabController;
   bool _isScrollable = true;
 
   final AuthService _authService = AuthService();
   final List<Widget> _myTabs = [
-    HomeTab(),
-    MapTab(),
-    Container(color: Colors.amber),
+    Container(color: Colors.greenAccent),
+    Container(color: Colors.red),
+    Container(color: Colors.blue),
   ];
 
   @override
@@ -47,10 +44,10 @@ class _MainTabState extends State<MainTab> with TickerProviderStateMixin {
           animatedIcon: AnimatedIcons.menu_close,
           children: [
             SpeedDialChild(
-              onTap: () => Navigator.pushNamed(context, Routes.CHILD_FORM),
+              onTap: () => print('Implimentar'),
               backgroundColor: Colors.green,
               child: Icon(Icons.add),
-              label: 'Nova Criança'
+              label: 'Novo itinerário'
             ),
             SpeedDialChild(
               onTap: () => _authService.logout(context),
@@ -77,7 +74,7 @@ class _MainTabState extends State<MainTab> with TickerProviderStateMixin {
       tabs: <Widget>[
         Tab(
           icon: Icon(
-            Icons.child_care,
+            Icons.format_list_bulleted,
             color: Theme.of(context).primaryColor,
           ),
         ),

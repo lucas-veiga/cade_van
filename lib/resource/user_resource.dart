@@ -36,18 +36,26 @@ class UserResource {
   }
 
   Future<User> getUser(final String email) async {
-      final url = '$RESOURCE_URL/email/$email';
+      try {
+        final url = '$RESOURCE_URL/$email';
+        print('GET Request to $url');
+
+        final res = await _dioWithInterceptors.get(url);
+        return User.fromJSON(res.data);
+      } on DioError catch(err) {
+        throw ResourceException('Error ao pegar usuario', err);
+      }
+  }
+
+  Future<User> getUserLoggedIn() async {
+    try {
+      final url = '$RESOURCE_URL/user-loggedin';
       print('GET Request to $url');
 
       final res = await _dioWithInterceptors.get(url);
       return User.fromJSON(res.data);
-  }
-
-  Future<User> getUserLoggedIn() async {
-    final url = '$RESOURCE_URL/user-loggedin';
-    print('GET Request to $url');
-
-    final res = await _dioWithInterceptors.get(url);
-    return User.fromJSON(res.data);
+    } on DioError catch(err) {
+      throw ResourceException('Error ao pegar usuario logado', err);
+    }
   }
 }

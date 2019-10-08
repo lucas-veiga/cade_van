@@ -9,12 +9,12 @@ import '../../provider/user_provider.dart';
 
 import '../../models/user.dart';
 
-class MapTab extends StatefulWidget {
+class MapResponsibleTab extends StatefulWidget {
   @override
-  _MapTabState createState() => _MapTabState();
+  _MapResponsibleTabState createState() => _MapResponsibleTabState();
 }
 
-class _MapTabState extends State<MapTab> {
+class _MapResponsibleTabState extends State<MapResponsibleTab> {
   Completer<GoogleMapController> _controller = Completer();
   BitmapDescriptor _driverIcon;
   Set<Marker> _markers;
