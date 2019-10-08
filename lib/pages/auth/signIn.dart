@@ -2,17 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../utils/validations.dart';
 import '../../widgets/toast.dart';
+import '../../widgets/default_button.dart';
+
+import '../../utils/validations.dart';
 import '../../utils/default_padding.dart';
 
-import '../../resource/auth_resource.dart';
+import '../../services/auth_service.dart';
 import '../../resource/resource_exception.dart';
-import '../../widgets/default_button.dart';
 import '../../models/user.dart';
 
 class SignIn extends StatelessWidget {
-  final AuthResource _authResource = AuthResource();
+  final AuthService _authService = AuthService();
   final Toast _toast = Toast();
   final User _user = User.empty();
   final PageController _pageController;
@@ -82,7 +83,7 @@ class SignIn extends StatelessWidget {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
     try {
-      await _authResource.login(_user, context);
+      await _authService.login(_user, context);
     } on ResourceException catch(err) {
       _toast.show(err.msg, context);
     }

@@ -1,6 +1,7 @@
 import 'package:location/location.dart';
 
 import 'package:meta/meta.dart';
+import './model_exception.dart';
 
 enum UserTypeEnum { DRIVER, RESPONSIBLE }
 
@@ -41,12 +42,12 @@ class User {
       userLocation = user.userLocation;
 
 
-  User.fromJSON(final dynamic json, final UserTypeEnum type):
+  User.fromJSON(final dynamic json):
       this.id = json['id'],
       this.email = json['email'],
       this.phone = json['phone'],
       this.name = json['name'],
-      this.type = type;
+      this.type = _userTypeFromJSON(json['perfil']);
 
   static Map<String, dynamic> toJSON(User user) =>
     {
@@ -57,18 +58,39 @@ class User {
       'phone': user.phone,
       'cpf': user.cpf,
       'nickname': user.nickname,
-      'type': _getType(user.type),
+      'type': _userTypeToJSON(user.type),
     };
 
-  static String _getType(final UserTypeEnum type) {
+  static String _userTypeToJSON(final UserTypeEnum type) {
     if (type == null) {
-      return null;
+      throw ModelException('Usuario Without Type');
     }
 
     if (type == UserTypeEnum.DRIVER) {
-      return 'driver';
+      return 'Driver';
     }
-    return 'responsible';
+
+    if (type == UserTypeEnum.RESPONSIBLE) {
+      return 'Responsible';
+    }
+
+    throw ModelException('UserType $type Not Found');
+  }
+
+  static UserTypeEnum _userTypeFromJSON(final String type) {
+    if (type == null) {
+      throw ModelException('Usuario Without Type');
+    }
+
+    if (type.toLowerCase() == 'driver') {
+      return UserTypeEnum.DRIVER;
+    }
+
+    if (type.toLowerCase() == 'responsible') {
+      return UserTypeEnum.RESPONSIBLE;
+    }
+
+    throw ModelException('UserType $type Not Found');
   }
 
   @override

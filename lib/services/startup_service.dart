@@ -13,10 +13,11 @@ import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
 
 import './child_service.dart';
-import './responsible_service.dart';
+import './user_service.dart';
 import './auth_service.dart';
 import './service_exception.dart';
 
+import '../models/user.dart';
 import '../widgets/modal.dart';
 import '../environments/environment.dart';
 import '../utils/application_color.dart';
@@ -25,7 +26,7 @@ enum StartupState { BUSY, ERROR, HOME_PAGE, AUTH_PAGE }
 
 class StartUpService {
   final AuthService _authService = AuthService();
-  final ResponsibleService _responsibleService = ResponsibleService();
+  final UserService _userService = UserService();
   final ChildService _childService = ChildService();
 
   final Modal _modal = Modal();
@@ -56,13 +57,9 @@ class StartUpService {
 //    await Future.delayed(Duration(seconds: 5));
     try {
       final res = await _authService.canEnter();
-      final userLocation = await _location.getLocation();
       switch (res) {
         case true: {
-          await _responsibleService.setCurrentUser(userProvider, userLocation: userLocation);
-          await _childService.setAllChildren(childProvider);
-          startupStatus.add(StartupState.HOME_PAGE);
-          print('Adding HOME PAGE');
+          await _handleHomePage(userProvider, childProvider);
           break;
         }
         case false: {
@@ -141,5 +138,20 @@ class StartUpService {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('Nao foi possivel pedir a localizacao ao usuario', err);
     }
+  }
+
+  Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider) async {
+    final userLocation = await _location.getLocation();
+    final user = await _userService.setCurrentUserFromServer(userProvider, userLocation: userLocation);
+    await _childService.setAllChildren(childProvider);
+
+    if (user.type == UserTypeEnum.RESPONSIBLE) {
+      startupStatus.add(StartupState.HOME_PAGE);
+    } else if (user.type == UserTypeEnum.DRIVER) {
+      throw ServiceException('Implementar TELA DRIVER');
+    } else {
+      throw ServiceException('Nenhum UserType encontrado');
+    }
+    print('Adding HOME PAGE');
   }
 }

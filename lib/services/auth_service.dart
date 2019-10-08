@@ -2,36 +2,41 @@ import 'package:flutter/material.dart';
 
 import 'package:catcher/core/catcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:location/location.dart';
 
-import '../services/service_exception.dart';
+import '../provider/user_provider.dart';
+import '../provider/child_provider.dart';
+
 import '../models/token.dart';
+import '../models/user.dart';
+
+import './user_service.dart';
+import './child_service.dart';
+import './service_exception.dart';
+
+import '../resource/auth_resource.dart';
 import '../routes.dart';
 
 class AuthService {
-  Future<void> login(final String token, final BuildContext context) async {
+  final Location _location = Location();
+
+  final UserService _userService = UserService();
+  final ChildService _childService = ChildService();
+  final AuthResource _authResource = AuthResource();
+
+  Future<void> login(final User user, final BuildContext context) async {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+
     try {
-      final tokenConverted = Token.fromJSON(token);
-      final tokenMap = Token.toJSON(tokenConverted);
-      final preferences = await SharedPreferences.getInstance();
-      preferences.setString(Token.TOKEN_KEY, tokenMap);
-      Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
+      await _handleToken(user);
+      final userFromServer = await _handleUser(userProvider, childProvider, user);
+      _handleHomePage(userFromServer, context);
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('Error ao realizar login');
     }
-  }
-
-  Future<bool> canEnter() async {
-      try {
-        final preferences = await SharedPreferences.getInstance();
-        final tokenStr = preferences.getString(Token.TOKEN_KEY);
-        if (tokenStr == null) return false;
-        final token = Token(tokenStr);
-        return token.payload.exp.isAfter(DateTime.now());
-      } catch (err, stack) {
-        Catcher.reportCheckedError(err, stack);
-        throw ServiceException('Error ao verificar o token');
-      }
   }
 
   Future<void> logout(final BuildContext context) async {
@@ -40,12 +45,51 @@ class AuthService {
       final res = await preferences.remove(Token.TOKEN_KEY);
       if (res) {
         Navigator.pushReplacementNamed(context, Routes.AUTH_PAGE);
-        return;
+      } else {
+        throw ServiceException('Não foi possível navegar para AUTH_PAGE');
       }
-      throw ServiceException('Não foi possível sair conta');
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('Error ao sair conta');
     }
+  }
+
+  Future<bool> canEnter() async {
+    try {
+      final preferences = await SharedPreferences.getInstance();
+      final tokenStr = preferences.getString(Token.TOKEN_KEY);
+      if (tokenStr == null) return false;
+      final token = Token(tokenStr);
+      return token.payload.exp.isAfter(DateTime.now());
+    } catch (err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('Error ao verificar o token');
+    }
+  }
+
+  Future<void> _handleToken(final User user) async {
+    final token = await _authResource.login(user);
+    final tokenJSON = Token.toJSON(token);
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString(Token.TOKEN_KEY, tokenJSON);
+  }
+
+  Future<User> _handleUser(final UserProvider userProvider, final ChildProvider childProvider, final User user) async {
+    final userFromServer = await _userService.getUserLoggedIn();
+    final userLocation = await _location.getLocation();
+    _userService.setCurrentUser(userProvider, user, userLocation: userLocation);
+    await _childService.setAllChildren(childProvider);
+    return userFromServer;
+  }
+
+  void _handleHomePage(final User userFromServer, final BuildContext context) {
+    if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
+      Navigator.pushReplacementNamed(context, Routes.HOME_PAGE);
+    } else if (userFromServer.type == UserTypeEnum.DRIVER) {
+      throw ServiceException('IMPLIMENTAR TELA DRIVER');
+    } else {
+      throw ServiceException('UserType Not Found');
+    }
+
   }
 }
