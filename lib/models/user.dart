@@ -13,6 +13,7 @@ class User {
   String phone;
   String cpf;
   String nickname;
+  bool isDriving;
   UserTypeEnum type;
   LocationData userLocation;
 
@@ -24,6 +25,7 @@ class User {
     @required this.phone,
     @required this.cpf,
     @required this.nickname,
+    @required this.isDriving,
     @required this.type,
     @required this.userLocation,
   });
@@ -38,6 +40,7 @@ class User {
       phone = user.phone,
       cpf = user.cpf,
       nickname = user.nickname,
+      isDriving = user.isDriving,
       type = user.type,
       userLocation = user.userLocation;
 
@@ -105,6 +108,7 @@ class User {
     buffer.write('phone: "$phone", ');
     buffer.write('cpf: "$cpf", ');
     buffer.write('nickname: "$nickname", ');
+    buffer.write('isDriving: $isDriving, ');
     buffer.write('type: "$type", ');
     buffer.write('location: { ');
     buffer.write('latitude: $_latitude, ');

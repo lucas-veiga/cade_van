@@ -1,10 +1,11 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:provider/provider.dart';
 
-import '../../routes.dart';
 import '../../services/auth_service.dart';
+import '../../provider/user_provider.dart';
 
 class MainDriverTab extends StatefulWidget {
   @override
@@ -40,22 +41,32 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     return DefaultTabController(
       length: _myTabs.length,
       child: Scaffold(
-        floatingActionButton: SpeedDial(
-          animatedIcon: AnimatedIcons.menu_close,
-          children: [
-            SpeedDialChild(
-              onTap: () => print('Implimentar'),
-              backgroundColor: Colors.green,
-              child: Icon(Icons.add),
-              label: 'Novo itinerário'
+        floatingActionButton: Consumer<UserProvider>(
+          builder: (_, final UserProvider provider, __) =>
+            SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              backgroundColor: provider.user.isDriving ? Colors.orange : null,
+              children: [
+                SpeedDialChild(
+                  onTap: () => provider.isDriving = !provider.isDriving,
+                  backgroundColor: provider.isDriving ? Colors.orange : null,
+                  child: Icon(provider.isDriving ? Icons.gps_off : Icons.gps_fixed),
+                  label: provider.isDriving ? 'Parar Viagem' : 'Iniciar Viagem',
+                ),
+                SpeedDialChild(
+                  onTap: () => print('Implimentar'),
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.add),
+                  label: 'Novo itinerário'
+                ),
+                SpeedDialChild(
+                  onTap: () => _authService.logout(context),
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close),
+                  label: 'Sair'
+                )
+              ],
             ),
-            SpeedDialChild(
-              onTap: () => _authService.logout(context),
-              backgroundColor: Colors.red,
-              child: Icon(Icons.close),
-              label: 'Sair'
-            )
-          ],
         ),
         bottomNavigationBar: _buildTabBar(context),
         body: TabBarView(

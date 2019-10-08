@@ -8,7 +8,15 @@ class UserProvider with ChangeNotifier {
   User get user => User.copy(_user);
 
   set currentUser(final User user) {
+    user.isDriving = false;
     _user = user;
+    notifyListeners();
+  }
+
+  get isDriving => _user.isDriving;
+
+  set isDriving(final bool value) {
+    _user.isDriving = value;
     notifyListeners();
   }
 }
