@@ -14,6 +14,7 @@ class User {
   String cpf;
   String nickname;
   bool isDriving;
+  String code;
   UserTypeEnum type;
   LocationData userLocation;
 
@@ -26,6 +27,7 @@ class User {
     @required this.cpf,
     @required this.nickname,
     @required this.isDriving,
+    @required this.code,
     @required this.type,
     @required this.userLocation,
   });
@@ -47,9 +49,12 @@ class User {
 
   User.fromJSON(final dynamic json):
       this.id = json['id'],
+      this.name = json['name'],
+      this.nickname = json['nickname'],
       this.email = json['email'],
       this.phone = json['phone'],
-      this.name = json['name'],
+      this.cpf = json['cpf'],
+      this.code = json['code'],
       this.type = _userTypeFromJSON(json['perfil']);
 
   static Map<String, dynamic> toJSON(User user) =>
@@ -82,7 +87,7 @@ class User {
 
   static UserTypeEnum _userTypeFromJSON(final String type) {
     if (type == null) {
-      throw ModelException('Usuario Without Type');
+      return null;
     }
 
     if (type.toLowerCase() == 'driver') {
@@ -109,6 +114,7 @@ class User {
     buffer.write('cpf: "$cpf", ');
     buffer.write('nickname: "$nickname", ');
     buffer.write('isDriving: $isDriving, ');
+    buffer.write('code: "$code", ');
     buffer.write('type: "$type", ');
     buffer.write('location: { ');
     buffer.write('latitude: $_latitude, ');

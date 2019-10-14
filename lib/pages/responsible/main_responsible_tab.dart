@@ -1,13 +1,23 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
+import 'package:flutter/gestures.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+
+
+import '../../services/auth_service.dart';
+import '../../services/socket_location_service.dart';
+import '../../services/driver_service.dart';
 
 import './home_responsible_tab.dart';
 import './map_responsible_tab.dart';
 
+import '../../provider/user_provider.dart';
+import '../../provider/child_provider.dart';
+import '../../provider/driver_provider.dart';
+
 import '../../routes.dart';
-import '../../services/auth_service.dart';
 
 class MainResponsibleTab extends StatefulWidget {
   @override
@@ -19,6 +29,8 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
   bool _isScrollable = true;
 
   final AuthService _authService = AuthService();
+  final DriverService _driverService = DriverService();
+
   final List<Widget> _myTabs = [
     HomeResponsibleTab(),
     MapResponsibleTab(),
@@ -29,6 +41,8 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
   void initState() {
     _tabController = TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
     _tabController.addListener(_handleTabChange);
+
+    SchedulerBinding.instance.addPostFrameCallback(_initAfterViewCreated);
     super.initState();
   }
 
@@ -102,5 +116,16 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
     } else {
       setState(() => _isScrollable = true);
     }
+  }
+
+  void _initAfterViewCreated(_) {
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final child = Provider.of<ChildProvider>(context, listen: false).children.first;
+    final driverProvider = Provider.of<DriverProvider>(context);
+
+    _driverService.setMyDrivers(user, child, driverProvider).then((value) {
+      SocketLocationService.init(Provider.of<UserProvider>(context, listen: false));
+      SocketLocationService.listenLocation(driverProvider);
+    });
   }
 }

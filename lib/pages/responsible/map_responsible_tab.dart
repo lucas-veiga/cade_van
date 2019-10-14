@@ -6,8 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../provider/user_provider.dart';
+import '../../provider/driver_provider.dart';
 
 import '../../models/user.dart';
+import '../../models/driver_location.dart';
 
 class MapResponsibleTab extends StatefulWidget {
   @override
@@ -21,9 +23,11 @@ class _MapResponsibleTabState extends State<MapResponsibleTab> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context, listen: false).user;
+    final User user = Provider.of<UserProvider>(context).user;
+    final DriverLocation driverLocation = Provider.of<DriverProvider>(context).driverLocation;
+
     _createMarkerImageFromAsset(context);
-    _addMarker(user);
+    _addUsers(user, driverLocation);
 
     return Stack(
       children: <Widget>[
@@ -49,9 +53,9 @@ class _MapResponsibleTabState extends State<MapResponsibleTab> {
                   ),
                 ),
                 Text(
-                  'Em movimento',
+                  driverLocation.isDriving ? 'Em Movimento' : 'Parado',
                   style: TextStyle(
-                    color: Colors.green,
+                    color: driverLocation.isDriving ? Colors.green : Colors.orange,
                   ),
                 )
               ],
@@ -62,17 +66,30 @@ class _MapResponsibleTabState extends State<MapResponsibleTab> {
     );
   }
 
-  void _addMarker(final User user) {
+  void _addUsers(final User user, final DriverLocation driverLocation) {
     _markers = {
       Marker(
-        markerId: MarkerId('Mototorista'),
+        markerId: MarkerId('MyPosition'),
         position: LatLng(user.userLocation.latitude, user.userLocation.longitude),
-        icon: _driverIcon,
         infoWindow: InfoWindow(
-          title: 'Motorista'
+          title: 'Minha Posição'
         ),
       ),
     };
+
+    if (driverLocation.isDriving) {
+      print('\n\n\tADDING NEW MARKER -> LAT: ${driverLocation.latitude} | LON: ${driverLocation.longitude} - ${driverLocation.driverId}');
+      _markers.add(
+        Marker(
+          markerId: MarkerId('Driver_${driverLocation.driverName}_${driverLocation.driverId}'),
+          position: LatLng(driverLocation.latitude, driverLocation.longitude),
+          icon: _driverIcon,
+          infoWindow: InfoWindow(
+            title: driverLocation.driverName,
+          ),
+        ),
+      );
+    }
   }
 
   void _createMarkerImageFromAsset(final BuildContext context) {

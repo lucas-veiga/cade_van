@@ -19,4 +19,9 @@ class UserProvider with ChangeNotifier {
     _user.isDriving = value;
     notifyListeners();
   }
+
+  @override
+  String toString() {
+    return _user.toString();
+  }
 }

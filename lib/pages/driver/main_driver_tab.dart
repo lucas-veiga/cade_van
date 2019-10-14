@@ -5,6 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/auth_service.dart';
+import '../../services/socket_location_service.dart';
 import '../../provider/user_provider.dart';
 
 class MainDriverTab extends StatefulWidget {
@@ -48,7 +49,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
               backgroundColor: provider.user.isDriving ? Colors.orange : null,
               children: [
                 SpeedDialChild(
-                  onTap: () => provider.isDriving = !provider.isDriving,
+                  onTap: () => _onStarDriving(provider),
                   backgroundColor: provider.isDriving ? Colors.orange : null,
                   child: Icon(provider.isDriving ? Icons.gps_off : Icons.gps_fixed),
                   label: provider.isDriving ? 'Parar Viagem' : 'Iniciar Viagem',
@@ -109,6 +110,17 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       setState(() => _isScrollable = false);
     } else {
       setState(() => _isScrollable = true);
+    }
+  }
+
+  void _onStarDriving(final UserProvider provider) {
+    provider.isDriving = !provider.isDriving;
+    if (provider.isDriving) {
+      SocketLocationService.init(provider);
+      SocketLocationService.sendLocation();
+    } else {
+      SocketLocationService.sendLocation(true);
+      Future.delayed(Duration(seconds: 1), SocketLocationService.close);
     }
   }
 }

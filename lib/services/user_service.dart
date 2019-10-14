@@ -31,7 +31,7 @@ class UserService {
   Future<User> setCurrentUserFromServer(final UserProvider userProvider, { final LocationData userLocation }) async {
     final token = await _tokenUtil.getToken();
     final user = await getUser(token.payload.sub);
-    setCurrentUser(userProvider, user);
+    setCurrentUser(userProvider, user, userLocation: userLocation);
     return user;
   }
 }

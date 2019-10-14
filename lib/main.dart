@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import './provider/user_provider.dart';
 import './provider/child_provider.dart';
+import './provider/driver_provider.dart';
 
 import './services/startup_service.dart';
 import './stateful_wrapper.dart';
@@ -25,8 +26,10 @@ void main() {
 
 class CadeVan extends StatelessWidget {
   final StartUpService _startUpService = StartUpService();
+
   final UserProvider _userProvider = UserProvider();
   final ChildProvider _childProvider = ChildProvider();
+  final DriverProvider _driverProvider = DriverProvider();
 
   @override
   Widget build(BuildContext context) =>
@@ -37,6 +40,9 @@ class CadeVan extends StatelessWidget {
         ),
         ChangeNotifierProvider<UserProvider>.value(
           value: _userProvider,
+        ),
+        ChangeNotifierProvider<DriverProvider>.value(
+          value: _driverProvider,
         ),
       ],
       child: MaterialApp(
