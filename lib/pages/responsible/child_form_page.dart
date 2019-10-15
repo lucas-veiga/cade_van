@@ -1,6 +1,7 @@
-import 'package:catcher/catcher_plugin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
+import 'package:catcher/catcher_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
@@ -21,10 +22,11 @@ class ChildFormPage extends StatelessWidget {
   final Child _child = Child.empty();
   final ChildService _childService = ChildService();
   final Toast _toast = Toast();
+  static final TextEditingController _driverCodeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-  final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
 
     return Scaffold(
       bottomNavigationBar: DefaultPadding(
@@ -46,7 +48,24 @@ class ChildFormPage extends StatelessWidget {
                   _buildSchoolField,
                   _buildPeriodoField,
                   BirthDate(_child),
-                  _buildDriverCode,
+                  Row(
+                    children: <Widget>[
+                      Flexible(
+                        flex: 9,
+                        child: _buildDriverCode,
+                      ),
+                      Flexible(
+                        flex: 3,
+                        child: RaisedButton(
+                          child: Text('Colar'),
+                          onPressed: () => Clipboard.getData('text/plain').then((res) {
+                            _child.driverCode = res.text;
+                            _driverCodeController.text = res.text;
+                          }),
+                        ),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -85,6 +104,7 @@ class ChildFormPage extends StatelessWidget {
 
   TextFormField get _buildDriverCode =>
     TextFormField(
+      controller: _driverCodeController,
       onSaved: (value) => _child.driverCode = value,
       validator: (value) => Validations.isRequired(input: value),
       decoration: InputDecoration(
@@ -100,8 +120,8 @@ class ChildFormPage extends StatelessWidget {
       await _childService.setAllChildren(childProvider);
       Navigator.pop(context);
     } on ResourceException catch(err, stack) {
-        _toast.show(err.msg, context);
-        Catcher.reportCheckedError(err, stack);
+      _toast.show(err.msg, context);
+      Catcher.reportCheckedError(err, stack);
     }
   }
 }

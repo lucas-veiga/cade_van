@@ -11,6 +11,7 @@ class ChildService {
 
   Future<void> setAllChildren(final ChildProvider childProvider) async {
     final children = await _childResource.getAllChildren();
+    childProvider.emptyChildren();
     childProvider.addAll = children;
   }
 }

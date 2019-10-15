@@ -16,4 +16,6 @@ class ChildProvider with ChangeNotifier {
     _children.addAll(children);
     notifyListeners();
   }
+
+  void emptyChildren() => _children.clear();
 }
