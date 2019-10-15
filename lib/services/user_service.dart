@@ -23,15 +23,14 @@ class UserService {
     return await _userResource.getUserLoggedIn();
   }
 
-  void setCurrentUser(final UserProvider userProvider, final User user, { final LocationData userLocation }) {
-    user.userLocation = userLocation;
+  void setCurrentUser(final UserProvider userProvider, final User user) {
     userProvider.currentUser = user;
   }
 
-  Future<User> setCurrentUserFromServer(final UserProvider userProvider, { final LocationData userLocation }) async {
+  Future<User> setCurrentUserFromServer(final UserProvider userProvider) async {
     final token = await _tokenUtil.getToken();
     final user = await getUser(token.payload.sub);
-    setCurrentUser(userProvider, user, userLocation: userLocation);
+    setCurrentUser(userProvider, user);
     return user;
   }
 }

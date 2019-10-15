@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:location/location.dart';
 
 import '../provider/user_provider.dart';
 import '../provider/child_provider.dart';
@@ -19,8 +18,6 @@ import '../resource/auth_resource.dart';
 import '../routes.dart';
 
 class AuthService {
-  final Location _location = Location();
-
   final UserService _userService = UserService();
   final ChildService _childService = ChildService();
   final AuthResource _authResource = AuthResource();
@@ -76,8 +73,7 @@ class AuthService {
 
   Future<User> _handleUser(final UserProvider userProvider, final ChildProvider childProvider, final User user) async {
     final userFromServer = await _userService.getUserLoggedIn();
-    final userLocation = await _location.getLocation();
-    _userService.setCurrentUser(userProvider, user, userLocation: userLocation);
+    _userService.setCurrentUser(userProvider, user);
     await _childService.setAllChildren(childProvider);
     return userFromServer;
   }

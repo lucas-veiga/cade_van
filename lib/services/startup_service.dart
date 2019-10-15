@@ -36,7 +36,6 @@ class StartUpService {
 
   Widget handlePageLanding(final BuildContext context, final AsyncSnapshot<StartupState> snap) {
     print('Iniciando handlePageLanding');
-    _requestPermission(context);
     switch (snap.data) {
       case StartupState.BUSY:
         print('SETTING SPLASH SCREEN');
@@ -145,8 +144,7 @@ class StartUpService {
 
   Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider) async {
     try {
-      final userLocation = await _location.getLocation();
-      final user = await _userService.setCurrentUserFromServer(userProvider, userLocation: userLocation);
+      final user = await _userService.setCurrentUserFromServer(userProvider);
       await _childService.setAllChildren(childProvider);
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {

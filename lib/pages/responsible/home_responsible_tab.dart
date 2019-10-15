@@ -20,7 +20,8 @@ class HomeResponsibleTab extends StatelessWidget {
           itemBuilder:
             (_, int i) =>
             InkWell(
-              onTap: () => _navigateToChildDetail(context, i, provider.children[i]),
+              onLongPress: () => _navigateToChildDetail(context, i, provider.children[i]),
+              onTap: () => _navigateToMap(provider.children[i]),
               child: DefaultPadding(
                 child: ChildItem(provider.children[i], i),
               ),
@@ -34,4 +35,6 @@ class HomeResponsibleTab extends StatelessWidget {
       transitionDuration: Duration(milliseconds: 700),
       pageBuilder: (_, __, ___) => ChildDetailPage(i),
     ));
+
+  void _navigateToMap(final Child child) => print('MAPA ->\t$child');
 }
