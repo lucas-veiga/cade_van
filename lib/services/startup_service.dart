@@ -22,8 +22,6 @@ import './driver_service.dart';
 
 import '../models/user.dart';
 import '../widgets/modal.dart';
-import '../environments/environment.dart';
-import '../utils/application_color.dart';
 
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
@@ -81,67 +79,6 @@ class StartUpService {
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('Erro ao inicar o aplicativo', err);
-    }
-  }
-
-  void _requestPermission(final BuildContext context) =>
-    _location.requestPermission()
-      .then((hasLocation) {
-      if (!hasLocation) {
-        _modal.showModal(
-          context,
-          stringTitle: 'Localização Necessaria',
-          stringContent: 'O ${Environment.APP_NAME} precisa acessar sua localização',
-          stringTitleColor: ApplicationColorEnum.WARNING,
-          actions: _buildAction(context),
-        );
-      }
-    }).catchError((err) {
-      Catcher.reportCheckedError(err, 'NostackTrace');
-      throw ServiceException('Nao foi possivel pedir a localizacao ao usuario', err);
-    });
-
-  List<Widget> _buildAction(final BuildContext context) =>
-    <Widget>[
-      FlatButton(
-        onPressed: () async => await _handleActionPressed(context),
-        child: Text(
-          'OK',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-      )
-    ];
-
-  Future<void> _handleActionPressed(final BuildContext context) async {
-    int attempts = 0;
-    final int maxAttempt = 3;
-
-    try {
-      bool has = false;
-      do {
-        print('Iniciando $attempts tentativa para pedir localizacao');
-        has = await _location.requestPermission();
-        if (has) {
-          Navigator.pop(context);
-          return;
-        } else {
-          attempts++;
-        }
-      } while(!has && attempts <= maxAttempt);
-
-      if (!has && attempts >= maxAttempt) {
-        _modal.showModal(
-          context,
-          stringTitle: 'Erro ao pegar a localização',
-          stringTitleColor: ApplicationColorEnum.ERROR,
-          stringContent: 'Limite máximo de tentativas excedido',
-        );
-      }
-    } catch (err, stack) {
-      Catcher.reportCheckedError(err, stack);
-      throw ServiceException('Nao foi possivel pedir a localizacao ao usuario', err);
     }
   }
 
