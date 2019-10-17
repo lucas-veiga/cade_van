@@ -9,7 +9,7 @@ import './provider/driver_provider.dart';
 
 import './services/startup_service.dart';
 import './stateful_wrapper.dart';
-import './routes.dart';
+import 'services/routes_service.dart';
 import './config/catcher_config.dart';
 import './utils/application_color.dart';
 
@@ -52,14 +52,14 @@ class CadeVan extends StatelessWidget {
           primarySwatch: ApplicationColor.MAIN,
         ),
         home: StatefulWrapper(
-          onInit: () => _startUpService.beforeAppInit(_userProvider, _childProvider),
+          onInit: () => _startUpService.beforeAppInit(_userProvider, _childProvider, _driverProvider),
           child: StreamBuilder<StartupState>(
             stream: _startUpService.startupStatus.stream,
             builder: (BuildContext ctx, AsyncSnapshot<StartupState> snap) =>
               _startUpService.handlePageLanding(ctx, snap),
           ),
         ),
-        routes: Routes.availableRoutes,
+        routes: RoutesService.availableRoutes,
       ),
     );
 }

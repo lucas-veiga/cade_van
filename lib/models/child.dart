@@ -10,6 +10,8 @@ class Child {
   String driverCode;
   int driverId;
 
+  Child.empty();
+
   Child({
     @required this.id,
     @required this.name,
@@ -20,6 +22,16 @@ class Child {
     @required this.driverCode,
     @required this.driverId
   });
+
+  Child.copy(final Child child):
+      id = child.id,
+      name = child.name,
+      school = child.school,
+      birthDate = child.birthDate,
+      period = child.period,
+      responsibleId = child.responsibleId,
+      driverCode = child.driverCode,
+      driverId = child.driverId;
 
   Child.fromJSON(final dynamic json):
       id = json['id'],
@@ -42,7 +54,27 @@ class Child {
       'driverCode': child.driverCode,
     };
 
-  Child.empty();
+  @override
+  int get hashCode =>
+    id.hashCode^
+    name.hashCode^
+    school.hashCode^
+    birthDate.hashCode^
+    period.hashCode^
+    responsibleId.hashCode^
+    driverCode.hashCode;
+
+  @override
+  bool operator ==(other) =>
+    other is Child && (
+      id == other.id &&
+        name == other.name &&
+        school == other.school &&
+        birthDate == other.birthDate &&
+        period == other.period &&
+        responsibleId == other.responsibleId &&
+        driverCode == other.driverCode
+    );
 
   @override
   String toString() {
@@ -56,7 +88,8 @@ class Child {
     buffer.write('period: "$period", ');
     buffer.write('responsibleId: $responsibleId, ');
     buffer.write('driverCode: "$driverCode", ');
-    buffer.write('driverId: $driverId, ');
+    buffer.write('driverId: $driverId ');
+    buffer.write('}');
     return buffer.toString();
   }
 }

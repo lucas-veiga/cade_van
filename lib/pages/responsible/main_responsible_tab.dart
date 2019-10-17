@@ -5,7 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../../services/auth_service.dart';
 import './home_responsible_tab.dart';
-import '../../routes.dart';
+import '../../services/routes_service.dart';
 
 class MainResponsibleTab extends StatefulWidget {
   @override
@@ -13,10 +13,10 @@ class MainResponsibleTab extends StatefulWidget {
 }
 
 class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProviderStateMixin {
+  final AuthService _authService = AuthService();
+
   TabController _tabController;
   bool _isScrollable = true;
-
-  final AuthService _authService = AuthService();
 
   final List<Widget> _myTabs = [
     HomeResponsibleTab(),
@@ -45,7 +45,7 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
           animatedIcon: AnimatedIcons.menu_close,
           children: [
             SpeedDialChild(
-              onTap: () => Navigator.pushNamed(context, Routes.CHILD_FORM),
+              onTap: () => Navigator.pushNamed(context, RoutesService.CHILD_FORM),
               backgroundColor: Colors.green,
               child: Icon(Icons.add),
               label: 'Nova Criança'

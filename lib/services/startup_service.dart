@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cade_van/provider/driver_provider.dart';
 import 'package:flutter/material.dart';
 
 import 'package:location/location.dart';
@@ -17,6 +18,7 @@ import './child_service.dart';
 import './user_service.dart';
 import './auth_service.dart';
 import './service_exception.dart';
+import './driver_service.dart';
 
 import '../models/user.dart';
 import '../widgets/modal.dart';
@@ -26,9 +28,10 @@ import '../utils/application_color.dart';
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
 class StartUpService {
-  final AuthService _authService = AuthService();
-  final UserService _userService = UserService();
-  final ChildService _childService = ChildService();
+  final AuthService _authService      = AuthService();
+  final UserService _userService      = UserService();
+  final ChildService _childService    = ChildService();
+  final DriverService _driverService  = DriverService();
 
   final Modal _modal = Modal();
   final Location _location = Location();
@@ -53,7 +56,7 @@ class StartUpService {
     }
   }
 
-  Future<void> beforeAppInit(final UserProvider userProvider, final ChildProvider childProvider) async {
+  Future<void> beforeAppInit(final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
     print('Iniciando beforeAppInit');
     startupStatus.add(StartupState.BUSY);
 //    await Future.delayed(Duration(seconds: 5));
@@ -61,7 +64,7 @@ class StartUpService {
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
-          await _handleHomePage(userProvider, childProvider);
+          await _handleHomePage(userProvider, childProvider, driverProvider);
           break;
         }
         case false: {
@@ -142,10 +145,14 @@ class StartUpService {
     }
   }
 
-  Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider) async {
+  Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
     try {
       final user = await _userService.setCurrentUserFromServer(userProvider);
-      await _childService.setAllChildren(childProvider);
+      if (user.type == UserTypeEnum.RESPONSIBLE) {
+        await _childService.setAllChildren(childProvider);
+      } else {
+        await _driverService.getAllItinerary(driverProvider);
+      }
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         startupStatus.add(StartupState.HOME_RESPONSIBLE_PAGE);

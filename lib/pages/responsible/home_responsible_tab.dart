@@ -6,10 +6,12 @@ import '../../widgets/custom_divider.dart';
 
 import '../../models/child.dart';
 import '../../utils/default_padding.dart';
-import 'child_detail_page.dart';
 import '../../provider/child_provider.dart';
+import '../../services/routes_service.dart';
 
 class HomeResponsibleTab extends StatelessWidget {
+  final RoutesService _routesService = RoutesService();
+
   @override
   Consumer build(BuildContext context) {
     return Consumer<ChildProvider>(
@@ -20,7 +22,7 @@ class HomeResponsibleTab extends StatelessWidget {
           itemBuilder:
             (_, int i) =>
             InkWell(
-              onLongPress: () => _navigateToChildDetail(context, i, provider.children[i]),
+              onLongPress: () => _routesService.goToChildDetailPage(context, i),
               onTap: () => _navigateToMap(provider.children[i]),
               child: DefaultPadding(
                 child: ChildItem(provider.children[i], i),
@@ -29,12 +31,6 @@ class HomeResponsibleTab extends StatelessWidget {
         ),
     );
   }
-
-  void _navigateToChildDetail(final BuildContext context, final int i, final Child child) =>
-    Navigator.push(context, PageRouteBuilder(
-      transitionDuration: Duration(milliseconds: 700),
-      pageBuilder: (_, __, ___) => ChildDetailPage(i),
-    ));
 
   void _navigateToMap(final Child child) => print('MAPA ->\t$child');
 }

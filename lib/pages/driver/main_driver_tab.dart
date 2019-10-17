@@ -6,7 +6,11 @@ import 'package:provider/provider.dart';
 
 import '../../services/auth_service.dart';
 import '../../services/socket_location_service.dart';
+import '../../services/driver_service.dart';
+import '../../services/routes_service.dart';
+
 import '../../provider/user_provider.dart';
+import './home_driver_tab.dart';
 
 class MainDriverTab extends StatefulWidget {
   @override
@@ -14,20 +18,20 @@ class MainDriverTab extends StatefulWidget {
 }
 
 class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateMixin {
-  TabController _tabController;
-  bool _isScrollable = true;
-
   final AuthService _authService = AuthService();
+  final DriverService _driverService = DriverService();
+  final RoutesService _routesService = RoutesService();
+
+  TabController _tabController;
+
   final List<Widget> _myTabs = [
-    Container(color: Colors.greenAccent),
-    Container(color: Colors.red),
+    HomeDriverPage(),
     Container(color: Colors.blue),
   ];
 
   @override
   void initState() {
     _tabController = TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
-    _tabController.addListener(_handleTabChange);
     super.initState();
   }
 
@@ -55,7 +59,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
                   label: provider.isDriving ? 'Parar Viagem' : 'Iniciar Viagem',
                 ),
                 SpeedDialChild(
-                  onTap: () => print('Implimentar'),
+                  onTap: _onCreatingItinerary,
                   backgroundColor: Colors.green,
                   child: Icon(Icons.add),
                   label: 'Novo itinerário'
@@ -72,7 +76,6 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
         bottomNavigationBar: _buildTabBar(context),
         body: TabBarView(
           controller: _tabController,
-          physics: _isScrollable ? null : NeverScrollableScrollPhysics(),
           dragStartBehavior: DragStartBehavior.down,
           children: _myTabs,
         ),
@@ -86,13 +89,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       tabs: <Widget>[
         Tab(
           icon: Icon(
-            Icons.format_list_bulleted,
-            color: Theme.of(context).primaryColor,
-          ),
-        ),
-        Tab(
-          icon: Icon(
-            Icons.map,
+            Icons.home,
             color: Theme.of(context).primaryColor,
           ),
         ),
@@ -105,14 +102,6 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       ],
     );
 
-  void _handleTabChange() {
-    if (_tabController.index == 1) {
-      setState(() => _isScrollable = false);
-    } else {
-      setState(() => _isScrollable = true);
-    }
-  }
-
   void _onStarDriving(final UserProvider provider) {
     provider.isDriving = !provider.isDriving;
     if (provider.isDriving) {
@@ -122,5 +111,11 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       SocketLocationService.sendLocation(true);
       Future.delayed(Duration(seconds: 1), SocketLocationService.close);
     }
+  }
+
+  Future<void> _onCreatingItinerary() async {
+    final children = await _driverService.findMyChildren();
+    _routesService.goToItineraryFormPage(context, children);
+
   }
 }

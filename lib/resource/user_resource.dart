@@ -38,9 +38,11 @@ class UserResource {
   Future<User> getUser(final String email) async {
       try {
         final url = '$RESOURCE_URL/$email';
+        print('GET Request to $url');
 
         final res = await _dioWithInterceptors.get(url);
-        return User.fromJSON(res.data);
+        final user = User.fromJSON(res.data);
+        return user;
       } on DioError catch(err) {
         throw ResourceException('Error ao pegar usuario', err);
       }

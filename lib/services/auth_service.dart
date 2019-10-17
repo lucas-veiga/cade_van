@@ -15,7 +15,7 @@ import './child_service.dart';
 import './service_exception.dart';
 
 import '../resource/auth_resource.dart';
-import '../routes.dart';
+import './routes_service.dart';
 
 class AuthService {
   final UserService _userService = UserService();
@@ -41,7 +41,7 @@ class AuthService {
       final preferences = await SharedPreferences.getInstance();
       final res = await preferences.remove(Token.TOKEN_KEY);
       if (res) {
-        Navigator.pushReplacementNamed(context, Routes.AUTH_PAGE);
+        Navigator.pushReplacementNamed(context, RoutesService.AUTH_PAGE);
       } else {
         throw ServiceException('Não foi possível navegar para AUTH_PAGE');
       }
@@ -80,9 +80,9 @@ class AuthService {
 
   void _handleHomePage(final User userFromServer, final BuildContext context) {
     if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
-      Navigator.pushReplacementNamed(context, Routes.HOME_RESPONSIBLE_PAGE);
+      Navigator.pushReplacementNamed(context, RoutesService.HOME_RESPONSIBLE_PAGE);
     } else if (userFromServer.type == UserTypeEnum.DRIVER) {
-      Navigator.pushReplacementNamed(context, Routes.HOME_DRIVER_PAGE);
+      Navigator.pushReplacementNamed(context, RoutesService.HOME_DRIVER_PAGE);
     } else {
       throw ServiceException('UserType Not Found');
     }
