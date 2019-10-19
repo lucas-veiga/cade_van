@@ -54,6 +54,7 @@ class ResponsibleTab extends StatelessWidget {
   TextFormField get _buildNameField =>
     TextFormField(
       onSaved: (value) => _user.name = value,
+      textCapitalization: TextCapitalization.words,
       validator: (value) => Validations.defaultValidator(value, 3),
       decoration: InputDecoration(
         labelText: 'Nome',

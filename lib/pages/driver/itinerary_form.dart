@@ -29,7 +29,7 @@ class ItineraryFormPage extends StatefulWidget {
 class _ItineraryFormPageState extends State<ItineraryFormPage> {
   final DriverService _driverService = DriverService();
 
-  final Itinerary _itinerary = Itinerary();
+  final Itinerary _itinerary = Itinerary()..type = ItineraryTypeEnum.IDA;
   final List<Child> _childrenSelected = [];
   final GlobalKey<FormState> _formKey = GlobalKey();
   final Toast _toast = Toast();
@@ -62,8 +62,31 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               DefaultPadding(child: _buildNameField),
+              SizedBox(height: 20),
+              DefaultPadding(child: Text('Tipo de Itinerário'), noVertical: true),
+              DefaultPadding(
+                noVertical: true,
+                child: Row(
+                  children: <Widget>[
+                    Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.IDA)),
+                    Radio(
+                      value: ItineraryTypeEnum.IDA,
+                      groupValue: _itinerary.type,
+                      onChanged: (value) => setState(() => _itinerary.type = value),
+                    ),
+                    SizedBox(width: 20),
+                    Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.VOLTA)),
+                    Radio(
+                      value: ItineraryTypeEnum.VOLTA,
+                      groupValue: _itinerary.type,
+                      onChanged: (value) => setState(() => _itinerary.type = value),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 30),
               Container(
                 height: MediaQuery.of(context).size.height,
@@ -79,6 +102,7 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
   TextFormField get _buildNameField =>
     TextFormField(
       onSaved: (value) => _itinerary.description = value,
+      textCapitalization: TextCapitalization.words,
       validator: (value) => Validations.isRequired(input: value),
       decoration: InputDecoration(
         labelText: 'Nome',

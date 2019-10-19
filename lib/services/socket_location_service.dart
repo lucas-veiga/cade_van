@@ -18,24 +18,28 @@ import './service_exception.dart';
 class SocketLocationService {
   static UserProvider _userProvider;
   static Location _location = Location();
-  static WebSocket _webSocket;
+  static WebSocket _webSocket = WebSocket();
   static StreamSubscription<LocationData> _streamSubscriptionLocation;
 
   static void close() {
     _streamSubscriptionLocation.cancel();
-    _webSocket.disconnect();
+//    _webSocket.disconnect();
     _webSocket = null;
     _userProvider = null;
     _streamSubscriptionLocation = null;
   }
 
-  static init(final UserProvider userProvider) {
-    if (_webSocket != null) {
-      throw ServiceException('Feche a conexao do socket antes de abri outra');
-    }
+  static init() {
+    _webSocket.connect('ws://192.168.15.9:8080/ws')
+      .then((res) {
+       res.sendString('/app/location/111/1111/driverId/111', 'FILHO DA PUTA');
+    });
+//    if (_webSocket != null) {
+//      throw ServiceException('Feche a conexao do socket antes de abri outra');
+//    }
 
-    _userProvider = userProvider;
-    _webSocket = WebSocket.driverPosition();
+//    _userProvider = userProvider;
+//    _webSocket = WebSocket.driverPosition();
   }
 
   static void sendLocation([final bool isStopping = false]) {
@@ -56,8 +60,8 @@ class SocketLocationService {
     if (_webSocket == null) {
       throw ServiceException('Nenhum Socket iniciado');
     }
-    _webSocket.listenMessage((value) =>
-      _handleReceivingLocation(value, driverProvider), customEvent: _buildListenEventMessage(driverProvider.drivers.first));
+//    _webSocket.listenMessage((value) =>
+//      _handleReceivingLocation(value, driverProvider), customEvent: _buildListenEventMessage(driverProvider.drivers.first));
   }
 
   static _handleReceivingLocation(final dynamic value, final DriverProvider driverProvider) {
@@ -71,7 +75,7 @@ class SocketLocationService {
       return;
     }
 
-    _webSocket.sendMessage(SocketEventsEnum.SHARING_LOCATION, getBody(position, isStopping));
+//    _webSocket.sendMessage(SocketEventsEnum.SHARING_LOCATION, getBody(position, isStopping));
   }
 
   static String getBody(final LocationData value, final bool isStopping) {

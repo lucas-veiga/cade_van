@@ -78,6 +78,7 @@ class ChildFormPage extends StatelessWidget {
   TextFormField get _buildNameField =>
     TextFormField(
       onSaved: (value) => _child.name = value,
+      textCapitalization: TextCapitalization.words,
       validator: (value) => Validations.isRequired(input: value),
       decoration: InputDecoration(
         labelText: 'Nome',
@@ -116,6 +117,7 @@ class ChildFormPage extends StatelessWidget {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
     try {
+      _child.status = ChildStatusEnum.LEFT_HOME;
       await _childService.saveChild(_child);
       await _childService.setAllChildren(childProvider);
       Navigator.pop(context);

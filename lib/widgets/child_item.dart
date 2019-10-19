@@ -32,9 +32,9 @@ class ChildItem extends StatelessWidget {
                 ),
               ),
               Text(
-                DecodeChileStatusEnum.getText(ChildStatusEnum.DEIXADO_ESCOLA),
+                DecodeChileStatusEnum.getDescription(_child.status),
                 style: TextStyle(
-                  color: DecodeChileStatusEnum.getColor(ChildStatusEnum.DEIXADO_ESCOLA),
+                  color: DecodeChileStatusEnum.getColor(_child.status),
                 ),
               ),
             ],

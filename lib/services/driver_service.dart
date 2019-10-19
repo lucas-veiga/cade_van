@@ -9,13 +9,14 @@ import '../models/user.dart';
 import '../models/child.dart';
 import '../models/itinerary.dart';
 
-import '../resource/driver_resource.dart';
-import '../provider/driver_provider.dart';
+import './service_exception.dart';
+import './socket_location_service.dart';
 
 import '../widgets/modal.dart';
 import '../environments/environment.dart';
 import '../utils/application_color.dart';
-import './service_exception.dart';
+import '../resource/driver_resource.dart';
+import '../provider/driver_provider.dart';
 
 class DriverService {
   DriverResource _driverResource = DriverResource();
@@ -45,7 +46,7 @@ class DriverService {
 
   Future<void> initItinerary(final BuildContext context, final Itinerary itinerary) async {
     await _onInitItinerary(context);
-    print('Iniciando SHARING');
+    SocketLocationService.init();
   }
 
   Future<void> _onInitItinerary(final BuildContext context) async {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-
 import 'package:catcher/core/catcher.dart';
+
 import '../../utils/default_padding.dart';
 import '../../utils/validations.dart';
 import '../../utils/mask.dart';
@@ -56,6 +56,7 @@ class DriverTab extends StatelessWidget {
   TextFormField get _buildNameField =>
     TextFormField(
       onSaved: (value) => _user.name = value,
+      textCapitalization: TextCapitalization.words,
       validator: (value) => Validations.defaultValidator(value, 3),
       decoration: InputDecoration(
         labelText: 'Nome',

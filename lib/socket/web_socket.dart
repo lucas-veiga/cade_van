@@ -1,50 +1,92 @@
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-import 'package:laravel_echo/laravel_echo.dart';
+import "dart:async";
+import "package:stomp/stomp.dart";
+import "package:stomp/impl/plugin.dart";
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/status.dart' as status;
 
-import '../environments/environment.dart';
-import './socket_events.dart';
 
 class WebSocket {
-  final Echo _echo;
+  Future<StompClient> connect(String url,
+    {String host,
+      String login,
+      String passcode,
+      List<int> heartbeat,
+      void onConnect(StompClient client, Map<String, String> headers),
+      void onDisconnect(StompClient client),
+      void onError(StompClient client, String message, String detail,
+        Map<String, String> headers),
+      void onFault(StompClient client, error, stackTrace)}) async =>
+    connectWith(await IOWebSocketChannel.connect(url),
+      host: host,
+      login: login,
+      passcode: passcode,
+      heartbeat: heartbeat,
+      onConnect: onConnect,
+      onDisconnect: onDisconnect,
+      onError: onError,
+      onFault: onFault);
 
-  WebSocket.driverPosition():
-    _echo = Echo({
-      'broadcaster': 'socket.io',
-      'client': IO.io,
-      'host': Environment.SOCKET_URL_DRIVER,
+  Future<StompClient> connectWith(IOWebSocketChannel channel,
+    {String host,
+      String login,
+      String passcode,
+      List<int> heartbeat,
+      void onConnect(StompClient client, Map<String, String> headers),
+      void onDisconnect(StompClient client),
+      void onError(StompClient client, String message, String detail,
+        Map<String, String> headers),
+      void onFault(StompClient client, error, stackTrace)}) =>
+    StompClient.connect(_WSStompConnector.startWith(channel),
+      host: host,
+      login: login,
+      passcode: passcode,
+      heartbeat: heartbeat,
+      onConnect: onConnect,
+      onDisconnect: onDisconnect,
+      onError: onError,
+      onFault: onFault);
+}
+
+class _WSStompConnector extends StringStompConnector {
+  final IOWebSocketChannel _socket;
+  StreamSubscription _listen;
+
+
+  static _WSStompConnector startWith(IOWebSocketChannel socket) =>
+    new _WSStompConnector(socket);
+
+  _WSStompConnector(this._socket) {
+    _init();
+  }
+
+  void _init() {
+    _listen = _socket.stream.listen((data) {
+      print("Read $data");
+      if (data != null) {
+        final String sdata = data.toString();
+        if (sdata.isNotEmpty) onString(sdata);
+      }
     });
+    _listen.onError((err) => onError(err, null));
+    _listen.onDone(() => onClose());
 
-  WebSocket.chat():
-    _echo = Echo({
-      'broadcaster': 'socket.io',
-      'client': IO.io,
-      'host': Environment.SOCKET_URL_CHAT,
+    _socket.stream.handleError((error) => onError(error, null));
+
+    _socket.sink.done.then((v) {
+      onClose();
     });
-
-
-  void sendMessage(final SocketEventsEnum value, final String msg){
-    final event = SocketEvents.convertEnum(value);
-    _socket.emit(event, msg);
   }
 
-  void listenMessage(final Function handler, {final SocketEventsEnum event, final String customEvent}) {
-    String eventConverted;
-    if (event != null ) {
-      eventConverted = SocketEvents.convertEnum(event);
-    } else if (customEvent != null) {
-      eventConverted = customEvent;
-    } else {
-      eventConverted = 'default-event';
-    }
-
-    print('EVENT NAME -> \t$eventConverted');
-    _socket.on(eventConverted, handler);
+  @override
+  void writeString_(String string) {
+    print("Write $string");
+    _socket.sink.add(string);
   }
 
-  void disconnect() {
-    _socket.clearListeners();
-    _echo.disconnect();
+  @override
+  Future close() {
+    _listen.cancel();
+    _socket.sink.close(status.goingAway);
+    return new Future.value();
   }
-
-  IO.Socket get _socket => _echo.socket;
 }

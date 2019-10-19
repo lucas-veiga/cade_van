@@ -105,7 +105,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   void _onStarDriving(final UserProvider provider) {
     provider.isDriving = !provider.isDriving;
     if (provider.isDriving) {
-      SocketLocationService.init(provider);
+//      SocketLocationService.init(provider);
       SocketLocationService.sendLocation();
     } else {
       SocketLocationService.sendLocation(true);
