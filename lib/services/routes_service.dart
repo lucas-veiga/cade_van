@@ -1,3 +1,4 @@
+import 'package:cade_van/models/itinerary.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child.dart';
@@ -22,6 +23,12 @@ class RoutesService {
   Future<dynamic> goToItineraryFormPage(final BuildContext context, final List<Child> children) async {
     return await Navigator.push(context, MaterialPageRoute(
       builder: (_) => ItineraryFormPage(children),
+    ));
+  }
+
+  Future<dynamic> goToItineraryDetail(final BuildContext context, final Itinerary itinerary) async {
+    return await Navigator.push(context, MaterialPageRoute(
+      builder: (_) => ItineraryDetailPage(itinerary),
     ));
   }
 

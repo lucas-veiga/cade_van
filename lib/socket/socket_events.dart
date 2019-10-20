@@ -1,17 +1,14 @@
 import './socket_exception.dart';
 
-enum SocketEventsEnum { SHARING_LOCATION, SEND_MSG_CHAT, }
+enum SocketEventsEnum { SEND_LOCATION }
 
 class SocketEvents {
-  static const String SHARING_LOCATION = 'sharing-location';
-  static const String SEND_MSG_CHAT = 'send-msg-chat';
+  static const String SEND_LOCATION = '/api/location';
 
   static String convertEnum(final SocketEventsEnum value) {
     switch (value) {
-      case SocketEventsEnum.SEND_MSG_CHAT:
-        return SEND_MSG_CHAT;
-      case SocketEventsEnum.SHARING_LOCATION:
-        return SHARING_LOCATION;
+      case SocketEventsEnum.SEND_LOCATION:
+        return SEND_LOCATION;
       default:
         throw SocketException('Nenhum evento encontrado com valor: $value');
     }

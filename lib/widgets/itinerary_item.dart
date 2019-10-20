@@ -22,7 +22,7 @@ class ItineraryItem extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-            backgroundColor: _chipBGColor,
+            backgroundColor: DecodeItineraryTypeEnum.getColor(_itinerary.type),
           ),
           Text(
             _itinerary.description,
@@ -51,24 +51,5 @@ class ItineraryItem extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Color get _chipBGColor {
-    if (_itinerary == null) {
-      throw WidgetException('itinerary is null');
-    }
-
-    if (_itinerary.type == null) {
-      throw WidgetException('itinerary.type is null');
-    }
-
-    switch (_itinerary.type) {
-      case ItineraryTypeEnum.IDA:
-        return Colors.green;
-      case ItineraryTypeEnum.VOLTA:
-        return Colors.blue;
-      default:
-        throw WidgetException('ItineraryTypeEnum nao encontrado | chipBGColor: ${_itinerary.type}');
-    }
   }
 }

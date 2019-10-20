@@ -37,7 +37,7 @@ class Modal {
         stringTitle,
         textAlign: TextAlign.center,
         style: TextStyle(
-          color: stringTitleColor == null ? Colors.black : ApplicationColor.decodeEnum(stringTitleColor),
+          color: stringTitleColor == null ? ApplicationColor.decodeEnum(ApplicationColorEnum.MAIN) : ApplicationColor.decodeEnum(stringTitleColor),
         ),
       );
     }

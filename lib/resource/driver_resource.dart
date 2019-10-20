@@ -34,7 +34,9 @@ class DriverResource {
 
       final res = await _dio.get(url);
       final untypedList = res.data.map((item) => Child.fromJSON(item)).toList();
-      return List<Child>.from(untypedList);
+      final children = List<Child>.from(untypedList);
+      print('Response: \t$children');
+      return children;
     } on DioError catch(err) {
         throw ResourceException('Error ao pegar suas criancas', err);
     }
@@ -47,6 +49,28 @@ class DriverResource {
       await _dio.post(ITINERARY_RESOURCE, data: itineraryJSON);
     } on DioError catch(err) {
       throw ResourceException('Error ao salvar intinerario', err);
+    }
+  }
+
+  Future<void> initItinerary(final int itineraryId) async {
+    try {
+      final url = '$ITINERARY_RESOURCE/init/$itineraryId';
+      print('GET Request to $url');
+
+      await _dio.get(url);
+    } on DioError catch(err) {
+      throw ResourceException('Error ao iniciar itinerario | ItineraryId: $itineraryId', err);
+    }
+  }
+
+  Future<void> finishItinerary(final int itineraryId) async {
+    try {
+      final url = '$ITINERARY_RESOURCE/finish/$itineraryId';
+      print('GET Request to $url');
+
+      await _dio.get(url);
+    } on DioError catch(err) {
+      throw ResourceException('Error ao finalizar itinerario | ItineraryId: $itineraryId', err);
     }
   }
 

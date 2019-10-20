@@ -124,6 +124,37 @@ class User {
     return buffer.toString();
   }
 
+  @override
+  int get hashCode =>
+    id.hashCode^
+    email.hashCode^
+    password.hashCode^
+    name.hashCode^
+    phone.hashCode^
+    cpf.hashCode^
+    nickname.hashCode^
+    isDriving.hashCode^
+    code.hashCode^
+    type.hashCode^
+    _latitude.hashCode^
+    _longitude.hashCode;
+
+  bool operator ==(other) =>
+    other is User && (
+      id == other.id &&
+      email == other.email &&
+      password == other.password &&
+      name == other.name &&
+      phone == other.phone &&
+      cpf == other.cpf &&
+      nickname == other.nickname &&
+      isDriving == other.isDriving &&
+      code == other.code &&
+      type == other.type &&
+      _latitude == other._latitude &&
+      _longitude == other._longitude
+    );
+
   double get _latitude {
     if (userLocation == null) return null;
     if (userLocation.latitude == null) return null;

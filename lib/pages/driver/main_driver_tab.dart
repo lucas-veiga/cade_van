@@ -103,14 +103,15 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     );
 
   void _onStarDriving(final UserProvider provider) {
-    provider.isDriving = !provider.isDriving;
-    if (provider.isDriving) {
+
+    print('\n\n\tFAZER ISSO\n\n');
+//    if (provider.isDriving) {
 //      SocketLocationService.init(provider);
-      SocketLocationService.sendLocation();
-    } else {
-      SocketLocationService.sendLocation(true);
-      Future.delayed(Duration(seconds: 1), SocketLocationService.close);
-    }
+//      SocketLocationService.sendLocation();
+//    } else {
+//      SocketLocationService.sendLocation(true);
+//      Future.delayed(Duration(seconds: 1), SocketLocationService.close);
+//    }
   }
 
   Future<void> _onCreatingItinerary() async {

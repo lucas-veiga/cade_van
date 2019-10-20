@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'package:catcher/core/catcher.dart';
 import 'package:location/location.dart';
@@ -12,11 +13,13 @@ import '../models/itinerary.dart';
 import './service_exception.dart';
 import './socket_location_service.dart';
 
+import '../provider/driver_provider.dart';
+import '../provider/user_provider.dart';
+
 import '../widgets/modal.dart';
 import '../environments/environment.dart';
 import '../utils/application_color.dart';
 import '../resource/driver_resource.dart';
-import '../provider/driver_provider.dart';
 
 class DriverService {
   DriverResource _driverResource = DriverResource();
@@ -38,23 +41,37 @@ class DriverService {
     print('JSON -> $itinerary');
   }
 
-  Future<void> getAllItinerary(final DriverProvider driverProvider) async {
+  Future<void> setAllItinerary(final DriverProvider driverProvider) async {
     final list = await _driverResource.findAll();
     driverProvider.emptyItinerary();
     driverProvider.setItinerary(many: list);
   }
 
   Future<void> initItinerary(final BuildContext context, final Itinerary itinerary) async {
-    await _onInitItinerary(context);
-    SocketLocationService.init();
+    await _checkGPSPermission(context);
+    await _driverResource.initItinerary(itinerary.id);
+
+    final UserProvider userProvider = Provider.of<UserProvider>(context);
+
+    await SocketLocationService.init(itinerary, userProvider);
+    SocketLocationService.sendLocation();
   }
 
-  Future<void> _onInitItinerary(final BuildContext context) async {
+  Future<void> finishItinerary(final int itineraryId) async {
+    SocketLocationService.sendLocation(false);
+    _driverResource.finishItinerary(itineraryId)
+    .then((_) {
+      Future.delayed(Duration(seconds: 1), SocketLocationService.close);
+    });
+
+  }
+
+  Future<void> _checkGPSPermission(final BuildContext context) async {
     final res = await _location.requestPermission();
     if (res == null) return;
 
     if (!res) {
-      _modal.showModal(
+      await _modal.showModal(
         context,
         stringTitle: 'Localização Necessaria',
         stringContent: 'O ${Environment.APP_NAME} precisa acessar sua localização',

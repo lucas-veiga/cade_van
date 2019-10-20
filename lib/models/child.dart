@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import './model_exception.dart';
+import './user.dart';
 
 class Child {
   int id;
@@ -9,7 +10,7 @@ class Child {
   DateTime birthDate;
   String period;
   ChildStatusEnum status;
-  int responsibleId;
+  User responsible;
   int driverId;
   String driverCode;
 
@@ -22,7 +23,7 @@ class Child {
     @required this.birthDate,
     @required this.period,
     @required this.status,
-    @required this.responsibleId,
+    @required this.responsible,
     @required this.driverCode,
     @required this.driverId
   });
@@ -34,7 +35,7 @@ class Child {
       birthDate = child.birthDate,
       period = child.period,
       status = child.status,
-      responsibleId = child.responsibleId,
+      responsible = child.responsible,
       driverCode = child.driverCode,
       driverId = child.driverId;
 
@@ -45,7 +46,7 @@ class Child {
       birthDate = DateTime.parse(json['birthDate']),
       period = json['period'],
       status = _statusFromJSON(json['status']),
-      responsibleId = json['responsibleId'],
+      responsible = User.fromJSON(json['responsible']),
       driverCode = json['driverCode'],
       driverId = json['driverId'];
 
@@ -57,7 +58,7 @@ class Child {
       'birthDate': child.birthDate.toIso8601String(),
       'period': child.period,
       'status': _statusToJSON(child.status),
-      'responsibleId': child.responsibleId,
+      'responsible': User.toJSON(child.responsible),
       'driverCode': child.driverCode,
     };
 
@@ -102,7 +103,7 @@ class Child {
     school.hashCode^
     birthDate.hashCode^
     period.hashCode^
-    responsibleId.hashCode^
+    responsible.hashCode^
     driverCode.hashCode;
 
   @override
@@ -113,7 +114,7 @@ class Child {
         school == other.school &&
         birthDate == other.birthDate &&
         period == other.period &&
-        responsibleId == other.responsibleId &&
+        responsible == other.responsible &&
         driverCode == other.driverCode
     );
 
@@ -128,7 +129,7 @@ class Child {
     buffer.write('dateBirth: "${birthDate.toString()}", ');
     buffer.write('period: "$period", ');
     buffer.write('status: "$status", ');
-    buffer.write('responsibleId: $responsibleId, ');
+    buffer.write('responsible: ${responsible.toString()}, ');
     buffer.write('driverCode: "$driverCode", ');
     buffer.write('driverId: $driverId ');
     buffer.write('}');

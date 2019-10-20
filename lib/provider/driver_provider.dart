@@ -7,7 +7,7 @@ import '../models/itinerary.dart';
 class DriverProvider with ChangeNotifier {
   final List<User> _drivers = [];
   final List<Itinerary> _itinerary = [];
-  final DriverLocation _driverLocation = DriverLocation();
+  DriverLocation _driverLocation = DriverLocation();
 
   List<User> get drivers => List.unmodifiable(_drivers);
 
@@ -16,14 +16,10 @@ class DriverProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  get driverLocation => DriverLocation.copy(_driverLocation);
+  DriverLocation get driverLocation => DriverLocation.copy(_driverLocation);
 
   set driverLocation(final DriverLocation driverLocation) {
-    _driverLocation.driverName = driverLocation.driverName;
-    _driverLocation.driverId = driverLocation.driverId;
-    _driverLocation.latitude = driverLocation.latitude;
-    _driverLocation.longitude = driverLocation.longitude;
-    _driverLocation.isDriving = driverLocation.isDriving;
+    _driverLocation = driverLocation;
     notifyListeners();
   }
 

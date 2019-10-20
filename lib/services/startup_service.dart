@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:cade_van/provider/driver_provider.dart';
 import 'package:flutter/material.dart';
 
-import 'package:location/location.dart';
 import 'package:catcher/core/catcher.dart';
 
 import '../pages/responsible/main_responsible_tab.dart';
@@ -13,6 +11,7 @@ import '../pages/auth/main_auth.dart';
 
 import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
+import '../provider/driver_provider.dart';
 
 import './child_service.dart';
 import './user_service.dart';
@@ -21,7 +20,6 @@ import './service_exception.dart';
 import './driver_service.dart';
 
 import '../models/user.dart';
-import '../widgets/modal.dart';
 
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
@@ -31,8 +29,6 @@ class StartUpService {
   final ChildService _childService    = ChildService();
   final DriverService _driverService  = DriverService();
 
-  final Modal _modal = Modal();
-  final Location _location = Location();
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
   Widget handlePageLanding(final BuildContext context, final AsyncSnapshot<StartupState> snap) {
@@ -88,7 +84,7 @@ class StartUpService {
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
       } else {
-        await _driverService.getAllItinerary(driverProvider);
+        await _driverService.setAllItinerary(driverProvider);
       }
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {

@@ -89,7 +89,7 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
               ),
               SizedBox(height: 30),
               Container(
-                height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.height / 1.79,
                 child: _buildChildrenList
               ),
             ],
@@ -128,18 +128,16 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
                   radius: 30,
                 ),
                 SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    _buildChildNameField(widget._allChildren[index].name),
-                    Row(
-                      children: <Widget>[
-                        _buildChildSchoolField(widget._allChildren[index].school),
-                        Text(' | '),
-                        _buildChildPeriodField(widget._allChildren[index].period),
-                      ],
-                    )
-                  ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      _buildChildNameField(widget._allChildren[index].name),
+                      _buildChildSchoolField(widget._allChildren[index].school),
+                      _buildChildResponsibleField(widget._allChildren[index].responsible.name),
+                      _buildChildPeriodField(widget._allChildren[index].period),
+                    ],
+                  ),
                 )
               ],
             ),
@@ -161,6 +159,27 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
           ),
           TextSpan(
             text: name,
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          )
+        ],
+      ),
+    );
+
+  RichText _buildChildResponsibleField(final String responsible) =>
+    RichText(
+      text: TextSpan(
+        children: [
+          TextSpan(
+            text: 'Responsável: ',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: responsible,
             style: TextStyle(
               color: Colors.black,
             ),
@@ -255,7 +274,7 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
       final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
       await _driverService.saveItinerary(_itinerary);
-      await _driverService.getAllItinerary(driverProvider);
+      await _driverService.setAllItinerary(driverProvider);
       Navigator.pop(context);
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);

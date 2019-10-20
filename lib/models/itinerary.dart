@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import './child.dart';
 import './model_exception.dart';
 
@@ -114,7 +116,7 @@ class ItineraryChild {
 enum ItineraryTypeEnum { IDA, VOLTA }
 
 class DecodeItineraryTypeEnum {
-  static String getDescription(ItineraryTypeEnum value) {
+  static String getDescription(final ItineraryTypeEnum value) {
     switch (value) {
       case ItineraryTypeEnum.IDA:
         return 'Ida';
@@ -122,6 +124,17 @@ class DecodeItineraryTypeEnum {
         return 'Volta';
       default:
         throw ModelException('ItineraryTypeEnum nao encontrado | _getDescription: $value');
+    }
+  }
+
+  static Color getColor(final ItineraryTypeEnum value) {
+    switch (value) {
+      case ItineraryTypeEnum.IDA:
+        return Colors.green;
+      case ItineraryTypeEnum.VOLTA:
+        return Colors.blue;
+      default:
+        throw ModelException('ItineraryTypeEnum nao encontrado | getColor: $value');
     }
   }
 }
