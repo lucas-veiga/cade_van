@@ -8,25 +8,28 @@ class Itinerary {
   String description;
   ItineraryTypeEnum type;
   int driverId;
+  bool isAtivo;
   List<ItineraryChild> itineraryChildren;
 
   Itinerary():
       itineraryChildren = [];
 
   Itinerary.fromJSON(final dynamic json):
-    id = json['id'],
-    description = json['description'],
-    driverId = json['driverId'],
-    type = _typeFromJSON(json['type']),
-    itineraryChildren = List<ItineraryChild>
-      .from(json['itineraryChildren']
-      .map((item) => ItineraryChild.fromJSON(item)).toList());
+      id = json['id'],
+      description = json['description'],
+      driverId = json['driverId'],
+      type = _typeFromJSON(json['type']),
+      isAtivo = json['ativo'],
+      itineraryChildren = List<ItineraryChild>
+        .from(json['itineraryChildren']
+        .map((item) => ItineraryChild.fromJSON(item)).toList());
 
-    Itinerary.copy(final Itinerary itinerary):
+  Itinerary.copy(final Itinerary itinerary):
       id = itinerary.id,
       description = itinerary.description,
       type = itinerary.type,
       driverId = itinerary.driverId,
+      isAtivo = itinerary.isAtivo,
       itineraryChildren = List.unmodifiable(itinerary.itineraryChildren.map((item) => ItineraryChild.copy(item)).toList());
 
   static Map<String, dynamic> toJSON(final Itinerary itinerary) =>
@@ -35,6 +38,7 @@ class Itinerary {
       'description': itinerary.description,
       'type': _typeToJSON(itinerary.type),
       'driverId': itinerary.driverId,
+      'ativo': itinerary.isAtivo,
       'itineraryChildren': _setItineraryChildrenToJSON(itinerary.itineraryChildren),
     };
 
@@ -65,6 +69,26 @@ class Itinerary {
   }
 
   @override
+  int get hashCode =>
+    id.hashCode^
+    description.hashCode^
+    driverId.hashCode^
+    isAtivo.hashCode^
+    type.hashCode^
+    itineraryChildren.hashCode;
+
+  @override
+  bool operator ==(other) =>
+    other is Itinerary && (
+      id == other.id &&
+      description == other.description &&
+      driverId == other.driverId &&
+      isAtivo == other.isAtivo &&
+      type == other.type &&
+      itineraryChildren == other.itineraryChildren
+    );
+
+  @override
   String toString() {
     StringBuffer buffer = StringBuffer();
     buffer.write('Intinerary: ');
@@ -72,6 +96,7 @@ class Itinerary {
     buffer.write('id: $id, ');
     buffer.write('description: "$description", ');
     buffer.write('driverId: $driverId, ');
+    buffer.write('isAtivo: $isAtivo, ');
     buffer.write('type: "$type", ');
     buffer.write('itineraryChildren: [ ');
     itineraryChildren.forEach((item) => buffer.write('${item.toString()}, '));
@@ -86,7 +111,7 @@ class ItineraryChild {
 
   ItineraryChild.fromJSON(final dynamic json):
       childOrder = json['order'],
-    child = Child.fromJSON(json['child']);
+      child = Child.fromJSON(json['child']);
 
   ItineraryChild.copy(final ItineraryChild itineraryChild):
       childOrder = itineraryChild.childOrder,

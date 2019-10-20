@@ -13,6 +13,7 @@ import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
 import '../provider/driver_provider.dart';
 
+import './socket_location_service.dart';
 import './child_service.dart';
 import './user_service.dart';
 import './auth_service.dart';
@@ -20,14 +21,15 @@ import './service_exception.dart';
 import './driver_service.dart';
 
 import '../models/user.dart';
+import '../models/itinerary.dart';
 
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
 class StartUpService {
-  final AuthService _authService      = AuthService();
-  final UserService _userService      = UserService();
-  final ChildService _childService    = ChildService();
-  final DriverService _driverService  = DriverService();
+  final AuthService _authService                     = AuthService();
+  final UserService _userService                     = UserService();
+  final ChildService _childService                   = ChildService();
+  final DriverService _driverService                 = DriverService();
 
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
@@ -50,15 +52,15 @@ class StartUpService {
     }
   }
 
-  Future<void> beforeAppInit(final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
+  Future<void> beforeAppInit(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
     print('Iniciando beforeAppInit');
     startupStatus.add(StartupState.BUSY);
-//    await Future.delayed(Duration(seconds: 5));
+
     try {
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
-          await _handleHomePage(userProvider, childProvider, driverProvider);
+          await _handleHomePage(context, userProvider, childProvider, driverProvider);
           break;
         }
         case false: {
@@ -78,13 +80,14 @@ class StartUpService {
     }
   }
 
-  Future<void> _handleHomePage(final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
+  Future<void> _handleHomePage(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
     try {
       final user = await _userService.setCurrentUserFromServer(userProvider);
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
       } else {
-        await _driverService.setAllItinerary(driverProvider);
+        final list = await _driverService.setAllItinerary(driverProvider);
+        _initItinerary(list, userProvider, context);
       }
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {
@@ -97,6 +100,20 @@ class StartUpService {
       print('Adding HOME PAGE');
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
+    }
+  }
+
+  Future<void> _initItinerary(final List<Itinerary> list, final UserProvider userProvider, final BuildContext context) async{
+    final hasItineraryActivated = list.any((item) => item.isAtivo == true);
+    if (hasItineraryActivated) {
+      await _driverService.checkGPSPermission(context);
+      final isConnected = SocketLocationService.isDisconnected(false);
+      final itineraryActivated = list.singleWhere((item) => item.isAtivo == true);
+      if (isConnected) {
+        SocketLocationService.close();
+      }
+      await SocketLocationService.init(itineraryActivated, userProvider);
+      SocketLocationService.sendLocation();
     }
   }
 }

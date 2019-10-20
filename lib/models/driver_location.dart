@@ -36,7 +36,7 @@ class DriverLocation {
       latitude = json['latitude'],
       longitude = json['longitude'],
       driverId = json['driverId'],
-      isDriving = json['isDriving'],
+      isDriving = json['driving'],
       itineraryId = json['itineraryId'],
       driverName = json['driverName'];
 
@@ -45,7 +45,7 @@ class DriverLocation {
       'latitude': location.latitude,
       'longitude': location.longitude,
       'driverId': location.driverId,
-      'isDriving': location.isDriving,
+      'driving': location.isDriving,
       'itineraryId': location.itineraryId,
       'driverName': location.driverName,
     };

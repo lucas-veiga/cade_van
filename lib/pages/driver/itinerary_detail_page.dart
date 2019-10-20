@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/custom_divider.dart';
 import '../../widgets/default_button.dart';
-import '../../widgets/modal.dart';
+import '../../widgets/default_alert_dialog.dart';
 
 import '../../models/itinerary.dart';
 import '../../utils/default_padding.dart';
@@ -13,7 +13,6 @@ class ItineraryDetailPage extends StatelessWidget {
   final DriverService _driverService = DriverService();
 
   final Itinerary _itinerary;
-  final Modal _modal = Modal();
 
   ItineraryDetailPage(this._itinerary);
 
@@ -125,11 +124,15 @@ class ItineraryDetailPage extends StatelessWidget {
   }
 
   Future<void> _finishItinerary(final BuildContext context) async {
-    final answer = await _modal.showModal(
-      context,
-      stringTitle: 'Tem certeza que deja encerrar o Itinerário ',
-      stringContent: _modalContent,
-      actions: _getFinishItineraryActions(context),
+    final answer = await showDialog(
+      context: context,
+      builder: (final BuildContext ctx) =>
+        DefaultAlertDialog(
+          ctx,
+          stringTitle: 'Tem certeza que deja encerrar o Itinerário ',
+          stringContent: _modalContent,
+          actions: _getFinishItineraryActions(ctx),
+        ),
     );
 
     if (answer != null && answer == true) {
@@ -164,7 +167,7 @@ class ItineraryDetailPage extends StatelessWidget {
           ),
         ),
         onPressed: () {
-            _driverService.finishItinerary(_itinerary.id)
+            _driverService.finishItinerary(context, _itinerary.id)
               .then((_) => Navigator.pop(context, true))
               .catchError((err) => Catcher.reportCheckedError(err, 'NoStack, Sorry'));
         },

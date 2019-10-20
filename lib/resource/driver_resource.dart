@@ -80,7 +80,9 @@ class DriverResource {
 
       final res = await _dio.get(ITINERARY_RESOURCE);
       final untypedList = res.data.map((item) => Itinerary.fromJSON(item)).toList();
-      return List<Itinerary>.from(untypedList);
+      final list = List<Itinerary>.from(untypedList);
+      print('Response: \t$list');
+      return list;
     } on DioError catch(err) {
       throw ResourceException('Error ao pegar todos intinerarios', err);
     }

@@ -2,32 +2,34 @@ import 'package:flutter/material.dart';
 
 import '../utils/application_color.dart';
 
-class Modal {
-  Future<bool> showModal(
-    final BuildContext context,
-    {
-      final String stringTitle,
-      final ApplicationColorEnum stringTitleColor,
-      final Widget widgetTitle,
-      final String stringContent,
-      final Widget widgetContent,
-      final List<Widget> actions,
-    }) async {
-    final answer = await showDialog(
-      context: context,
-      builder: (final BuildContext ctx) =>
-        AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          title: _getTitle(stringTitle, widgetTitle, stringTitleColor),
-          content: _getContent(stringContent, widgetContent),
-          actions: _getActions(actions, ctx),
-        )
+class DefaultAlertDialog extends StatelessWidget {
+  final String stringTitle;
+  final ApplicationColorEnum stringTitleColor;
+  final Widget widgetTitle;
+  final String stringContent;
+  final Widget widgetContent;
+  final List<Widget> actions;
+  final BuildContext context;
+
+  DefaultAlertDialog(this.context, {
+    this.stringTitle,
+    this.stringTitleColor,
+    this.widgetTitle,
+    this.stringContent,
+    this.widgetContent,
+    this.actions,
+  });
+
+  @override
+  AlertDialog build(BuildContext context) =>
+    AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      title: _title,
+      content: _content,
+      actions: _actions,
     );
 
-    return answer == null ? false : true;
-  }
-
-  Widget _getTitle(final String stringTitle, final Widget widgetTitle, final ApplicationColorEnum stringTitleColor) {
+  Widget get _title {
     if (stringTitle == null && widgetTitle != null) {
       return widgetTitle;
     }
@@ -51,7 +53,7 @@ class Modal {
     );
   }
 
-  Widget _getContent(final String stringContent, final Widget widgetContent) {
+  Widget get _content {
     if (stringContent == null && widgetContent != null) {
       return widgetContent;
     }
@@ -69,15 +71,15 @@ class Modal {
     );
   }
 
-  List<Widget> _getActions(final List<Widget> actions, final BuildContext ctx) {
+  List<Widget> get _actions {
     if (actions == null) {
       return <Widget>[
         FlatButton(
-          onPressed: () => Navigator.pop(ctx),
+          onPressed: () => Navigator.pop(context),
           child: Text(
             'OK',
             style: TextStyle(
-              color: Theme.of(ctx).primaryColor,
+              color: Theme.of(context).primaryColor,
             ),
           ),
         )

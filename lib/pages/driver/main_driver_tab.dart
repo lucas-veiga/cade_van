@@ -5,12 +5,12 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:provider/provider.dart';
 
 import '../../services/auth_service.dart';
-import '../../services/socket_location_service.dart';
 import '../../services/driver_service.dart';
 import '../../services/routes_service.dart';
 
-import '../../provider/user_provider.dart';
+import '../../provider/driver_provider.dart';
 import './home_driver_tab.dart';
+import '../../models/itinerary.dart';
 
 class MainDriverTab extends StatefulWidget {
   @override
@@ -46,17 +46,17 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     return DefaultTabController(
       length: _myTabs.length,
       child: Scaffold(
-        floatingActionButton: Consumer<UserProvider>(
-          builder: (_, final UserProvider provider, __) =>
-            SpeedDial(
+        floatingActionButton: Consumer<DriverProvider>(
+          builder: (_, final DriverProvider provider, __) =>
+            SpeedDial(itinerary.description
               animatedIcon: AnimatedIcons.menu_close,
-              backgroundColor: provider.user.isDriving ? Colors.orange : null,
+              backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
               children: [
                 SpeedDialChild(
-                  onTap: () => _onStarDriving(provider),
-                  backgroundColor: provider.isDriving ? Colors.orange : null,
-                  child: Icon(provider.isDriving ? Icons.gps_off : Icons.gps_fixed),
-                  label: provider.isDriving ? 'Parar Viagem' : 'Iniciar Viagem',
+                  onTap: () => _onStarDriving(),
+                  backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
+                  child: Icon(_isSharing(provider.itinerary) ? Icons.gps_off : Icons.gps_fixed),
+                  label: _isSharing(provider.itinerary) ? 'Parar Viagem' : 'Iniciar Viagem',
                 ),
                 SpeedDialChild(
                   onTap: _onCreatingItinerary,
@@ -102,7 +102,10 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       ],
     );
 
-  void _onStarDriving(final UserProvider provider) {
+  bool _isSharing(final List<Itinerary> list) =>
+    list.any((item) => item.isAtivo == true);
+
+  void _onStarDriving() {
 
     print('\n\n\tFAZER ISSO\n\n');
 //    if (provider.isDriving) {

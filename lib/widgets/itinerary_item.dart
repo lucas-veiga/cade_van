@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../models/itinerary.dart';
 import '../utils/default_padding.dart';
-import './widget_exception.dart';
 
 class ItineraryItem extends StatelessWidget {
   final Itinerary _itinerary;
@@ -15,6 +14,16 @@ class ItineraryItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
+          if (_itinerary.isAtivo) Chip(
+            label: Text(
+              'Em Andamento',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            backgroundColor: Colors.orange,
+          ),
+          SizedBox(width: 5),
           Chip(
             label: Text(
               DecodeItineraryTypeEnum.getDescription(_itinerary.type),
@@ -24,11 +33,14 @@ class ItineraryItem extends StatelessWidget {
             ),
             backgroundColor: DecodeItineraryTypeEnum.getColor(_itinerary.type),
           ),
-          Text(
-            _itinerary.description,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 15
+          Expanded(
+            child: Text(
+              _itinerary.description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 15
+              ),
             ),
           ),
           Row(

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../widgets/custom_divider.dart';
 import '../../widgets/itinerary_item.dart';
-import '../../widgets/modal.dart';
+import '../../widgets/default_alert_dialog.dart';
 
 import '../../services/driver_service.dart';
 import '../../services/routes_service.dart';
@@ -17,8 +17,6 @@ class HomeDriverPage extends StatelessWidget {
   final DriverService _driverService = DriverService();
   final RoutesService _routesService = RoutesService();
 
-  final Modal _modal = Modal();
-
   @override
   Widget build(BuildContext context) {
     return Consumer<DriverProvider>(
@@ -27,21 +25,49 @@ class HomeDriverPage extends StatelessWidget {
           separatorBuilder: (_, __) => CustomDivider(height: 0),
           itemCount: provider.itinerary.length,
           itemBuilder: (_, final int i) =>
-          InkWell(
-            onTap: () => _onItineraryClick(context, provider.itinerary[i]),
-            child: ItineraryItem(provider.itinerary[i]),
-          ),
+            InkWell(
+              onTap: () => _onItineraryClick(context, provider, provider.itinerary[i]),
+              child: ItineraryItem(provider.itinerary[i]),
+            ),
         ),
     );
   }
 
-  Future<void> _onItineraryClick(final BuildContext context, final Itinerary itinerary) async{
-    final answer = await _modal.showModal(
-      context,
-      stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
-      stringTitleColor: ApplicationColorEnum.MAIN,
-      stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
-      actions: _buildModalInitItineraryActions(context, itinerary),
+  Future<void> _onItineraryClick(final BuildContext context, final DriverProvider driverProvider, final Itinerary itinerary) async{
+    final hasItineraryActivated = driverProvider.itinerary.any((item) => item.isAtivo == true);
+    if (hasItineraryActivated) {
+      final itineraryActivated = driverProvider
+        .itinerary
+        .singleWhere((item) => item.isAtivo == true);
+
+      if (itineraryActivated == itinerary) {
+        _routesService.goToItineraryDetail(context, itinerary);
+        return;
+      } else {
+        driverProvider.itinerary.singleWhere((item) => item.isAtivo == true);
+        await showDialog(
+          context: context,
+          builder: (final BuildContext ctx) =>
+            DefaultAlertDialog(
+              ctx,
+              stringTitle: 'Você já tem um itinerário em andamento',
+              stringTitleColor: ApplicationColorEnum.ERROR,
+              stringContent: 'O itinerário ${itineraryActivated.description} está ativo.\nFinalize o ${itineraryActivated.description} antes de inicar outro itinerário',
+            ),
+        );
+        return;
+      }
+    }
+
+    final answer = await showDialog(
+      context: context,
+      builder: (final BuildContext ctx) =>
+        DefaultAlertDialog(
+          ctx,
+          stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
+          stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
+          actions: _buildModalInitItineraryActions(context, ctx, itinerary),
+        ),
     );
 
     if (answer != null && answer == true) {
@@ -49,23 +75,23 @@ class HomeDriverPage extends StatelessWidget {
     }
   }
 
- List<FlatButton> _buildModalInitItineraryActions(final BuildContext context, final Itinerary itinerary) =>
-   [
-     FlatButton(
-       child: Text('Iniciar'),
-       onPressed: () {
-         final res = Navigator.pop(context, true);
-         if (res) _driverService.initItinerary(context, itinerary);
-       },
-     ),
-     FlatButton(
-       child: Text(
-         'Cancelar',
-         style: TextStyle(
-           color: Colors.red,
-         ),
-       ),
-       onPressed: () => Navigator.pop(context, false),
-     ),
-   ];
+  List<FlatButton> _buildModalInitItineraryActions(final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>
+    [
+      FlatButton(
+        child: Text('Iniciar'),
+        onPressed: () {
+          final res = Navigator.pop(alertContext, true);
+          if (res) _driverService.initItinerary(context, itinerary);
+        },
+      ),
+      FlatButton(
+        child: Text(
+          'Cancelar',
+          style: TextStyle(
+            color: Colors.red,
+          ),
+        ),
+        onPressed: () => Navigator.pop(context, false),
+      ),
+    ];
 }

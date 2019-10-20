@@ -31,6 +31,8 @@ class CadeVan extends StatelessWidget {
   final ChildProvider _childProvider = ChildProvider();
   final DriverProvider _driverProvider = DriverProvider();
 
+  final _navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) =>
     MultiProvider(
@@ -46,13 +48,13 @@ class CadeVan extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        navigatorKey: Catcher.navigatorKey,
+        navigatorKey: _navigatorKey,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: ApplicationColor.MAIN,
         ),
         home: StatefulWrapper(
-          onInit: () => _startUpService.beforeAppInit(_userProvider, _childProvider, _driverProvider),
+          onInit: () => _startUpService.beforeAppInit(_navigatorKey.currentState.overlay.context, _userProvider, _childProvider, _driverProvider),
           child: StreamBuilder<StartupState>(
             stream: _startUpService.startupStatus.stream,
             builder: (BuildContext ctx, AsyncSnapshot<StartupState> snap) =>

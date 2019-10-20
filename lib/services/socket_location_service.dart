@@ -25,7 +25,7 @@ class SocketLocationService {
   static StreamSubscription<LocationData> _streamSubscriptionLocation;
 
   static Future<void> init(final Itinerary itinerary, final UserProvider userProvider) async {
-    _isDisconnected();
+    isDisconnected();
     try {
       _webSocket = WebSocket();
       _stomp = await _webSocket.connect(Environment.SOCKET);
@@ -93,10 +93,17 @@ class SocketLocationService {
     }
   }
 
-  static void _isDisconnected() {
-    if (_webSocket != null || _stomp != null) {
-      throw ServiceException('Feche a conexao do socket antes de abri outra');
+  static bool isDisconnected([final bool throwException = true]) {
+    if (throwException) {
+      if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
+        throw ServiceException('Feche a conexao do socket antes de abri outra');
+      }
     }
+
+    if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
+      return true;
+    }
+    return false;
   }
 
   static void _isSharingLocation() {
