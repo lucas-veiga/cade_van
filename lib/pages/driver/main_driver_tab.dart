@@ -48,7 +48,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       child: Scaffold(
         floatingActionButton: Consumer<DriverProvider>(
           builder: (_, final DriverProvider provider, __) =>
-            SpeedDial(itinerary.description
+            SpeedDial(
               animatedIcon: AnimatedIcons.menu_close,
               backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
               children: [
