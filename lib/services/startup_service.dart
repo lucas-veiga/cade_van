@@ -19,6 +19,7 @@ import './user_service.dart';
 import './auth_service.dart';
 import './service_exception.dart';
 import './driver_service.dart';
+import './responsible_service.dart';
 
 import '../models/user.dart';
 import '../models/itinerary.dart';
@@ -30,6 +31,7 @@ class StartUpService {
   final UserService _userService                     = UserService();
   final ChildService _childService                   = ChildService();
   final DriverService _driverService                 = DriverService();
+  final ResponsibleService _responsibleService       = ResponsibleService();
 
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
@@ -85,6 +87,8 @@ class StartUpService {
       final user = await _userService.setCurrentUserFromServer(userProvider);
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
+        await _responsibleService.setMyDrivers(userProvider);
+        await _initListeningLocation(userProvider, context);
       } else {
         final list = await _driverService.setAllItinerary(driverProvider);
         _initItinerary(list, userProvider, context);
@@ -112,8 +116,14 @@ class StartUpService {
       if (isConnected) {
         SocketLocationService.close();
       }
-      await SocketLocationService.init(itineraryActivated, userProvider);
+      await SocketLocationService.init(userProvider, itineraryActivated);
       SocketLocationService.sendLocation();
+      await _childService.updateStatusWaiting(itineraryActivated.id);
     }
+  }
+
+  Future<void> _initListeningLocation(final UserProvider userProvider, final BuildContext context) async {
+    await SocketLocationService.init(userProvider);
+    SocketLocationService.listenLocation(context);
   }
 }

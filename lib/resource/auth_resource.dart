@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
 import '../models/user.dart';
@@ -8,10 +7,8 @@ import '../models/token.dart';
 
 import '../config/dio_config.dart';
 import './resource_exception.dart';
-import '../environments/environment.dart';
 
 class AuthResource {
-  static const String resourceUrl = '${Environment.API_URL}';
   static const String auth = 'http://localhost:8080';
 
   final Dio _dio = DioConfig.dioDefault();

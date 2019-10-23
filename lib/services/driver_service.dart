@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:location/location.dart';
 
-import '../models/user.dart';
 import '../models/child.dart';
 import '../models/itinerary.dart';
 
@@ -21,14 +20,13 @@ import '../environments/environment.dart';
 import '../utils/application_color.dart';
 import '../resource/driver_resource.dart';
 
+import './child_service.dart';
+
 class DriverService {
   DriverResource _driverResource = DriverResource();
-  Location _location = Location();
+  ChildService _childService = ChildService();
 
-  Future<void> setMyDrivers(final User user, final Child child, final DriverProvider driverProvider) async {
-    final driver = await _driverResource.findResponsibleDriver(user.id, child.driverId);
-    driverProvider.driver = driver;
-  }
+  Location _location = Location();
 
   Future<List<Child>> findMyChildren() async {
     return await _driverResource.findMyChildren();
@@ -54,9 +52,10 @@ class DriverService {
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
-    await SocketLocationService.init(itinerary, userProvider);
+    await SocketLocationService.init(userProvider, itinerary);
     SocketLocationService.sendLocation();
     await setAllItinerary(driverProvider);
+    await _childService.updateStatusWaiting(itinerary.id);
   }
 
   Future<void> finishItinerary(final BuildContext context, final int itineraryId) async {

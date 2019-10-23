@@ -1,10 +1,16 @@
+import 'dart:math';
+
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+
+import 'package:provider/provider.dart';
 import 'package:location/location.dart';
 import 'package:stomp/stomp.dart';
 
 import '../provider/user_provider.dart';
 import '../provider/driver_provider.dart';
+import '../provider/child_provider.dart';
 
 import '../socket/web_socket.dart';
 import '../socket/socket_events.dart';
@@ -13,10 +19,18 @@ import '../models/driver_location.dart';
 import '../models/itinerary.dart';
 
 import './service_exception.dart';
+import './child_service.dart';
+
 import '../environments/environment.dart';
+import '../widgets/toast.dart';
+import '../utils/application_color.dart';
 
 class SocketLocationService {
+  static final ChildService _childService = ChildService();
+
+  static final Toast _toast = Toast();
   static Location _location = Location();
+  static bool _isFirstRequest = true;
 
   static UserProvider _userProvider;
   static Itinerary _itinerary;
@@ -24,7 +38,7 @@ class SocketLocationService {
   static WebSocket _webSocket;
   static StreamSubscription<LocationData> _streamSubscriptionLocation;
 
-  static Future<void> init(final Itinerary itinerary, final UserProvider userProvider) async {
+  static Future<void> init(final UserProvider userProvider, [ final Itinerary itinerary ]) async {
     isDisconnected();
     try {
       _webSocket = WebSocket();
@@ -63,10 +77,34 @@ class SocketLocationService {
       .listen((value) => _handleLocationChanging(value, isDriving));
   }
 
-  static void listenLocation(final DriverProvider driverProvider) {
-//    _isConnected();
-//    _webSocket.listenMessage((value) =>
-//      _handleReceivingLocation(value, driverProvider), customEvent: _buildListenEventMessage(driverProvider.drivers.first));
+  static void listenLocation(final BuildContext context) {
+    _isConnected();
+    _userProvider.myDrivers
+    .forEach((item) {
+      final randId = new Random().nextInt(9999).toString();
+      _stomp.subscribeJson(randId, _buildListningEventMessage(item.id), (final Map<String, String> headers, final dynamic message) async {
+        final driverLocation = DriverLocation.fromJSON(message);
+        if (_isFirstRequest) {
+          final childProvider = Provider.of<ChildProvider>(context, listen: false);
+          _isFirstRequest = false;
+          await _childService.setAllChildren(childProvider);
+//          _toast.show('O ${driverLocation.driverName} saiu de casa', context, backgroundColor: ApplicationColorEnum.SUCCESS);
+        }
+        if (!driverLocation.isDriving) {
+          _isFirstRequest = true;
+        }
+      });
+    });
+  }
+
+  static bool isDisconnected([final bool throwException = true]) {
+    if (throwException) {
+      if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
+        throw ServiceException('Feche a conexao do socket antes de abri outra');
+      }
+    }
+
+    return _webSocket != null || (_stomp != null && !_stomp.isDisconnected);
   }
 
   static _handleReceivingLocation(final dynamic value, final DriverProvider driverProvider) {
@@ -79,12 +117,16 @@ class SocketLocationService {
       throw ServiceException('Nao foi possivel pegar a localizacao do usuario');
     }
 
+    if (_itinerary == null) {
+      throw ServiceException('Itinerario nao foi informado!');
+    }
+
     final driverLocationMap =
     DriverLocation.toJSON(
       DriverLocation.create(position, isDriving, _userProvider.user.id, _itinerary.id, _userProvider.user.name),
     );
     _userProvider.isDriving = isDriving;
-    _stomp.sendJson(_buildListenEventMessage(position), driverLocationMap);
+    _stomp.sendJson(_buildSendEventMessage(position), driverLocationMap);
   }
 
   static void _isConnected() {
@@ -92,27 +134,15 @@ class SocketLocationService {
       throw ServiceException('Nenhum Socket iniciado');
     }
   }
-
-  static bool isDisconnected([final bool throwException = true]) {
-    if (throwException) {
-      if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
-        throw ServiceException('Feche a conexao do socket antes de abri outra');
-      }
-    }
-
-    if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
-      return true;
-    }
-    return false;
-  }
-
   static void _isSharingLocation() {
     if (_streamSubscriptionLocation == null) {
       throw ServiceException('Usuario nao esta compartilhando localizacao');
     }
   }
 
-  static String _buildListenEventMessage(final LocationData locationData) =>
-    SocketEvents.convertEnum(SocketEventsEnum.SEND_LOCATION)
-      + '/${_userProvider.user.id}';
+  static String _buildSendEventMessage(final LocationData locationData) =>
+    '${SocketEvents.convertEnum(SocketEventsEnum.SEND_LOCATION)}/${_userProvider.user.id}';
+
+  static String _buildListningEventMessage(final int driverId) =>
+    '/topic/location/$driverId';
 }

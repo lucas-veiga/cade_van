@@ -14,4 +14,8 @@ class ChildService {
     childProvider.emptyChildren();
     childProvider.addAll = children;
   }
+
+  Future<void> updateStatusWaiting(final int itineraryId) async {
+    await _childResource.updateStatusWaiting(itineraryId);
+  }
 }

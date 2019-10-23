@@ -1,7 +1,6 @@
 import 'package:cade_van/models/itinerary.dart';
 import 'package:dio/dio.dart';
 
-import '../models/user.dart';
 import '../models/child.dart';
 
 import '../config/dio_config.dart';
@@ -13,19 +12,6 @@ class DriverResource {
   static const String ITINERARY_RESOURCE = '${Environment.API_URL}/itinerary';
 
   final Dio _dio = DioConfig.withInterceptors();
-
-  Future<User> findResponsibleDriver(final int responsibleId, final int driverId) async {
-      try {
-        final url = '$RESOURCE_URL/my-drivers/$responsibleId/$driverId';
-        print('GET Request to $url');
-
-        final res = await _dio.get(url);
-        final user =  User.fromJSON(res.data);
-        return user..type = UserTypeEnum.DRIVER;
-      } on DioError catch(err) {
-        throw ResourceException('Error ao pegar seus motoristas', err);
-      }
-  }
 
   Future<List<Child>> findMyChildren() async {
     try {

@@ -4,8 +4,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 import '../../services/auth_service.dart';
-import './home_responsible_tab.dart';
 import '../../services/routes_service.dart';
+
+import './home_responsible_tab.dart';
+import '../../environments/environment.dart';
 
 class MainResponsibleTab extends StatefulWidget {
   @override
@@ -41,6 +43,22 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
     return DefaultTabController(
       length: _myTabs.length,
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            Environment.APP_NAME,
+            style: TextStyle(
+              color: Theme.of(context).primaryColor
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          actionsIconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          iconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          elevation: 0,
+        ),
         floatingActionButton: SpeedDial(
           animatedIcon: AnimatedIcons.menu_close,
           children: [

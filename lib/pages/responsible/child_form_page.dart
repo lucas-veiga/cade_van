@@ -14,6 +14,8 @@ import '../../resource/resource_exception.dart';
 import '../../services/child_service.dart';
 
 import '../../provider/child_provider.dart';
+import '../../provider/user_provider.dart';
+
 import '../../widgets/default_button.dart';
 import '../../models/child.dart';
 
@@ -26,11 +28,9 @@ class ChildFormPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
-
     return Scaffold(
       bottomNavigationBar: DefaultPadding(
-        child: DefaultButton(text: 'SALVAR', function: () => _submit(childProvider, context)),
+        child: DefaultButton(text: 'SALVAR', function: () => _submit(context)),
       ),
       body: DefaultPadding(
         child: SingleChildScrollView(
@@ -113,11 +113,16 @@ class ChildFormPage extends StatelessWidget {
       ),
     );
 
-  Future _submit(final ChildProvider childProvider, final BuildContext context) async {
+  Future _submit(final BuildContext context) async {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
+
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+
     try {
       _child.status = ChildStatusEnum.LEFT_HOME;
+      _child.responsible = userProvider.user;
       await _childService.saveChild(_child);
       await _childService.setAllChildren(childProvider);
       Navigator.pop(context);
