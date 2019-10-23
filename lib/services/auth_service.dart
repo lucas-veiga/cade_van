@@ -17,6 +17,8 @@ import './service_exception.dart';
 import '../resource/auth_resource.dart';
 import './routes_service.dart';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 class AuthService {
   final UserService _userService = UserService();
   final ChildService _childService = ChildService();
@@ -78,7 +80,23 @@ class AuthService {
     return userFromServer;
   }
 
-  void _handleHomePage(final User userFromServer, final BuildContext context) {
+  void _handleHomePage(final User userFromServer, final BuildContext context) async {
+    final FirebaseMessaging _fcm = FirebaseMessaging();
+    String fcmToken = await _fcm.getToken();
+    print('TOKENNNNNNNNNNNNNNNNNNN' + fcmToken);
+    _fcm.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print("onMessage: $message");
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print("onLaunch: $message");
+//         TODO optional
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print("onResume: $message");
+//         TODO optional
+      },
+    );
     if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
       Navigator.pushReplacementNamed(context, RoutesService.HOME_RESPONSIBLE_PAGE);
     } else if (userFromServer.type == UserTypeEnum.DRIVER) {
