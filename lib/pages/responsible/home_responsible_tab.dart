@@ -3,14 +3,18 @@ import 'package:provider/provider.dart';
 
 import '../../widgets/child_item.dart';
 import '../../widgets/custom_divider.dart';
+import '../../widgets/toast.dart';
+
+import '../../utils/default_padding.dart';
 
 import '../../models/child.dart';
-import '../../utils/default_padding.dart';
 import '../../provider/child_provider.dart';
 import '../../services/routes_service.dart';
 
 class HomeResponsibleTab extends StatelessWidget {
   final RoutesService _routesService = RoutesService();
+
+  final Toast _toast = Toast();
 
   @override
   Consumer build(BuildContext context) {
@@ -23,7 +27,7 @@ class HomeResponsibleTab extends StatelessWidget {
             (_, int i) =>
             InkWell(
               onLongPress: () => _routesService.goToChildDetailPage(context, i),
-              onTap: () => _navigateToMap(provider.children[i]),
+              onTap: () => _navigateToMap(context, provider.children[i]),
               child: DefaultPadding(
                 child: ChildItem(provider.children[i], i),
               ),
@@ -32,5 +36,17 @@ class HomeResponsibleTab extends StatelessWidget {
     );
   }
 
-  void _navigateToMap(final Child child) => print('MAPA ->\t$child');
+  void _navigateToMap(final BuildContext context, final Child child) {
+    if (child.status == ChildStatusEnum.LEFT_HOME) {
+      _toast.show('A sua criança está em casa', context, backgroundColorCustom: DecodeChileStatusEnum.getColor(child.status));
+      return;
+    }
+
+    if (child.status == ChildStatusEnum.LEFT_SCHOOL) {
+      _toast.show('A sua criança está na escola', context, backgroundColorCustom: DecodeChileStatusEnum.getColor(child.status));
+      return;
+    }
+
+    Navigator.pushNamed(context, RoutesService.MAP_RESPONSIBLE_PAGE);
+  }
 }

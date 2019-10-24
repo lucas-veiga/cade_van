@@ -6,7 +6,10 @@ class Toast {
   ScaffoldFeatureController<SnackBar, SnackBarClosedReason> show(
     final String msg,
     final BuildContext context,
-    { ApplicationColorEnum backgroundColor = ApplicationColorEnum.ERROR }) {
+    {
+      final ApplicationColorEnum backgroundColor = ApplicationColorEnum.ERROR,
+      final Color backgroundColorCustom,
+    }) {
 
     return Scaffold.of(context).showSnackBar(
       SnackBar(
@@ -14,8 +17,16 @@ class Toast {
           msg,
           textAlign: TextAlign.center,
         ),
-        backgroundColor: ApplicationColor.decodeEnum(backgroundColor),
+        backgroundColor: _getBGColor(backgroundColor, backgroundColorCustom),
       ),
     );
+  }
+
+  Color _getBGColor(final ApplicationColorEnum colorEnum, final Color customColor) {
+    if (customColor != null) {
+      return customColor;
+    }
+
+    return ApplicationColor.decodeEnum(colorEnum);
   }
 }

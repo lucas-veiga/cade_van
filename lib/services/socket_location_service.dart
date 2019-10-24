@@ -79,21 +79,16 @@ class SocketLocationService {
 
   static void listenLocation(final BuildContext context) {
     _isConnected();
+    final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
+
     _userProvider.myDrivers
-    .forEach((item) {
+      .forEach((item) {
       final randId = new Random().nextInt(9999).toString();
-      _stomp.subscribeJson(randId, _buildListningEventMessage(item.id), (final Map<String, String> headers, final dynamic message) async {
-        final driverLocation = DriverLocation.fromJSON(message);
-        if (_isFirstRequest) {
-          final childProvider = Provider.of<ChildProvider>(context, listen: false);
-          _isFirstRequest = false;
-          await _childService.setAllChildren(childProvider);
-//          _toast.show('O ${driverLocation.driverName} saiu de casa', context, backgroundColor: ApplicationColorEnum.SUCCESS);
-        }
-        if (!driverLocation.isDriving) {
-          _isFirstRequest = true;
-        }
-      });
+      _stomp.subscribeJson(
+        randId,
+        _buildListeningEventMessage(item.id),
+          (_, msg) => _handleReceivingMsg(driverProvider, context, msg)
+      );
     });
   }
 
@@ -105,11 +100,6 @@ class SocketLocationService {
     }
 
     return _webSocket != null || (_stomp != null && !_stomp.isDisconnected);
-  }
-
-  static _handleReceivingLocation(final dynamic value, final DriverProvider driverProvider) {
-    final location = DriverLocation.fromJSON(value);
-    driverProvider.driverLocation = location;
   }
 
   static _handleLocationChanging(final LocationData position, final bool isDriving) {
@@ -140,9 +130,22 @@ class SocketLocationService {
     }
   }
 
+  static Future<void> _handleReceivingMsg(final DriverProvider driverProvider, final BuildContext context, final dynamic message) async {
+    final driverLocation = DriverLocation.fromJSON(message);
+    if (_isFirstRequest) {
+      final childProvider = Provider.of<ChildProvider>(context, listen: false);
+      _isFirstRequest = false;
+      await _childService.setAllChildren(childProvider);
+    }
+    if (!driverLocation.isDriving) {
+      _isFirstRequest = true;
+    }
+    driverProvider.driverLocation = driverLocation;
+  }
+
   static String _buildSendEventMessage(final LocationData locationData) =>
     '${SocketEvents.convertEnum(SocketEventsEnum.SEND_LOCATION)}/${_userProvider.user.id}';
 
-  static String _buildListningEventMessage(final int driverId) =>
+  static String _buildListeningEventMessage(final int driverId) =>
     '/topic/location/$driverId';
 }

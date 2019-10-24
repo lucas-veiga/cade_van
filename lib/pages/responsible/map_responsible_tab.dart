@@ -23,73 +23,22 @@ class _MapResponsibleTabState extends State<MapResponsibleTab> {
 
   @override
   Widget build(BuildContext context) {
-    final User user = Provider.of<UserProvider>(context).user;
-    final DriverLocation driverLocation = Provider.of<DriverProvider>(context).driverLocation;
-
     _createMarkerImageFromAsset(context);
-    _addUsers(user, driverLocation);
 
     return Stack(
       children: <Widget>[
-        GoogleMap(
-          markers: _markers,
-          onMapCreated: (final GoogleMapController controller) => _controller.complete(controller),
-          initialCameraPosition: CameraPosition(
-            target: LatLng(user.userLocation.latitude, user.userLocation.longitude),
-            zoom: 15,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 30),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'Status do Motorista: ',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                Text(
-                  driverLocation.isDriving ? 'Em Movimento' : 'Parado',
-                  style: TextStyle(
-                    color: driverLocation.isDriving ? Colors.green : Colors.orange,
-                  ),
-                )
-              ],
+        Consumer<DriverProvider>(
+          builder: (ctx, final DriverProvider provider, _) => GoogleMap(
+//          markers: _markers,
+            onMapCreated: (final GoogleMapController controller) => _controller.complete(controller),
+            initialCameraPosition: CameraPosition(
+              target: LatLng(provider.driverLocation.latitude, provider.driverLocation.longitude),
+              zoom: 15,
             ),
           ),
         ),
       ],
     );
-  }
-
-  void _addUsers(final User user, final DriverLocation driverLocation) {
-    _markers = {
-      Marker(
-        markerId: MarkerId('MyPosition'),
-        position: LatLng(user.userLocation.latitude, user.userLocation.longitude),
-        infoWindow: InfoWindow(
-          title: 'Minha Posição'
-        ),
-      ),
-    };
-
-    if (driverLocation.isDriving) {
-      print('\n\n\tADDING NEW MARKER -> LAT: ${driverLocation.latitude} | LON: ${driverLocation.longitude} - ${driverLocation.driverId}');
-      _markers.add(
-        Marker(
-          markerId: MarkerId('Driver_${driverLocation.driverName}_${driverLocation.driverId}'),
-          position: LatLng(driverLocation.latitude, driverLocation.longitude),
-          icon: _driverIcon,
-          infoWindow: InfoWindow(
-            title: driverLocation.driverName,
-          ),
-        ),
-      );
-    }
   }
 
   void _createMarkerImageFromAsset(final BuildContext context) {
