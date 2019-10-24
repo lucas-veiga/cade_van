@@ -11,6 +11,7 @@ import '../models/itinerary.dart';
 
 import './service_exception.dart';
 import './socket_location_service.dart';
+import './routes_service.dart';
 
 import '../provider/driver_provider.dart';
 import '../provider/user_provider.dart';
@@ -23,8 +24,9 @@ import '../resource/driver_resource.dart';
 import './child_service.dart';
 
 class DriverService {
-  DriverResource _driverResource = DriverResource();
-  ChildService _childService = ChildService();
+  DriverResource _driverResource  = DriverResource();
+  ChildService _childService      = ChildService();
+  RoutesService _routesService    = RoutesService();
 
   Location _location = Location();
 
@@ -45,7 +47,70 @@ class DriverService {
     return list;
   }
 
-  Future<void> initItinerary(final BuildContext context, final Itinerary itinerary) async {
+  Future<void> initItinerary(final BuildContext context, final DriverProvider driverProvider, final Itinerary itinerary) async{
+    print('\nINITING ITINARY!\n');
+    final hasItineraryActivated = driverProvider.itinerary.any((item) => item.isAtivo == true);
+    if (hasItineraryActivated) {
+      final itineraryActivated = driverProvider
+        .itinerary
+        .singleWhere((item) => item.isAtivo == true);
+
+      if (itineraryActivated == itinerary) {
+        _routesService.goToItineraryDetail(context, itinerary);
+        return;
+      } else {
+        driverProvider.itinerary.singleWhere((item) => item.isAtivo == true);
+        await showDialog(
+          context: context,
+          builder: (final BuildContext ctx) =>
+            DefaultAlertDialog(
+              ctx,
+              stringTitle: 'Você já tem um itinerário em andamento',
+              stringTitleColor: ApplicationColorEnum.ERROR,
+              stringContent: 'O itinerário ${itineraryActivated.description} está ativo.\nFinalize o ${itineraryActivated.description} antes de inicar outro itinerário',
+            ),
+        );
+        return;
+      }
+    }
+
+    final answer = await showDialog(
+      context: context,
+      builder: (final BuildContext ctx) =>
+        DefaultAlertDialog(
+          ctx,
+          stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
+          stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
+          actions: _buildModalInitItineraryActions(context, ctx, itinerary),
+        ),
+    );
+
+    if (answer != null && answer == true) {
+      _routesService.goToItineraryDetail(context, itinerary);
+    }
+  }
+
+  List<FlatButton> _buildModalInitItineraryActions(final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>
+    [
+      FlatButton(
+        child: Text('Iniciar'),
+        onPressed: () {
+          final res = Navigator.pop(alertContext, true);
+          if (res) _onInitItinerary(context, itinerary);
+        },
+      ),
+      FlatButton(
+        child: Text(
+          'Cancelar',
+          style: TextStyle(
+            color: Colors.red,
+          ),
+        ),
+        onPressed: () => Navigator.pop(context, false),
+      ),
+    ];
+
+  Future<void> _onInitItinerary(final BuildContext context, final Itinerary itinerary) async {
     await checkGPSPermission(context);
     await _driverResource.initItinerary(itinerary.id);
 

@@ -28,6 +28,7 @@ dependencies:
   flutter_datetime_picker: ^1.2.6
   flutter_speed_dial: ^1.2.1
   loading: ^1.0.1
+  flutter_picker: ^1.0.15
 
   # Maps
   location: ^2.3.5
