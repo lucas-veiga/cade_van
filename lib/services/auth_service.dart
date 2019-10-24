@@ -20,9 +20,11 @@ import './routes_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
-  final UserService _userService = UserService();
-  final ChildService _childService = ChildService();
-  final AuthResource _authResource = AuthResource();
+  final UserService _userService    = UserService();
+  final ChildService _childService  = ChildService();
+  final AuthResource _authResource  = AuthResource();
+
+  final FirebaseMessaging _fcm      = FirebaseMessaging();
 
   Future<void> login(final User user, final BuildContext context) async {
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -81,7 +83,7 @@ class AuthService {
   }
 
   void _handleHomePage(final User userFromServer, final BuildContext context) async {
-    final FirebaseMessaging _fcm = FirebaseMessaging();
+
     String fcmToken = await _fcm.getToken();
     print('TOKENNNNNNNNNNNNNNNNNNN' + fcmToken);
     _fcm.configure(
