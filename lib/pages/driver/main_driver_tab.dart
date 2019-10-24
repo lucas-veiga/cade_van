@@ -9,8 +9,9 @@ import '../../services/driver_service.dart';
 import '../../services/routes_service.dart';
 
 import '../../provider/driver_provider.dart';
-import './home_driver_tab.dart';
 import '../../models/itinerary.dart';
+import './home_driver_tab.dart';
+import '../../environments/environment.dart';
 
 class MainDriverTab extends StatefulWidget {
   @override
@@ -46,6 +47,23 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     return DefaultTabController(
       length: _myTabs.length,
       child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(
+            Environment.APP_NAME,
+            style: TextStyle(
+              color: Theme.of(context).primaryColor
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          actionsIconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          iconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          elevation: 0,
+        ),
         floatingActionButton: Consumer<DriverProvider>(
           builder: (_, final DriverProvider provider, __) =>
             SpeedDial(

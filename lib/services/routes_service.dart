@@ -28,9 +28,9 @@ class RoutesService {
     ));
   }
 
-  Future<dynamic> goToItineraryDetail(final BuildContext context, final Itinerary itinerary) async {
+  Future<dynamic> goToItineraryDetail(final BuildContext context, final Itinerary itinerary, [ final bool isViewing = false ]) async {
     return await Navigator.push(context, MaterialPageRoute(
-      builder: (_) => ItineraryDetailPage(itinerary),
+      builder: (_) => ItineraryDetailPage(itinerary, isViewing),
     ));
   }
 
