@@ -14,7 +14,7 @@ class RoutesService {
 
   static final Map<String, WidgetBuilder> _availableRoutes = {
     HOME_RESPONSIBLE_PAGE: (final BuildContext ctx) => MainResponsibleTab(),
-    MAP_RESPONSIBLE_PAGE: (final BuildContext ctx) => MapResponsibleTab(),
+    MAP_RESPONSIBLE_PAGE: (final BuildContext ctx) => MapResponsiblePage(),
     HOME_DRIVER_PAGE: (final BuildContext ctx) => MainDriverTab(),
     CHILD_FORM: (final BuildContext ctx) => ChildFormPage(),
     AUTH_PAGE: (final BuildContext ctx) => MainAuthPage(),
