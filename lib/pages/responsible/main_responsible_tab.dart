@@ -79,7 +79,6 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
         bottomNavigationBar: _buildTabBar(context),
         body: TabBarView(
           controller: _tabController,
-          physics: _isScrollable ? null : NeverScrollableScrollPhysics(),
           dragStartBehavior: DragStartBehavior.down,
           children: _myTabs,
         ),

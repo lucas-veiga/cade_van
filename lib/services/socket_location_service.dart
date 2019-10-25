@@ -137,6 +137,9 @@ class SocketLocationService {
     if (!driverLocation.isDriving) {
       _isFirstRequest = true;
     }
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context);
+    await _childService.setAllChildren(childProvider);
+
     driverProvider.driverLocation = driverLocation;
   }
 
