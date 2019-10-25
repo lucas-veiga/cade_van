@@ -73,4 +73,16 @@ class DriverResource {
       throw ResourceException('Error ao pegar todos intinerarios', err);
     }
   }
+
+  Future<Itinerary> findItinerary(final int itineraryId) async {
+    try {
+      final url = '$RESOURCE_URL/$itineraryId';
+      print('GET Request to $url');
+
+      final res = await _dio.get(url);
+      return Itinerary.fromJSON(res.data);
+    } on DioError catch(err) {
+      throw ResourceException('Error ao pegar intinerario com id $itineraryId', err);
+    }
+  }
 }

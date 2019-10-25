@@ -60,6 +60,7 @@ class Child {
       'status': _statusToJSON(child.status),
       'responsible': User.toJSON(child.responsible),
       'driverCode': child.driverCode,
+      'driverId': child.driverId,
     };
 
   static ChildStatusEnum _statusFromJSON(final String status) {

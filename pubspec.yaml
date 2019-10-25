@@ -29,6 +29,7 @@ dependencies:
   flutter_speed_dial: ^1.2.1
   loading: ^1.0.1
   flutter_picker: ^1.0.15
+  flutter_slidable: ^0.5.4
 
   # Maps
   location: ^2.3.5

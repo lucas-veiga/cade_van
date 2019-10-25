@@ -43,4 +43,15 @@ class ChildResource {
       throw ResourceException('Error ao pegar criancas', err);
     }
   }
+
+  Future<Child> updateChild(final Child child) async {
+    try {
+      print('PUT Request to $RESOURCE_URL');
+      final childJSON = json.encode(Child.toJSON(child));
+      final res = await _dio.put(RESOURCE_URL, data: childJSON);
+      return Child.fromJSON(res.data);
+    } on DioError catch (err) {
+      throw ResourceException('Error ao atualizar criancas', err);
+    }
+  }
 }

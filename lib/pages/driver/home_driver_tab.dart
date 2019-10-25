@@ -23,8 +23,8 @@ class HomeDriverPage extends StatelessWidget {
           itemCount: provider.itinerary.length,
           itemBuilder: (_, final int i) =>
             InkWell(
-              onTap: () => _routesService.goToItineraryDetail(context, provider.itinerary[i], true),
-              onLongPress: () => _driverService.initItinerary(context, provider, provider.itinerary[i]),
+              onTap: () => _driverService.initItinerary(context, provider, provider.itinerary[i]),
+              onLongPress: () => _routesService.goToItineraryDetail(context, provider.itinerary[i], true),
               child: ItineraryItem(provider.itinerary[i]),
             ),
         ),

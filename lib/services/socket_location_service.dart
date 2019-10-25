@@ -22,13 +22,10 @@ import './service_exception.dart';
 import './child_service.dart';
 
 import '../environments/environment.dart';
-import '../widgets/toast.dart';
-import '../utils/application_color.dart';
 
 class SocketLocationService {
   static final ChildService _childService = ChildService();
 
-  static final Toast _toast = Toast();
   static Location _location = Location();
   static bool _isFirstRequest = true;
 

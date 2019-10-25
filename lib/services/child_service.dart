@@ -18,4 +18,8 @@ class ChildService {
   Future<void> updateStatusWaiting(final int itineraryId) async {
     await _childResource.updateStatusWaiting(itineraryId);
   }
+
+  Future<Child> updateChild(final Child child) async {
+    return await _childResource.updateChild(child);
+  }
 }

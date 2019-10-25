@@ -40,6 +40,10 @@ class DriverService {
     print('JSON -> $itinerary');
   }
 
+  Future<Itinerary> findItinerary(final int itineraryId) async {
+    return await _driverResource.findItinerary(itineraryId);
+  }
+
   Future<List<Itinerary>> setAllItinerary(final DriverProvider driverProvider) async {
     final list = await _driverResource.findAll();
     driverProvider.emptyItinerary();
@@ -74,7 +78,7 @@ class DriverService {
       }
     }
 
-    final answer = await showDialog(
+    await showDialog(
       context: context,
       builder: (final BuildContext ctx) =>
         DefaultAlertDialog(
@@ -84,19 +88,15 @@ class DriverService {
           actions: _buildModalInitItineraryActions(context, ctx, itinerary),
         ),
     );
-
-    if (answer != null && answer == true) {
-      _routesService.goToItineraryDetail(context, itinerary);
-    }
   }
 
   List<FlatButton> _buildModalInitItineraryActions(final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>
     [
       FlatButton(
         child: Text('Iniciar'),
-        onPressed: () {
-          final res = Navigator.pop(alertContext, true);
-          if (res) _onInitItinerary(context, itinerary);
+        onPressed: () async {
+          Navigator.pop(alertContext, true);
+          await _onInitItinerary(context, itinerary);
         },
       ),
       FlatButton(
@@ -121,6 +121,9 @@ class DriverService {
     SocketLocationService.sendLocation();
     await setAllItinerary(driverProvider);
     await _childService.updateStatusWaiting(itinerary.id);
+
+    final itineraryFromServer = await findItinerary(itinerary.id);
+    _routesService.goToItineraryDetail(context, itineraryFromServer);
   }
 
   Future<void> finishItinerary(final BuildContext context, final int itineraryId) async {
@@ -128,7 +131,7 @@ class DriverService {
 
     SocketLocationService.sendLocation(false);
     _driverResource.finishItinerary(itineraryId)
-    .then((_) {
+      .then((_) {
       Future.delayed(Duration(seconds: 1), SocketLocationService.close)
         .then((_) => setAllItinerary(driverProvider));
     });
@@ -170,17 +173,17 @@ class DriverService {
   }
 
   List<FlatButton> _buildModaGPSActivatedActions(final BuildContext context) =>
-  [
-    FlatButton(
-      onPressed: () async => await _handleActionGPSActivatedPressed(context),
-      child: Text(
-        'OK',
-        style: TextStyle(
-          color: Theme.of(context).primaryColor,
+    [
+      FlatButton(
+        onPressed: () async => await _handleActionGPSActivatedPressed(context),
+        child: Text(
+          'OK',
+          style: TextStyle(
+            color: Theme.of(context).primaryColor,
+          ),
         ),
-      ),
-    )
-  ];
+      )
+    ];
 
   Future<void> _handleActionGPSActivatedPressed(final BuildContext context) async {
     int attempts = 0;
