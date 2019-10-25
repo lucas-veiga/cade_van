@@ -2,7 +2,7 @@
 
 set -e
 
-PROJECT=$HOME/workspace/cade/cade_onibus/cade-onibus-mobile
+PROJECT=$HOME/workspace/cade/cade_van/cade_van
 ENV_FOLDER="$PROJECT"/lib/environments
 
 cd "$ENV_FOLDER"
