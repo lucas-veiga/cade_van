@@ -14,7 +14,7 @@ class Toast {
 
     return Scaffold.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(milliseconds: durationMilliseconds),
+        duration: Duration(seconds: durationMilliseconds),
         content: Text(
           msg,
           textAlign: TextAlign.center,
