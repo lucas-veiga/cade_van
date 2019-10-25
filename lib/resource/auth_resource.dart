@@ -7,9 +7,10 @@ import '../models/token.dart';
 
 import '../config/dio_config.dart';
 import './resource_exception.dart';
+import '../environments/environment.dart';
 
 class AuthResource {
-  static const String auth = 'http://localhost:8080';
+  static const String auth = Environment.LOGIN;
 
   final Dio _dio = DioConfig.dioDefault();
 

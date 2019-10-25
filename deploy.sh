@@ -13,7 +13,7 @@ mv environment_prod.dart environment.dart
 cd "$PROJECT"
 echo "Fazendo build do projeto"
 flutter clean
-flutter build appbundle
+flutter build apk
 
 cd "$ENV_FOLDER"
 echo "Trocando environments"
