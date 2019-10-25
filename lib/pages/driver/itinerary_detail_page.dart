@@ -104,66 +104,12 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
               return Column(
                 children: <Widget>[
                   InkWell(
-                    onTap: () => _deliveryChild(child, true),
-                    child: Slidable(
-                      actionPane: SlidableDrawerActionPane(),
-                      actions: <Widget>[
-                        IconSlideAction(
-                          caption: 'Entregue',
-                          color: Colors.blue,
-                          icon: Icons.check,
-                          onTap: () => _deliveryChild(child),
-                        ),
-                      ],
-                      child: DefaultPadding(
-                        child: Row(
-                          children: <Widget>[
-                            CircleAvatar(
-                              radius: 40,
-                            ),
-                            SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    child.name,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  Text(
-                                    child.school,
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  Text(
-                                    child.responsible.name,
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Chip(
-                                label: Text(
-                                  DecodeChileStatusEnum.getDescription(child.status),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(0),
-                                elevation: 10,
-                                backgroundColor: DecodeChileStatusEnum.getColor(child.status)
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
+                    onTap: () {
+                      if (!widget.isViewing) {
+                        _deliveryChild(child, true);
+                      }
+                    },
+                    child: _childItem(child),
                   ),
                   CustomDivider(height: 0),
                 ],
@@ -175,6 +121,118 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
       ],
     );
 
+  _childItem(final Child child) {
+    if (widget.isViewing) {
+      return DefaultPadding(
+        child: Row(
+          children: <Widget>[
+            CircleAvatar(
+              radius: 40,
+            ),
+            SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    child.name,
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    child.school,
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    child.responsible.name,
+                    style: TextStyle(
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Chip(
+                label: Text(
+                  DecodeChileStatusEnum.getDescription(child.status),
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+                padding: EdgeInsets.all(0),
+                elevation: 10,
+                backgroundColor: DecodeChileStatusEnum.getColor(child.status)
+              ),
+            )
+          ],
+        ),
+      );
+    } else {
+      return Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        actions: <Widget>[
+          IconSlideAction(
+            caption: 'Entregue',
+            color: Colors.blue,
+            icon: Icons.check,
+            onTap: () => _deliveryChild(child),
+          ),
+        ],
+        child: DefaultPadding(
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 40,
+              ),
+              SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      child.name,
+                      style: TextStyle(
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      child.school,
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      child.responsible.name,
+                      style: TextStyle(
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: Chip(
+                  label: Text(
+                    DecodeChileStatusEnum.getDescription(child.status),
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  padding: EdgeInsets.all(0),
+                  elevation: 10,
+                  backgroundColor: DecodeChileStatusEnum.getColor(child.status)
+                ),
+              )
+            ],
+          ),
+        ),
+      );
+    }
+  }
   List<FlatButton> _getFinishItineraryActions(final BuildContext context) =>
     [
       FlatButton(
