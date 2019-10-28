@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:rxdart/rxdart.dart';
 
 enum AnimationType { FADE,SCALE }
 
@@ -8,7 +9,7 @@ class AnimateTransition extends StatefulWidget {
   final Widget secondChild;
   final int durationInMilliseconds;
   final AnimationType animationType;
-  final BehaviorSubject<bool> controller;
+  final StreamController<bool> controller;
 
   AnimateTransition({
     @required this.firstChild,
@@ -30,7 +31,7 @@ class _AnimateTransition extends State<AnimateTransition> {
   @override
   void initState() {
     _animate = widget.firstChild;
-    widget.controller.listen(_handleListen);
+    widget.controller.stream.listen(_handleListen);
     super.initState();
   }
 

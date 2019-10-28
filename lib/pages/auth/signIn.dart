@@ -89,7 +89,7 @@ class SignIn extends StatelessWidget {
     _isLoadingStream.add(true);
     _formKey.currentState.save();
     try {
-      await _authService.login(_user, context);
+      await _authService.login(_user, context, true);
     } on ResourceException catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       _toast.show(err.msg, context);

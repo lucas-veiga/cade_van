@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -14,6 +16,10 @@ class HomeDriverPage extends StatelessWidget {
   final DriverService _driverService = DriverService();
   final RoutesService _routesService = RoutesService();
 
+  final StreamController<bool> _blockUIStream;
+
+  HomeDriverPage(this._blockUIStream);
+
   @override
   Widget build(BuildContext context) {
     return Consumer<DriverProvider>(
@@ -23,7 +29,7 @@ class HomeDriverPage extends StatelessWidget {
           itemCount: provider.itinerary.length,
           itemBuilder: (_, final int i) =>
             InkWell(
-              onTap: () => _driverService.initItinerary(context, provider, provider.itinerary[i]),
+              onTap: () => _driverService.initItinerary(context, provider, provider.itinerary[i], _blockUIStream),
               onLongPress: () => _routesService.goToItineraryDetail(context, provider.itinerary[i], true),
               child: ItineraryItem(provider.itinerary[i]),
             ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -13,6 +15,7 @@ import '../../models/child.dart';
 import '../../widgets/default_button.dart';
 import '../../widgets/custom_divider.dart';
 import '../../widgets/toast.dart';
+import '../../widgets/block_ui.dart';
 
 import '../../services/driver_service.dart';
 import '../../provider/driver_provider.dart';
@@ -29,6 +32,7 @@ class ItineraryFormPage extends StatefulWidget {
 class _ItineraryFormPageState extends State<ItineraryFormPage> {
   final DriverService _driverService = DriverService();
 
+  final StreamController<bool> _blockUIStream = StreamController.broadcast();
   final Itinerary _itinerary = Itinerary()..type = ItineraryTypeEnum.IDA;
   final List<Child> _childrenSelected = [];
   final GlobalKey<FormState> _formKey = GlobalKey();
@@ -36,63 +40,66 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: Builder(
-        builder: (ctx) => DefaultPadding(
-          child: DefaultButton(text: 'SALVAR', function: () => _submit(ctx)),
-        ),
-      ),
-      appBar: AppBar(
-        title: Text(
-          'Novo itinerário',
-          style: TextStyle(
-            color: Theme.of(context).primaryColor
+    return BlockUI(
+      blockUIController: _blockUIStream,
+      child: Scaffold(
+        bottomNavigationBar: Builder(
+          builder: (ctx) => DefaultPadding(
+            child: DefaultButton(text: 'SALVAR', function: () => _submit(ctx)),
           ),
         ),
-        backgroundColor: Colors.transparent,
-        actionsIconTheme: IconThemeData(
-          color: Theme.of(context).primaryColor,
+        appBar: AppBar(
+          title: Text(
+            'Novo itinerário',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          actionsIconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          iconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor,
+          ),
+          elevation: 0,
         ),
-        iconTheme: IconThemeData(
-          color: Theme.of(context).primaryColor,
-        ),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              DefaultPadding(child: _buildNameField),
-              SizedBox(height: 20),
-              DefaultPadding(child: Text('Tipo de Itinerário'), noVertical: true),
-              DefaultPadding(
-                noVertical: true,
-                child: Row(
-                  children: <Widget>[
-                    Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.IDA)),
-                    Radio(
-                      value: ItineraryTypeEnum.IDA,
-                      groupValue: _itinerary.type,
-                      onChanged: (value) => setState(() => _itinerary.type = value),
-                    ),
-                    SizedBox(width: 20),
-                    Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.VOLTA)),
-                    Radio(
-                      value: ItineraryTypeEnum.VOLTA,
-                      groupValue: _itinerary.type,
-                      onChanged: (value) => setState(() => _itinerary.type = value),
-                    ),
-                  ],
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                DefaultPadding(child: _buildNameField),
+                SizedBox(height: 20),
+                DefaultPadding(child: Text('Tipo de Itinerário'), noVertical: true),
+                DefaultPadding(
+                  noVertical: true,
+                  child: Row(
+                    children: <Widget>[
+                      Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.IDA)),
+                      Radio(
+                        value: ItineraryTypeEnum.IDA,
+                        groupValue: _itinerary.type,
+                        onChanged: (value) => setState(() => _itinerary.type = value),
+                      ),
+                      SizedBox(width: 20),
+                      Text(DecodeItineraryTypeEnum.getDescription(ItineraryTypeEnum.VOLTA)),
+                      Radio(
+                        value: ItineraryTypeEnum.VOLTA,
+                        groupValue: _itinerary.type,
+                        onChanged: (value) => setState(() => _itinerary.type = value),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 30),
-              Container(
-                height: MediaQuery.of(context).size.height / 1.79,
-                child: _buildChildrenList
-              ),
-            ],
+                SizedBox(height: 30),
+                Container(
+                  height: MediaQuery.of(context).size.height / 1.79,
+                  child: _buildChildrenList
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -264,7 +271,7 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
       return;
     }
     _formKey.currentState.save();
-
+    _blockUIStream.add(true);
     _itinerary.itineraryChildren = _childrenSelected
       .asMap()
       .map((index, child) => MapEntry(index, ItineraryChild(child, index)))
@@ -273,11 +280,13 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
     try {
       final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
-      await _driverService.saveItinerary(_itinerary);
+      await _driverService.saveItinerary(_itinerary, true);
       await _driverService.setAllItinerary(driverProvider);
       Navigator.pop(context);
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
+    } finally {
+      _blockUIStream.add(false);
     }
   }
 

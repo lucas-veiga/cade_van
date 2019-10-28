@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import '../provider/driver_provider.dart';
 import '../provider/user_provider.dart';
 
 import '../widgets/default_alert_dialog.dart';
+
 import '../environments/environment.dart';
 import '../utils/application_color.dart';
 import '../resource/driver_resource.dart';
@@ -34,7 +36,10 @@ class DriverService {
     return await _driverResource.findMyChildren();
   }
 
-  Future<void> saveItinerary(final Itinerary itinerary) async {
+  Future<void> saveItinerary(final Itinerary itinerary, [final bool delay = false]) async {
+    if (delay) {
+      await Future.delayed(Duration(seconds: 3));
+    }
     final String itineraryJSON = json.encode(Itinerary.toJSON(itinerary));
     await _driverResource.saveItinerary(itineraryJSON);
     print('JSON -> $itinerary');
@@ -51,7 +56,7 @@ class DriverService {
     return list;
   }
 
-  Future<void> initItinerary(final BuildContext context, final DriverProvider driverProvider, final Itinerary itinerary) async{
+  Future<void> initItinerary(final BuildContext context, final DriverProvider driverProvider, final Itinerary itinerary, final StreamController<bool> blockUIStream) async{
     print('\nINITING ITINARY!\n');
     final hasItineraryActivated = driverProvider.itinerary.any((item) => item.isAtivo == true);
     if (hasItineraryActivated) {
@@ -85,18 +90,18 @@ class DriverService {
           ctx,
           stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
           stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
-          actions: _buildModalInitItineraryActions(context, ctx, itinerary),
+          actions: _buildModalInitItineraryActions(blockUIStream, context, ctx, itinerary),
         ),
     );
   }
 
-  List<FlatButton> _buildModalInitItineraryActions(final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>
+  List<FlatButton> _buildModalInitItineraryActions(final StreamController<bool> blockUIStream, final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>
     [
       FlatButton(
         child: Text('Iniciar'),
         onPressed: () async {
           Navigator.pop(alertContext, true);
-          await _onInitItinerary(context, itinerary);
+          await _onInitItinerary(blockUIStream, context, itinerary);
         },
       ),
       FlatButton(
@@ -110,20 +115,25 @@ class DriverService {
       ),
     ];
 
-  Future<void> _onInitItinerary(final BuildContext context, final Itinerary itinerary) async {
-    await checkGPSPermission(context);
-    await _driverResource.initItinerary(itinerary.id);
+  Future<void> _onInitItinerary(final StreamController<bool> blockUIStream, final BuildContext context, final Itinerary itinerary) async {
+    try {
+      blockUIStream.add(true);
+      await checkGPSPermission(context);
+      await _driverResource.initItinerary(itinerary.id);
 
-    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
+      final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+      final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
-    await SocketLocationService.init(userProvider, itinerary);
-    SocketLocationService.sendLocation();
-    await setAllItinerary(driverProvider);
-    await _childService.updateStatusWaiting(itinerary.id);
+      await SocketLocationService.init(userProvider, itinerary);
+      SocketLocationService.sendLocation();
+      await setAllItinerary(driverProvider);
+      await _childService.updateStatusWaiting(itinerary.id);
 
-    final itineraryFromServer = await findItinerary(itinerary.id);
-    _routesService.goToItineraryDetail(context, itineraryFromServer);
+      final itineraryFromServer = await findItinerary(itinerary.id);
+      _routesService.goToItineraryDetail(context, itineraryFromServer);
+    } finally {
+      blockUIStream.add(false);
+    }
   }
 
   Future<void> finishItinerary(final BuildContext context, final int itineraryId) async {

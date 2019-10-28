@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -8,7 +10,10 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import '../../utils/default_padding.dart';
 import '../../utils/validations.dart';
 import '../../utils/mask.dart';
+
 import '../../widgets/toast.dart';
+import '../../widgets/default_button.dart';
+import '../../widgets/block_ui.dart';
 
 import '../../resource/resource_exception.dart';
 import '../../services/child_service.dart';
@@ -16,57 +21,62 @@ import '../../services/child_service.dart';
 import '../../provider/child_provider.dart';
 import '../../provider/user_provider.dart';
 
-import '../../widgets/default_button.dart';
 import '../../models/child.dart';
 
 class ChildFormPage extends StatelessWidget {
-  static final GlobalKey<FormState> _formKey = GlobalKey();
-  final Child _child = Child.empty();
   final ChildService _childService = ChildService();
-  final Toast _toast = Toast();
+
+  static final GlobalKey<FormState> _formKey = GlobalKey();
   static final TextEditingController _driverCodeController = TextEditingController();
+
+  final Child _child = Child.empty();
+  final Toast _toast = Toast();
+  final StreamController<bool> _blockUIStream = StreamController.broadcast();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: DefaultPadding(
-        child: DefaultButton(text: 'SALVAR', function: () => _submit(context)),
-      ),
-      body: DefaultPadding(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  CircleAvatar(
-                    radius: 100,
-                  ),
-                  _buildNameField,
-                  _buildSchoolField,
-                  _buildPeriodoField,
-                  BirthDate(_child),
-                  Row(
-                    children: <Widget>[
-                      Flexible(
-                        flex: 9,
-                        child: _buildDriverCode,
-                      ),
-                      Flexible(
-                        flex: 3,
-                        child: RaisedButton(
-                          child: Text('Colar'),
-                          onPressed: () => Clipboard.getData('text/plain').then((res) {
-                            _child.driverCode = res.text;
-                            _driverCodeController.text = res.text;
-                          }),
+    return BlockUI(
+      blockUIController: _blockUIStream,
+      child: Scaffold(
+        bottomNavigationBar: DefaultPadding(
+          child: DefaultButton(text: 'SALVAR', function: () => _submit(context)),
+        ),
+        body: DefaultPadding(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: 100,
+                    ),
+                    _buildNameField,
+                    _buildSchoolField,
+                    _buildPeriodoField,
+                    BirthDate(_child),
+                    Row(
+                      children: <Widget>[
+                        Flexible(
+                          flex: 9,
+                          child: _buildDriverCode,
                         ),
-                      ),
-                    ],
-                  )
-                ],
+                        Flexible(
+                          flex: 3,
+                          child: RaisedButton(
+                            child: Text('Colar'),
+                            onPressed: () => Clipboard.getData('text/plain').then((res) {
+                              _child.driverCode = res.text;
+                              _driverCodeController.text = res.text;
+                            }),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -117,10 +127,12 @@ class ChildFormPage extends StatelessWidget {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
 
+    _blockUIStream.add(true);
     final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
+      await Future.delayed(Duration(seconds: 3));
       _child.status = ChildStatusEnum.LEFT_HOME;
       _child.responsible = userProvider.user;
       await _childService.saveChild(_child);
@@ -129,6 +141,8 @@ class ChildFormPage extends StatelessWidget {
     } on ResourceException catch(err, stack) {
       _toast.show(err.msg, context);
       Catcher.reportCheckedError(err, stack);
+    } finally {
+      _blockUIStream.add(false);
     }
   }
 }

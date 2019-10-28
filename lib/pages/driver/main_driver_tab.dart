@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter/gestures.dart';
@@ -12,6 +14,7 @@ import '../../services/routes_service.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
+import '../../widgets/block_ui.dart';
 import './home_driver_tab.dart';
 
 class MainDriverTab extends StatefulWidget {
@@ -25,21 +28,26 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   final RoutesService _routesService = RoutesService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  TabController _tabController;
 
-  final List<Widget> _myTabs = [
-    HomeDriverPage(),
-    Container(color: Colors.blue),
-  ];
+  StreamController<bool> _blockUIStream;
+  TabController _tabController;
+  List<Widget> _myTabs;
 
   @override
   void initState() {
+    _blockUIStream = StreamController.broadcast();
+    _myTabs = [
+      HomeDriverPage(_blockUIStream),
+      Container(color: Colors.blue),
+    ];
     _tabController = TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
+
     super.initState();
   }
 
   @override
   void dispose() {
+    _blockUIStream.close();
     _tabController.dispose();
     super.dispose();
   }
@@ -48,58 +56,61 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   DefaultTabController build(BuildContext context) {
     return DefaultTabController(
       length: _myTabs.length,
-      child: Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          centerTitle: true,
-          title: Text(
-            Environment.APP_NAME,
-            style: TextStyle(
-              color: Theme.of(context).primaryColor
+      child: BlockUI(
+        blockUIController: _blockUIStream,
+        child: Scaffold(
+          key: _scaffoldKey,
+          appBar: AppBar(
+            automaticallyImplyLeading: false,
+            centerTitle: true,
+            title: Text(
+              Environment.APP_NAME,
+              style: TextStyle(
+                color: Theme.of(context).primaryColor
+              ),
             ),
+            backgroundColor: Colors.transparent,
+            actionsIconTheme: IconThemeData(
+              color: Theme.of(context).primaryColor,
+            ),
+            iconTheme: IconThemeData(
+              color: Theme.of(context).primaryColor,
+            ),
+            elevation: 0,
           ),
-          backgroundColor: Colors.transparent,
-          actionsIconTheme: IconThemeData(
-            color: Theme.of(context).primaryColor,
-          ),
-          iconTheme: IconThemeData(
-            color: Theme.of(context).primaryColor,
-          ),
-          elevation: 0,
-        ),
-        floatingActionButton: Consumer<DriverProvider>(
-          builder: (_, final DriverProvider provider, __) =>
-            SpeedDial(
-              animatedIcon: AnimatedIcons.menu_close,
-              backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
-              children: [
+          floatingActionButton: Consumer<DriverProvider>(
+            builder: (_, final DriverProvider provider, __) =>
+              SpeedDial(
+                animatedIcon: AnimatedIcons.menu_close,
+                backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
+                children: [
 //                SpeedDialChild(
 //                  onTap: () => _onStarDriving(provider.itinerary),
 //                  backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
 //                  child: Icon(_isSharing(provider.itinerary) ? Icons.gps_off : Icons.gps_fixed),
 //                  label: _isSharing(provider.itinerary) ? 'Parar Viagem' : 'Iniciar Viagem',
 //                ),
-                SpeedDialChild(
-                  onTap: _onCreatingItinerary,
-                  backgroundColor: Colors.green,
-                  child: Icon(Icons.add),
-                  label: 'Novo itinerário'
-                ),
-                SpeedDialChild(
-                  onTap: () => _authService.logout(context),
-                  backgroundColor: Colors.red,
-                  child: Icon(Icons.close),
-                  label: 'Sair'
-                )
-              ],
-            ),
-        ),
-        bottomNavigationBar: _buildTabBar(context),
-        body: TabBarView(
-          controller: _tabController,
-          dragStartBehavior: DragStartBehavior.down,
-          children: _myTabs,
+                  SpeedDialChild(
+                    onTap: _onCreatingItinerary,
+                    backgroundColor: Colors.green,
+                    child: Icon(Icons.add),
+                    label: 'Novo itinerário'
+                  ),
+                  SpeedDialChild(
+                    onTap: () => _authService.logout(context),
+                    backgroundColor: Colors.red,
+                    child: Icon(Icons.close),
+                    label: 'Sair'
+                  )
+                ],
+              ),
+          ),
+          bottomNavigationBar: _buildTabBar(context),
+          body: TabBarView(
+            controller: _tabController,
+            dragStartBehavior: DragStartBehavior.down,
+            children: _myTabs,
+          ),
         ),
       ),
     );
@@ -171,7 +182,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   void _onItinerarySelected(final Picker picker, final Itinerary itinerary) {
     final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
     picker.doCancel(context);
-    _driverService.initItinerary(context, driverProvider, itinerary);
+    _driverService.initItinerary(context, driverProvider, itinerary, _blockUIStream);
   }
 
   Future<void> _onCreatingItinerary() async {

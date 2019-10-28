@@ -10,12 +10,14 @@ class BlockUI extends StatelessWidget {
 
   final String flarePath;
   final String flareAnimation;
+  final Color bgColor;
 
   BlockUI({
     @required this.child,
     @required this.blockUIController,
     this.flarePath = 'assets/flare/loading_circle.flr',
     this.flareAnimation = 'Untitled',
+    this.bgColor,
   }) : assert(child != null),
       assert(blockUIController != null);
 
@@ -35,7 +37,7 @@ class BlockUI extends StatelessWidget {
       children: <Widget>[
         child,
         if (snap.data == true) Container(
-          color: Theme.of(context).primaryColor.withOpacity(0.8),
+          color: bgColor == null ? Theme.of(context).primaryColor.withOpacity(0.8) : bgColor,
           height: height,
           width: width,
           child: FlareActor(
