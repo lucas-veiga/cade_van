@@ -18,4 +18,9 @@ class ChildProvider with ChangeNotifier {
   }
 
   void emptyChildren() => _children.clear();
+
+  void logout() {
+    _children.clear();
+    notifyListeners();
+  }
 }

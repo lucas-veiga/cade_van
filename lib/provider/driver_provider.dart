@@ -43,4 +43,11 @@ class DriverProvider with ChangeNotifier {
       return;
     }
   }
+
+  void logout() {
+    _drivers.clear();
+    _itinerary.clear();
+    _driverLocation = DriverLocation();
+    notifyListeners();
+  }
 }

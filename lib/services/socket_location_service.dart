@@ -36,7 +36,7 @@ class SocketLocationService {
   static StreamSubscription<LocationData> _streamSubscriptionLocation;
 
   static Future<void> init(final UserProvider userProvider, [ final Itinerary itinerary ]) async {
-    isDisconnected();
+    isConnected();
     try {
       _webSocket = WebSocket();
       _stomp = await _webSocket.connect(Environment.SOCKET);
@@ -50,9 +50,11 @@ class SocketLocationService {
 
   static void close([final bool closeConnections = true]) {
     if (closeConnections) {
-      _isConnected();
-      _isSharingLocation();
-      _streamSubscriptionLocation.cancel();
+      isDisconnected();
+      if (_isSharingLocation()) {
+        _streamSubscriptionLocation.cancel();
+        _streamSubscriptionLocation = null;
+      }
       _stomp.disconnect();
     }
 
@@ -64,7 +66,7 @@ class SocketLocationService {
   }
 
   static void sendLocation([final bool isDriving = true]) {
-    _isConnected();
+    isDisconnected();
     if (!isDriving) {
       _streamSubscriptionLocation.cancel();
       _streamSubscriptionLocation = null;
@@ -75,7 +77,7 @@ class SocketLocationService {
   }
 
   static void listenLocation(final BuildContext context) {
-    _isConnected();
+    isDisconnected();
     final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
     _userProvider.myDrivers
@@ -89,14 +91,24 @@ class SocketLocationService {
     });
   }
 
-  static bool isDisconnected([final bool throwException = true]) {
+  static bool isConnected([final bool throwException = true]) {
     if (throwException) {
-      if (_webSocket != null || (_stomp != null && !_stomp.isDisconnected)) {
-        throw ServiceException('Feche a conexao do socket antes de abri outra');
+      if (_webSocket != null && (_stomp != null && !_stomp.isDisconnected)) {
+        throw ServiceException('Ja existe uma conexao do socket aberta');
       }
     }
 
     return _webSocket != null || (_stomp != null && !_stomp.isDisconnected);
+  }
+
+  static bool isDisconnected([final bool throwException = true]) {
+    if (throwException) {
+      if (_webSocket == null && _stomp == null) {
+        throw ServiceException('Nenhuma conexao do socket foi iniciada');
+      }
+    }
+
+    return _webSocket == null && _stomp == null;
   }
 
   static _handleLocationChanging(final LocationData position, final bool isDriving) {
@@ -116,15 +128,8 @@ class SocketLocationService {
     _stomp.sendJson(_buildSendEventMessage(position), driverLocationMap);
   }
 
-  static void _isConnected() {
-    if (_webSocket == null || _stomp == null) {
-      throw ServiceException('Nenhum Socket iniciado');
-    }
-  }
-  static void _isSharingLocation() {
-    if (_streamSubscriptionLocation == null) {
-      throw ServiceException('Usuario nao esta compartilhando localizacao');
-    }
+  static bool _isSharingLocation() {
+    return _streamSubscriptionLocation != null;
   }
 
   static Future<void> _handleReceivingMsg(final DriverProvider driverProvider, final BuildContext context, final dynamic message) async {

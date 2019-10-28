@@ -6,13 +6,18 @@ import 'package:provider/provider.dart';
 
 import '../provider/user_provider.dart';
 import '../provider/child_provider.dart';
+import '../provider/driver_provider.dart';
 
 import '../models/token.dart';
 import '../models/user.dart';
+import '../models/itinerary.dart';
 
 import './user_service.dart';
 import './child_service.dart';
 import './service_exception.dart';
+import './responsible_service.dart';
+import './driver_service.dart';
+import './socket_location_service.dart';
 
 import '../resource/auth_resource.dart';
 import './routes_service.dart';
@@ -20,22 +25,21 @@ import './routes_service.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
-  final UserService _userService    = UserService();
-  final ChildService _childService  = ChildService();
-  final AuthResource _authResource  = AuthResource();
+  final UserService _userService                = UserService();
+  final ChildService _childService              = ChildService();
+  final AuthResource _authResource              = AuthResource();
+  final ResponsibleService _responsibleService  = ResponsibleService();
+  final DriverService _driverService            = DriverService();
 
   final FirebaseMessaging _fcm      = FirebaseMessaging();
 
   Future<void> login(final User user, final BuildContext context, [final bool delay = false]) async {
-    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
-
     if (delay) {
       await Future.delayed(Duration(seconds: 3));
     }
     try {
       await _handleToken(user);
-      final userFromServer = await _handleUser(userProvider, childProvider, user);
+      final userFromServer = await _handleUser(context);
       _handleHomePage(userFromServer, context);
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
@@ -44,10 +48,20 @@ class AuthService {
   }
 
   Future<void> logout(final BuildContext context) async {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+    final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
+
     try {
       final preferences = await SharedPreferences.getInstance();
       final res = await preferences.remove(Token.TOKEN_KEY);
       if (res) {
+        userProvider.logout();
+        childProvider.logout();
+        driverProvider.logout();
+        if (SocketLocationService.isConnected(false)) {
+          SocketLocationService.close();
+        }
         Navigator.pushReplacementNamed(context, RoutesService.AUTH_PAGE);
       } else {
         throw ServiceException('Não foi possível navegar para AUTH_PAGE');
@@ -71,6 +85,26 @@ class AuthService {
     }
   }
 
+  Future<void> initListeningLocation(final UserProvider userProvider, final BuildContext context) async {
+    await SocketLocationService.init(userProvider);
+    SocketLocationService.listenLocation(context);
+  }
+
+  Future<void> initItinerary(final List<Itinerary> list, final UserProvider userProvider, final BuildContext context) async{
+    final hasItineraryActivated = list.any((item) => item.isAtivo == true);
+    if (hasItineraryActivated) {
+      await _driverService.checkGPSPermission(context);
+      final isConnected = SocketLocationService.isConnected(false);
+      final itineraryActivated = list.singleWhere((item) => item.isAtivo == true);
+      if (isConnected) {
+        SocketLocationService.close();
+      }
+      await SocketLocationService.init(userProvider, itineraryActivated);
+      SocketLocationService.sendLocation();
+      await _childService.updateStatusWaiting(itineraryActivated.id);
+    }
+  }
+
   Future<void> _handleToken(final User user) async {
     final token = await _authResource.login(user);
     final tokenJSON = Token.toJSON(token);
@@ -78,18 +112,29 @@ class AuthService {
     preferences.setString(Token.TOKEN_KEY, tokenJSON);
   }
 
-  Future<User> _handleUser(final UserProvider userProvider, final ChildProvider childProvider, final User user) async {
-    final userFromServer = await _userService.getUserLoggedIn();
+  Future<User> _handleUser(final BuildContext context) async {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+    final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
+
+    final user = await _userService.getUserLoggedIn();
     _userService.setCurrentUser(userProvider, user);
-    await _childService.setAllChildren(childProvider);
-    return userFromServer;
+
+    if (user.type == UserTypeEnum.RESPONSIBLE) {
+      await _childService.setAllChildren(childProvider);
+      await _responsibleService.setMyDrivers(userProvider);
+      await initListeningLocation(userProvider, context);
+    } else {
+      final list = await _driverService.setAllItinerary(driverProvider);
+      initItinerary(list, userProvider, context);
+    }
+    return user;
   }
 
   void _handleHomePage(final User userFromServer, final BuildContext context) async {
-
     String fcmToken = await _fcm.getToken();
-    print('TOKENNNNNNNNNNNNNNNNNNN' + fcmToken);
-    _fcm.configure(
+    print('TOKENNNNNNNNNNNNNNNNNNN\t' + fcmToken);
+    _fcm?.configure(
       onMessage: (Map<String, dynamic> message) async {
         print("onMessage: $message");
       },
@@ -102,6 +147,7 @@ class AuthService {
 //         TODO optional
       },
     );
+
     if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
       Navigator.pushReplacementNamed(context, RoutesService.HOME_RESPONSIBLE_PAGE);
     } else if (userFromServer.type == UserTypeEnum.DRIVER) {

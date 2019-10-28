@@ -88,10 +88,10 @@ class StartUpService {
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
         await _responsibleService.setMyDrivers(userProvider);
-        await _initListeningLocation(userProvider, context);
+        await _authService.initListeningLocation(userProvider, context);
       } else {
         final list = await _driverService.setAllItinerary(driverProvider);
-        _initItinerary(list, userProvider, context);
+        _authService.initItinerary(list, userProvider, context);
       }
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {
@@ -105,25 +105,5 @@ class StartUpService {
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
     }
-  }
-
-  Future<void> _initItinerary(final List<Itinerary> list, final UserProvider userProvider, final BuildContext context) async{
-    final hasItineraryActivated = list.any((item) => item.isAtivo == true);
-    if (hasItineraryActivated) {
-      await _driverService.checkGPSPermission(context);
-      final isConnected = SocketLocationService.isDisconnected(false);
-      final itineraryActivated = list.singleWhere((item) => item.isAtivo == true);
-      if (isConnected) {
-        SocketLocationService.close();
-      }
-      await SocketLocationService.init(userProvider, itineraryActivated);
-      SocketLocationService.sendLocation();
-      await _childService.updateStatusWaiting(itineraryActivated.id);
-    }
-  }
-
-  Future<void> _initListeningLocation(final UserProvider userProvider, final BuildContext context) async {
-    await SocketLocationService.init(userProvider);
-    SocketLocationService.listenLocation(context);
   }
 }

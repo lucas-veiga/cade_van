@@ -47,6 +47,12 @@ class UserProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void logout() {
+    _user = User.empty();
+    _myDrivers.clear();
+    notifyListeners();
+  }
+
   @override
   String toString() {
     return _user.toString();
