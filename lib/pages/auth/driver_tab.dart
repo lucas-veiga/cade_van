@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,10 +22,13 @@ class DriverTab extends StatelessWidget {
   final AuthService _authService = AuthService();
   final UserService _userService = UserService();
 
+  final StreamController<bool> _isLoadingStream;
   final CustomMask _customMask = CustomMask();
   final Toast _toast = Toast();
   final User _user = User.empty();
   static final GlobalKey<FormState> _formKey = GlobalKey();
+
+  DriverTab(this._isLoadingStream);
 
   @override
   DefaultPadding build(BuildContext context) {
@@ -117,12 +122,15 @@ class DriverTab extends StatelessWidget {
     if (!_formKey.currentState.validate()) return;
     _formKey.currentState.save();
     _user.type = UserTypeEnum.DRIVER;
+    _isLoadingStream.add(true);
     try {
-      await _userService.create(_user);
+      await _userService.create(_user, true);
       await _authService.login(_user, context);
     } on ResourceException catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       _toast.show(err.msg, context);
+    } finally {
+      _isLoadingStream.add(false);
     }
   }
 }

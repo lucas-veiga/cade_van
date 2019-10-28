@@ -26,10 +26,13 @@ class AuthService {
 
   final FirebaseMessaging _fcm      = FirebaseMessaging();
 
-  Future<void> login(final User user, final BuildContext context) async {
+  Future<void> login(final User user, final BuildContext context, [final bool delay = false]) async {
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
 
+    if (delay) {
+      await Future.delayed(Duration(seconds: 3));
+    }
     try {
       await _handleToken(user);
       final userFromServer = await _handleUser(userProvider, childProvider, user);

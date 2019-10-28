@@ -1,9 +1,10 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
+import './landing.dart';
 import './signIn.dart';
 import './signUp.dart';
-import './landing.dart';
 
 class MainAuthPage extends StatefulWidget {
   static final int landPage = 1, signIn = 0, signUp = 2;
@@ -13,20 +14,26 @@ class MainAuthPage extends StatefulWidget {
 }
 
 class _MainAuthPageState extends State<MainAuthPage> {
-  static final StreamController<bool> _isLoadingStream = StreamController<bool>.broadcast();
-
   static final PageController _pageController =
-      PageController(initialPage: MainAuthPage.landPage);
+  PageController(initialPage: MainAuthPage.landPage);
 
-  final List<Widget> _pages = [
-    SignIn(_pageController, _isLoadingStream),
-    LandingPage(_pageController),
-    SignUp(_pageController, _isLoadingStream),
-  ];
+  StreamController<bool> _isLoadingStream;
+  List<Widget> _pages;
 
   @override
+  void initState() {
+    _isLoadingStream = StreamController<bool>.broadcast();
+    _pages = [
+      SignIn(_pageController, _isLoadingStream),
+      LandingPage(_pageController),
+      SignUp(_pageController, _isLoadingStream),
+    ];
+
+    super.initState();
+  }
+  @override
   void dispose() {
-    _isLoadingStream.close();
+    _isLoadingStream?.close();
     super.dispose();
   }
 
@@ -44,8 +51,8 @@ class _MainAuthPageState extends State<MainAuthPage> {
   PageView _loadPageView(AsyncSnapshot<bool> snap) {
     return PageView(
       physics: snap.hasData && snap.data
-          ? NeverScrollableScrollPhysics()
-          : BouncingScrollPhysics(),
+        ? NeverScrollableScrollPhysics()
+        : BouncingScrollPhysics(),
       controller: _pageController,
       children: _pages,
     );

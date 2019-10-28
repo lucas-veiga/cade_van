@@ -39,6 +39,7 @@ dependencies:
   stomp: ^0.8.0
   web_socket_channel: ^1.1.0
 
+  flare_flutter: ^1.6.2
   provider: ^3.1.0
   flutter_masked_text: ^0.8.0
   flutter_svg: ^0.14.0
@@ -71,6 +72,7 @@ flutter:
     - assets/images/responsible_image.svg
     - assets/images/driver_image.svg
     - assets/images/school_bus.png
+    - assets/flare/loading_circle.flr
   #  - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

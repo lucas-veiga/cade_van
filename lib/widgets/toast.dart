@@ -9,14 +9,14 @@ class Toast {
     {
       final ApplicationColorEnum backgroundColor = ApplicationColorEnum.ERROR,
       final Color backgroundColorCustom,
-      final int durationMilliseconds = 2,
+      final int durationSeconds = 2,
     }) {
 
     return Scaffold.of(context).showSnackBar(
       SnackBar(
-        duration: Duration(milliseconds: durationMilliseconds),
+        duration: Duration(seconds: durationSeconds),
         content: Text(
-          msg,
+          msg == null ? 'Default Message' : msg,
           textAlign: TextAlign.center,
         ),
         backgroundColor: _getBGColor(backgroundColor, backgroundColorCustom),

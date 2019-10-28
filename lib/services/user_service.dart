@@ -1,7 +1,4 @@
-import 'package:location/location.dart';
-
 import '../models/user.dart';
-
 import '../resource/user_resource.dart';
 import '../provider/user_provider.dart';
 import '../utils/token.dart';
@@ -11,7 +8,10 @@ class UserService {
 
   final TokenUtil _tokenUtil = TokenUtil();
 
-  Future<void> create(final User user) async{
+  Future<void> create(final User user, [final bool delay = false]) async {
+      if (delay) {
+        await Future.delayed(Duration(seconds: 3));
+      }
       await _userResource.createUser(user);
   }
 

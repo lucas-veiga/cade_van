@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../widgets/toast.dart';
 import '../../widgets/default_button.dart';
+import '../../widgets/block_ui.dart';
 
 import '../../utils/validations.dart';
 import '../../utils/default_padding.dart';
@@ -36,21 +37,24 @@ class SignIn extends StatelessWidget {
         );
         return Future.value(false);
       },
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: DefaultPadding(
-          child: Padding(
-            padding: EdgeInsets.only(top: _height / 2),
-            child: SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: <Widget>[
-                    _buildEmailField,
-                    _buildPasswordField,
-                    SizedBox(height: 20),
-                    DefaultButton(text: 'ENTRAR', function: () => _submit(context)),
-                  ],
+      child: BlockUI(
+        blockUIController: _isLoadingStream,
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          body: DefaultPadding(
+            child: Padding(
+              padding: EdgeInsets.only(top: _height / 2),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      _buildEmailField,
+                      _buildPasswordField,
+                      SizedBox(height: 20),
+                      DefaultButton(text: 'ENTRAR', function: () => _submit(context)),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -82,12 +86,15 @@ class SignIn extends StatelessWidget {
 
   void _submit(BuildContext context) async {
     if (!_formKey.currentState.validate()) return;
+    _isLoadingStream.add(true);
     _formKey.currentState.save();
     try {
       await _authService.login(_user, context);
     } on ResourceException catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       _toast.show(err.msg, context);
+    } finally {
+      _isLoadingStream.add(false);
     }
   }
 }
