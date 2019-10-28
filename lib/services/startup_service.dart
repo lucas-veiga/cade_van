@@ -36,7 +36,7 @@ class StartUpService {
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
   Widget handlePageLanding(final BuildContext context, final AsyncSnapshot<StartupState> snap) {
-    print('Iniciando handlePageLanding');
+    print('Iniciando handlePageLanding -> ${snap.data}');
     switch (snap.data) {
       case StartupState.BUSY:
         print('SETTING SPLASH SCREEN');
@@ -50,7 +50,7 @@ class StartUpService {
         print('SETTING AUTH PAGE');
         return MainAuthPage();
       default:
-        return MainAuthPage();
+        return SplashScreen();
     }
   }
 
@@ -59,6 +59,7 @@ class StartUpService {
     startupStatus.add(StartupState.BUSY);
 
     try {
+      await Future.delayed(Duration(seconds: 2));
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
