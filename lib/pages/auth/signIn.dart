@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 
 import '../../widgets/toast.dart';
@@ -11,7 +10,8 @@ import '../../utils/validations.dart';
 import '../../utils/default_padding.dart';
 
 import '../../services/auth_service.dart';
-import '../../resource/resource_exception.dart';
+import '../../services/service_exception.dart';
+
 import '../../models/user.dart';
 
 class SignIn extends StatelessWidget {
@@ -41,23 +41,26 @@ class SignIn extends StatelessWidget {
         blockUIController: _isLoadingStream,
         child: Scaffold(
           backgroundColor: Colors.white,
-          body: DefaultPadding(
-            child: Padding(
-              padding: EdgeInsets.only(top: _height / 2),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      _buildEmailField,
-                      _buildPasswordField,
-                      SizedBox(height: 20),
-                      DefaultButton(text: 'ENTRAR', function: () => _submit(context)),
-                    ],
+          body: Builder(
+            builder: (ctx) =>
+              DefaultPadding(
+                child: Padding(
+                  padding: EdgeInsets.only(top: _height / 2),
+                  child: SingleChildScrollView(
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        children: <Widget>[
+                          _buildEmailField,
+                          _buildPasswordField,
+                          SizedBox(height: 20),
+                          DefaultButton(text: 'ENTRAR', function: () => _submit(ctx)),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
           ),
         ),
       ),
@@ -90,8 +93,7 @@ class SignIn extends StatelessWidget {
     _formKey.currentState.save();
     try {
       await _authService.login(_user, context, true);
-    } on ResourceException catch(err, stack) {
-      Catcher.reportCheckedError(err, stack);
+    } on ServiceException catch(err) {
       _toast.show(err.msg, context);
     } finally {
       _isLoadingStream.add(false);

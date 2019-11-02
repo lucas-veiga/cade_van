@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../provider/user_provider.dart';
 import '../provider/child_provider.dart';
@@ -19,10 +20,10 @@ import './responsible_service.dart';
 import './driver_service.dart';
 import './socket_location_service.dart';
 
+import '../resource/resource_exception.dart';
 import '../resource/auth_resource.dart';
-import './routes_service.dart';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
+import './routes_service.dart';
 
 class AuthService {
   final UserService _userService                = UserService();
@@ -41,6 +42,8 @@ class AuthService {
       await _handleToken(user);
       final userFromServer = await _handleUser(context);
       _handleHomePage(userFromServer, context);
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg);
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('Error ao realizar login');
