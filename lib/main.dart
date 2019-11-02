@@ -57,6 +57,7 @@ class CadeVan extends StatelessWidget {
           onInit: () => _startUpService.beforeAppInit(_navigatorKey.currentState.overlay.context, _userProvider, _childProvider, _driverProvider),
           child: StreamBuilder<StartupState>(
             stream: _startUpService.startupStatus.stream,
+            initialData: StartupState.BUSY,
             builder: (BuildContext ctx, AsyncSnapshot<StartupState> snap) =>
               _startUpService.handlePageLanding(ctx, snap),
           ),

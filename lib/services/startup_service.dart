@@ -13,7 +13,6 @@ import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
 import '../provider/driver_provider.dart';
 
-import './socket_location_service.dart';
 import './child_service.dart';
 import './user_service.dart';
 import './auth_service.dart';
@@ -22,7 +21,6 @@ import './driver_service.dart';
 import './responsible_service.dart';
 
 import '../models/user.dart';
-import '../models/itinerary.dart';
 
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
@@ -36,28 +34,21 @@ class StartUpService {
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
   Widget handlePageLanding(final BuildContext context, final AsyncSnapshot<StartupState> snap) {
-    print('Iniciando handlePageLanding -> ${snap.data}');
     switch (snap.data) {
       case StartupState.BUSY:
-        print('SETTING SPLASH SCREEN');
         return SplashScreen();
       case StartupState.HOME_RESPONSIBLE_PAGE:
-        print('SETTING HOME PAGE');
         return MainResponsibleTab();
       case StartupState.HOME_DRIVER_PAGE:
         return MainDriverTab();
       case StartupState.AUTH_PAGE:
-        print('SETTING AUTH PAGE');
         return MainAuthPage();
       default:
-        return SplashScreen();
+        return MainAuthPage();
     }
   }
 
   Future<void> beforeAppInit(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
-    print('Iniciando beforeAppInit');
-    startupStatus.add(StartupState.BUSY);
-
     try {
       await Future.delayed(Duration(seconds: 2));
       final res = await _authService.canEnter();
@@ -68,12 +59,10 @@ class StartUpService {
         }
         case false: {
           startupStatus.add(StartupState.AUTH_PAGE);
-          print('Adding AUTH PAGE - false');
           break;
         }
         default: {
           startupStatus.add(StartupState.AUTH_PAGE);
-          print('Adding AUTH PAGE - default');
           break;
         }
       }
@@ -104,6 +93,7 @@ class StartUpService {
       }
       print('Adding HOME PAGE');
     } catch (err, stack) {
+      startupStatus.add(StartupState.AUTH_PAGE);
       Catcher.reportCheckedError(err, stack);
     }
   }
