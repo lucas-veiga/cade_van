@@ -1,5 +1,9 @@
 name: cade_van
-description: A new Flutter project.
+description: This is an Course Completion Work. The project goal is to track the whereabouts of school bus' drivers
+authors:
+  - Mateus Gomes da Silva Cardoso <mateus7532@gmail.com>
+  - Lucas Veiga <lucasveiga07@gmail.com>
+repository: https://github.com/lucas-veiga/cade_van
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
