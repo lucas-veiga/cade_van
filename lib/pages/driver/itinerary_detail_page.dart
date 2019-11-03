@@ -1,4 +1,3 @@
-import 'package:cade_van/utils/application_color.dart';
 import 'package:flutter/material.dart';
 
 import 'package:catcher/core/catcher.dart';
@@ -8,16 +7,19 @@ import 'package:provider/provider.dart';
 import '../../widgets/custom_divider.dart';
 import '../../widgets/default_button.dart';
 import '../../widgets/default_alert_dialog.dart';
+import '../../widgets/toast.dart';
 
 import '../../models/child.dart';
 import '../../models/itinerary.dart';
 
 import '../../services/driver_service.dart';
 import '../../services/child_service.dart';
+import '../../services/service_exception.dart';
 
+import '../../utils/application_color.dart';
 import '../../utils/default_padding.dart';
-import '../../provider/driver_provider.dart';
 
+import '../../provider/driver_provider.dart';
 class ItineraryDetailPage extends StatefulWidget {
   final Itinerary _itinerary;
   final bool isViewing;
@@ -32,6 +34,9 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
   final DriverService _driverService  = DriverService();
   final ChildService _childService    = ChildService();
 
+  final Toast _toast = Toast();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Scaffold build(BuildContext context) {
     return _scaffold(context);
@@ -40,10 +45,12 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
   Scaffold _scaffold(final BuildContext context) {
     if (widget.isViewing) {
       return Scaffold(
+        key: _scaffoldKey,
         body: _getBody(context),
       );
     }
     return Scaffold(
+      key: _scaffoldKey,
       bottomNavigationBar: DefaultPadding(
         noVertical: true,
         child: DefaultButton(
@@ -294,51 +301,55 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
   }
 
   Future<void> _deliveryChild(final Child child, [isOnTab = false]) async {
-    if (isOnTab) {
-      final answer = await showDialog(
-        context: context,
-        builder: (ctx) =>
-          DefaultAlertDialog(
-            ctx,
-            stringTitle: 'Tem certeza que entregou essa criança?',
-            stringTitleColor: ApplicationColorEnum.WARNING,
-            stringContent: _deliveryModalContent,
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Sim'),
-                onPressed: () => Navigator.pop(ctx, true),
-              ),
-              FlatButton(
-                child: Text('Ainda Não'),
-                onPressed: () => Navigator.pop(ctx, false),
-              )
-            ],
-          ),
-      );
+    try {
+      if (isOnTab) {
+        final answer = await showDialog(
+          context: context,
+          builder: (ctx) =>
+            DefaultAlertDialog(
+              ctx,
+              stringTitle: 'Tem certeza que entregou essa criança?',
+              stringTitleColor: ApplicationColorEnum.WARNING,
+              stringContent: _deliveryModalContent,
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Sim'),
+                  onPressed: () => Navigator.pop(ctx, true),
+                ),
+                FlatButton(
+                  child: Text('Ainda Não'),
+                  onPressed: () => Navigator.pop(ctx, false),
+                )
+              ],
+            ),
+        );
 
-      if (answer == null || answer == false) {
-        return;
+        if (answer == null || answer == false) {
+          return;
+        }
       }
+
+      final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
+
+      if (widget._itinerary.type == ItineraryTypeEnum.IDA) {
+        if (child.status == ChildStatusEnum.WAITING) {
+          child.status = ChildStatusEnum.GOING_SCHOOL;
+        } else if (child.status == ChildStatusEnum.GOING_SCHOOL) {
+          child.status = ChildStatusEnum.LEFT_SCHOOL;
+        }
+      } else {
+        if (child.status == ChildStatusEnum.WAITING) {
+          child.status = ChildStatusEnum.GOING_HOME;
+        } else if (child.status == ChildStatusEnum.GOING_HOME) {
+          child.status = ChildStatusEnum.LEFT_HOME;
+        }
+      }
+      final childSaved = await _childService.updateChild(child);
+      final index = widget._itinerary.itineraryChildren.indexWhere((item) => item.child == childSaved);
+      await _driverService.setAllItinerary(driverProvider);
+      setState(() => widget._itinerary.itineraryChildren[index].child = childSaved);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, _scaffoldKey.currentState.context);
     }
-
-    final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
-
-    if (widget._itinerary.type == ItineraryTypeEnum.IDA) {
-      if (child.status == ChildStatusEnum.WAITING) {
-        child.status = ChildStatusEnum.GOING_SCHOOL;
-      } else if (child.status == ChildStatusEnum.GOING_SCHOOL) {
-        child.status = ChildStatusEnum.LEFT_SCHOOL;
-      }
-    } else {
-      if (child.status == ChildStatusEnum.WAITING) {
-        child.status = ChildStatusEnum.GOING_HOME;
-      } else if (child.status == ChildStatusEnum.GOING_HOME) {
-        child.status = ChildStatusEnum.LEFT_HOME;
-      }
-    }
-    final childSaved = await _childService.updateChild(child);
-    final index = widget._itinerary.itineraryChildren.indexWhere((item) => item.child == childSaved);
-    await _driverService.setAllItinerary(driverProvider);
-    setState(() => widget._itinerary.itineraryChildren[index].child = childSaved);
   }
 }

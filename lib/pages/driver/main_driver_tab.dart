@@ -10,11 +10,14 @@ import 'package:flutter_picker/flutter_picker.dart';
 import '../../services/auth_service.dart';
 import '../../services/driver_service.dart';
 import '../../services/routes_service.dart';
+import '../../services/service_exception.dart';
+
+import '../../widgets/toast.dart';
+import '../../widgets/block_ui.dart';
 
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
-import '../../widgets/block_ui.dart';
 import './home_driver_tab.dart';
 
 class MainDriverTab extends StatefulWidget {
@@ -28,6 +31,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   final RoutesService _routesService = RoutesService();
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Toast _toast = Toast();
 
   StreamController<bool> _blockUIStream;
   TabController _tabController;
@@ -97,7 +101,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
                     label: 'Novo itinerário'
                   ),
                   SpeedDialChild(
-                    onTap: () => _authService.logout(context),
+                    onTap: _logout,
                     backgroundColor: Colors.red,
                     child: Icon(Icons.close),
                     label: 'Sair'
@@ -180,14 +184,29 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   }
 
   void _onItinerarySelected(final Picker picker, final Itinerary itinerary) {
-    final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
-    picker.doCancel(context);
-    _driverService.initItinerary(context, driverProvider, itinerary, _blockUIStream);
+    try {
+      final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
+      picker.doCancel(context);
+      _driverService.initItinerary(context, driverProvider, itinerary, _blockUIStream);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, _scaffoldKey.currentState.context);
+    }
   }
 
   Future<void> _onCreatingItinerary() async {
-    final children = await _driverService.findMyChildren();
-    _routesService.goToItineraryFormPage(context, children);
+    try {
+      final children = await _driverService.findMyChildren();
+      _routesService.goToItineraryFormPage(context, children);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, _scaffoldKey.currentState.context);
+    }
+  }
 
+  Future<void> _logout() async {
+    try {
+      await _authService.logout(_scaffoldKey.currentState.context);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, _scaffoldKey.currentState.context);
+    }
   }
 }

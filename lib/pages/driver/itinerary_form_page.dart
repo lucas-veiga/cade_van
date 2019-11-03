@@ -18,6 +18,8 @@ import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
 import '../../services/driver_service.dart';
+import '../../services/service_exception.dart';
+
 import '../../provider/driver_provider.dart';
 
 class ItineraryFormPage extends StatefulWidget {
@@ -35,14 +37,16 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
   final StreamController<bool> _blockUIStream = StreamController.broadcast();
   final Itinerary _itinerary = Itinerary()..type = ItineraryTypeEnum.IDA;
   final List<Child> _childrenSelected = [];
-  final GlobalKey<FormState> _formKey = GlobalKey();
   final Toast _toast = Toast();
+  final GlobalKey<FormState> _formKey = GlobalKey();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return BlockUI(
       blockUIController: _blockUIStream,
       child: Scaffold(
+        key: _scaffoldKey,
         bottomNavigationBar: Builder(
           builder: (ctx) => DefaultPadding(
             child: DefaultButton(text: 'SALVAR', function: () => _submit(ctx)),
@@ -283,11 +287,10 @@ class _ItineraryFormPageState extends State<ItineraryFormPage> {
       await _driverService.saveItinerary(_itinerary, true);
       await _driverService.setAllItinerary(driverProvider);
       Navigator.pop(context);
-    } catch(err, stack) {
-      Catcher.reportCheckedError(err, stack);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, _scaffoldKey.currentState.context);
     } finally {
       _blockUIStream.add(false);
     }
   }
-
 }
