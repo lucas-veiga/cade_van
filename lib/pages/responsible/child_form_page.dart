@@ -15,8 +15,8 @@ import '../../widgets/toast.dart';
 import '../../widgets/default_button.dart';
 import '../../widgets/block_ui.dart';
 
-import '../../resource/resource_exception.dart';
 import '../../services/child_service.dart';
+import '../../services/service_exception.dart';
 
 import '../../provider/child_provider.dart';
 import '../../provider/user_provider.dart';
@@ -138,9 +138,8 @@ class ChildFormPage extends StatelessWidget {
       await _childService.saveChild(_child);
       await _childService.setAllChildren(childProvider);
       Navigator.pop(context);
-    } on ResourceException catch(err, stack) {
+    } on ServiceException catch(err) {
       _toast.show(err.msg, context);
-      Catcher.reportCheckedError(err, stack);
     } finally {
       _blockUIStream.add(false);
     }

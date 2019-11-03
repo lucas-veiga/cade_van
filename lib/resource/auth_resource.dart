@@ -12,6 +12,7 @@ import '../environments/environment.dart';
 
 class AuthResource {
   static const String auth = Environment.LOGIN;
+  static const String DEFAULT_MESSAGE = 'Error ao ';
 
   final Dio _dio = DioConfig.dioDefault();
 
@@ -29,7 +30,7 @@ class AuthResource {
     } on DioError catch(err, stack) {
       if (err.response == null) {
         Catcher.reportCheckedError(err, stack);
-        throw ResourceException('Error ao pegar response do login', err);
+        throw ResourceException('$DEFAULT_MESSAGE pegar response do login', err);
       }
 
       if (err.response.statusCode == 401) {
@@ -37,10 +38,7 @@ class AuthResource {
       }
 
       Catcher.reportCheckedError(err, stack);
-      throw ResourceException('Error ao realizar requisição do login', err);
-    } catch (err, stack) {
-      Catcher.reportCheckedError(err, stack);
-      throw ResourceException('Error ao realizar login', err);
+      throw ResourceException('$DEFAULT_MESSAGE realizar requisição do login', err);
     }
   }
 }

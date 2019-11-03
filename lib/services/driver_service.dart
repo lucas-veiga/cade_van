@@ -13,86 +13,126 @@ import '../models/itinerary.dart';
 import './service_exception.dart';
 import './socket_location_service.dart';
 import './routes_service.dart';
+import './child_service.dart';
 
 import '../provider/driver_provider.dart';
 import '../provider/user_provider.dart';
 
-import '../widgets/default_alert_dialog.dart';
 
-import '../environments/environment.dart';
-import '../utils/application_color.dart';
 import '../resource/driver_resource.dart';
+import '../resource/resource_exception.dart';
 
-import './child_service.dart';
+import '../utils/application_color.dart';
+import '../environments/environment.dart';
+import '../socket/socket_exception.dart';
+import '../widgets/default_alert_dialog.dart';
 
 class DriverService {
   DriverResource _driverResource  = DriverResource();
   ChildService _childService      = ChildService();
   RoutesService _routesService    = RoutesService();
 
+  static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   Location _location = Location();
 
   Future<List<Child>> findMyChildren() async {
-    return await _driverResource.findMyChildren();
+    try {
+      return await _driverResource.findMyChildren();
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE pegar suas crianças', err);
+    }
   }
 
   Future<void> saveItinerary(final Itinerary itinerary, [final bool delay = false]) async {
     if (delay) {
       await Future.delayed(Duration(seconds: 3));
     }
-    final String itineraryJSON = json.encode(Itinerary.toJSON(itinerary));
-    await _driverResource.saveItinerary(itineraryJSON);
-    print('JSON -> $itinerary');
+    try {
+      final String itineraryJSON = json.encode(Itinerary.toJSON(itinerary));
+      await _driverResource.saveItinerary(itineraryJSON);
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE salvar o itinerário', err);
+    }
   }
 
   Future<Itinerary> findItinerary(final int itineraryId) async {
-    return await _driverResource.findItinerary(itineraryId);
+    try {
+      return await _driverResource.findItinerary(itineraryId);
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE encontrar o itinerário');
+    }
   }
 
   Future<List<Itinerary>> setAllItinerary(final DriverProvider driverProvider) async {
-    final list = await _driverResource.findAll();
-    driverProvider.emptyItinerary();
-    driverProvider.setItinerary(many: list);
-    return list;
+    try {
+      final list = await _driverResource.findAll();
+      driverProvider.emptyItinerary();
+      driverProvider.setItinerary(many: list);
+      return list;
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE encontrar todos os itinerários', err);
+    }
   }
 
   Future<void> initItinerary(final BuildContext context, final DriverProvider driverProvider, final Itinerary itinerary, final StreamController<bool> blockUIStream) async{
     print('\nINITING ITINARY!\n');
-    final hasItineraryActivated = driverProvider.itinerary.any((item) => item.isAtivo == true);
-    if (hasItineraryActivated) {
-      final itineraryActivated = driverProvider
-        .itinerary
-        .singleWhere((item) => item.isAtivo == true);
+     try {
+       final hasItineraryActivated = driverProvider.itinerary.any((item) => item.isAtivo == true);
+       if (hasItineraryActivated) {
+         final itineraryActivated = driverProvider
+           .itinerary
+           .singleWhere((item) => item.isAtivo == true);
 
-      if (itineraryActivated == itinerary) {
-        _routesService.goToItineraryDetail(context, itinerary);
-        return;
-      } else {
-        driverProvider.itinerary.singleWhere((item) => item.isAtivo == true);
-        await showDialog(
-          context: context,
-          builder: (final BuildContext ctx) =>
-            DefaultAlertDialog(
-              ctx,
-              stringTitle: 'Você já tem um itinerário em andamento',
-              stringTitleColor: ApplicationColorEnum.ERROR,
-              stringContent: 'O itinerário ${itineraryActivated.description} está ativo.\nFinalize o ${itineraryActivated.description} antes de inicar outro itinerário',
-            ),
-        );
-        return;
-      }
-    }
+         if (itineraryActivated == itinerary) {
+           _routesService.goToItineraryDetail(context, itinerary);
+           return;
+         } else {
+           driverProvider.itinerary.singleWhere((item) => item.isAtivo == true);
+           await showDialog(
+             context: context,
+             builder: (final BuildContext ctx) =>
+               DefaultAlertDialog(
+                 ctx,
+                 stringTitle: 'Você já tem um itinerário em andamento',
+                 stringTitleColor: ApplicationColorEnum.ERROR,
+                 stringContent: 'O itinerário ${itineraryActivated.description} está ativo.\nFinalize o ${itineraryActivated.description} antes de inicar outro itinerário',
+               ),
+           );
+           return;
+         }
+       }
 
-    await showDialog(
-      context: context,
-      builder: (final BuildContext ctx) =>
-        DefaultAlertDialog(
-          ctx,
-          stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
-          stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
-          actions: _buildModalInitItineraryActions(blockUIStream, context, ctx, itinerary),
-        ),
-    );
+       await showDialog(
+         context: context,
+         builder: (final BuildContext ctx) =>
+           DefaultAlertDialog(
+             ctx,
+             stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
+             stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
+             actions: _buildModalInitItineraryActions(blockUIStream, context, ctx, itinerary),
+           ),
+       );
+     } on ResourceException catch(err) {
+       throw ServiceException(err.msg, err);
+     } on SocketException catch(err, stack) {
+       Catcher.reportCheckedError(err, stack);
+       throw ServiceException('$DEFAULT_MESSAGE iniciar o socket', err);
+     } catch(err, stack) {
+       Catcher.reportCheckedError(err, stack);
+       throw ServiceException('$DEFAULT_MESSAGE iniciar o itinerário', err);
+     }
   }
 
   List<FlatButton> _buildModalInitItineraryActions(final StreamController<bool> blockUIStream, final BuildContext context, final BuildContext alertContext, final Itinerary itinerary) =>

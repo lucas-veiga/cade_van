@@ -1,6 +1,7 @@
-import 'package:cade_van/models/itinerary.dart';
+import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
+import '../models/itinerary.dart';
 import '../models/child.dart';
 
 import '../config/dio_config.dart';
@@ -10,6 +11,7 @@ import './resource_exception.dart';
 class DriverResource {
   static const String RESOURCE_URL = '${Environment.API_URL}/driver';
   static const String ITINERARY_RESOURCE = '${Environment.API_URL}/itinerary';
+  static const String DEFAULT_MESSAGE = 'Error ao ';
 
   final Dio _dio = DioConfig.withInterceptors();
 
@@ -23,8 +25,9 @@ class DriverResource {
       final children = List<Child>.from(untypedList);
       print('Response: \t$children');
       return children;
-    } on DioError catch(err) {
-        throw ResourceException('Error ao pegar suas criancas', err);
+    } on DioError catch(err, stack) {
+        Catcher.reportCheckedError(err, stack);
+        throw ResourceException('$DEFAULT_MESSAGE pegar suas criancas', err);
     }
   }
 
@@ -33,8 +36,9 @@ class DriverResource {
       print('POST Request to $ITINERARY_RESOURCE');
       print('Body: \t$itineraryJSON');
       await _dio.post(ITINERARY_RESOURCE, data: itineraryJSON);
-    } on DioError catch(err) {
-      throw ResourceException('Error ao salvar intinerario', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE salvar intinerario', err);
     }
   }
 
@@ -44,8 +48,9 @@ class DriverResource {
       print('GET Request to $url');
 
       await _dio.get(url);
-    } on DioError catch(err) {
-      throw ResourceException('Error ao iniciar itinerario | ItineraryId: $itineraryId', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE iniciar itinerario | ItineraryId: $itineraryId', err);
     }
   }
 
@@ -55,8 +60,9 @@ class DriverResource {
       print('GET Request to $url');
 
       await _dio.get(url);
-    } on DioError catch(err) {
-      throw ResourceException('Error ao finalizar itinerario | ItineraryId: $itineraryId', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE finalizar itinerario | ItineraryId: $itineraryId', err);
     }
   }
 
@@ -69,8 +75,9 @@ class DriverResource {
       final list = List<Itinerary>.from(untypedList);
       print('Response: \t$list');
       return list;
-    } on DioError catch(err) {
-      throw ResourceException('Error ao pegar todos intinerarios', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar todos intinerarios', err);
     }
   }
 
@@ -81,8 +88,9 @@ class DriverResource {
 
       final res = await _dio.get(url);
       return Itinerary.fromJSON(res.data);
-    } on DioError catch(err) {
-      throw ResourceException('Error ao pegar intinerario com id $itineraryId', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar intinerario com id $itineraryId', err);
     }
   }
 }

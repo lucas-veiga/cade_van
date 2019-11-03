@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:catcher/core/catcher.dart';
 
 import '../../utils/default_padding.dart';
 import '../../utils/validations.dart';
@@ -11,11 +10,11 @@ import '../../utils/mask.dart';
 
 import '../../services/auth_service.dart';
 import '../../services/user_service.dart';
+import '../../services/service_exception.dart';
 
 import '../../widgets/toast.dart';
 import '../../widgets/default_button.dart';
 
-import '../../resource/resource_exception.dart';
 import '../../models/user.dart';
 
 class DriverTab extends StatelessWidget {
@@ -126,8 +125,7 @@ class DriverTab extends StatelessWidget {
     try {
       await _userService.create(_user, true);
       await _authService.login(_user, context);
-    } on ResourceException catch(err, stack) {
-      Catcher.reportCheckedError(err, stack);
+    } on ServiceException catch(err) {
       _toast.show(err.msg, context);
     } finally {
       _isLoadingStream.add(false);

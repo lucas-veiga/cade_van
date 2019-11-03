@@ -1,3 +1,4 @@
+import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
 import '../config/dio_config.dart';
@@ -7,6 +8,7 @@ import '../models/user.dart';
 
 class ResponsibleResource {
   static const String RESOURCE_URL = '${Environment.API_URL}/responsible';
+  static const String DEFAULT_MESSAGE = 'Error ao ';
 
   final Dio _dio = DioConfig.withInterceptors();
 
@@ -19,8 +21,9 @@ class ResponsibleResource {
       final untypedList = res.data.map((item) => User.fromJSON(item)).toList();
       final drivers = List<User>.from(untypedList);
       return drivers.map((item) => item..type = UserTypeEnum.DRIVER).toList();
-    } on DioError catch (err) {
-      throw ResourceException('Error ao pegar seus motoristas', err);
+    } on DioError catch (err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar seus motoristas', err);
     }
   }
 }

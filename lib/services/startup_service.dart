@@ -21,6 +21,8 @@ import './driver_service.dart';
 import './responsible_service.dart';
 
 import '../models/user.dart';
+import '../resource/resource_exception.dart';
+import '../socket/socket_exception.dart';
 
 enum StartupState { BUSY, ERROR, HOME_RESPONSIBLE_PAGE, HOME_DRIVER_PAGE, AUTH_PAGE }
 
@@ -31,6 +33,7 @@ class StartUpService {
   final DriverService _driverService                 = DriverService();
   final ResponsibleService _responsibleService       = ResponsibleService();
 
+  static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
 
   Widget handlePageLanding(final BuildContext context, final AsyncSnapshot<StartupState> snap) {
@@ -66,9 +69,14 @@ class StartUpService {
           break;
         }
       }
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } on SocketException catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE iniciar o socket no start-up', err);
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
-      throw ServiceException('Erro ao inicar o aplicativo', err);
+      throw ServiceException('$DEFAULT_MESSAGE fazer o start-up correto do App', err);
     }
   }
 

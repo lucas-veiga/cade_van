@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:dio/dio.dart';
 
 import '../models/user.dart';
@@ -9,6 +10,7 @@ import './resource_exception.dart';
 
 class UserResource {
   static const String RESOURCE_URL = '${Environment.API_URL}/user';
+  static const String DEFAULT_MESSAGE = 'Error ao ';
 
   final Dio _dioWithInterceptors = DioConfig.withInterceptors();
   final Dio _dio = DioConfig.dioDefault();
@@ -22,30 +24,33 @@ class UserResource {
       final userMap = User.toJSON(user);
       final userJson = json.encode(userMap);
       await _dio.post(url, data: userJson);
-    } on DioError catch(err) {
+    } on DioError catch(err, stack) {
       if (err.response == null) {
-        throw ResourceException('Algo deu errado ao criar conta', err);
-      } else if (err.response.statusCode == 400) {
-        throw ResourceException(err.error, err);
-      } else {
-        throw ResourceException('Error ao realizar requet para criar conta', err);
+        Catcher.reportCheckedError(err, stack);
+        throw ResourceException('$DEFAULT_MESSAGE ao criar conta', err);
       }
-    } catch (err) {
-      throw ResourceException('Error ao criar conta', err);
+
+      if (err.response.statusCode == 400) {
+        throw ResourceException(err.response.data['message'], err);
+      }
+
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE realizar requet para criar conta', err);
     }
   }
 
   Future<User> getUser(final String email) async {
-      try {
-        final url = '$RESOURCE_URL/$email';
-        print('GET Request to $url');
+    try {
+      final url = '$RESOURCE_URL/$email';
+      print('GET Request to $url');
 
-        final res = await _dioWithInterceptors.get(url);
-        final user = User.fromJSON(res.data);
-        return user;
-      } on DioError catch(err) {
-        throw ResourceException('Error ao pegar usuario', err);
-      }
+      final res = await _dioWithInterceptors.get(url);
+      final user = User.fromJSON(res.data);
+      return user;
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar usuario', err);
+    }
   }
 
   Future<User> getUserLoggedIn() async {
@@ -55,8 +60,9 @@ class UserResource {
 
       final res = await _dioWithInterceptors.get(url);
       return User.fromJSON(res.data);
-    } on DioError catch(err) {
-      throw ResourceException('Error ao pegar usuario logado', err);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar usuario', err);
     }
   }
 }

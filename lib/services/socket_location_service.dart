@@ -14,11 +14,11 @@ import '../provider/child_provider.dart';
 
 import '../socket/web_socket.dart';
 import '../socket/socket_events.dart';
+import '../socket/socket_exception.dart';
 
 import '../models/driver_location.dart';
 import '../models/itinerary.dart';
 
-import './service_exception.dart';
 import './child_service.dart';
 
 import '../environments/environment.dart';
@@ -44,7 +44,7 @@ class SocketLocationService {
       _itinerary = itinerary;
     } catch (err) {
       close(false);
-      throw ServiceException('Erro ao abrir conexcao Socket', err);
+      throw SocketException('Erro ao abrir conexcao Socket', err);
     }
   }
 
@@ -80,8 +80,8 @@ class SocketLocationService {
     isDisconnected();
     final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
 
-    _userProvider.myDrivers
-      .forEach((item) {
+    _userProvider?.myDrivers
+      ?.forEach((item) {
       final randId = new Random().nextInt(9999).toString();
       _stomp.subscribeJson(
         randId,
@@ -94,7 +94,7 @@ class SocketLocationService {
   static bool isConnected([final bool throwException = true]) {
     if (throwException) {
       if (_webSocket != null && (_stomp != null && !_stomp.isDisconnected)) {
-        throw ServiceException('Ja existe uma conexao do socket aberta');
+        throw SocketException('Ja existe uma conexao do socket aberta');
       }
     }
 
@@ -104,7 +104,7 @@ class SocketLocationService {
   static bool isDisconnected([final bool throwException = true]) {
     if (throwException) {
       if (_webSocket == null && _stomp == null) {
-        throw ServiceException('Nenhuma conexao do socket foi iniciada');
+        throw SocketException('Nenhuma conexao do socket foi iniciada');
       }
     }
 
@@ -113,11 +113,11 @@ class SocketLocationService {
 
   static _handleLocationChanging(final LocationData position, final bool isDriving) {
     if (position == null) {
-      throw ServiceException('Nao foi possivel pegar a localizacao do usuario');
+      throw SocketException('Nao foi possivel pegar a localizacao do usuario');
     }
 
     if (_itinerary == null) {
-      throw ServiceException('Itinerario nao foi informado!');
+      throw SocketException('Itinerario nao foi informado!');
     }
 
     final driverLocationMap =

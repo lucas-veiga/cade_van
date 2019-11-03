@@ -23,6 +23,7 @@ import './socket_location_service.dart';
 import '../resource/resource_exception.dart';
 import '../resource/auth_resource.dart';
 
+import '../socket/socket_exception.dart';
 import './routes_service.dart';
 
 class AuthService {
@@ -32,6 +33,7 @@ class AuthService {
   final ResponsibleService _responsibleService  = ResponsibleService();
   final DriverService _driverService            = DriverService();
 
+  static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   final FirebaseMessaging _fcm      = FirebaseMessaging();
 
   Future<void> login(final User user, final BuildContext context, [final bool delay = false]) async {
@@ -43,10 +45,10 @@ class AuthService {
       final userFromServer = await _handleUser(context);
       _handleHomePage(userFromServer, context);
     } on ResourceException catch(err) {
-      throw ServiceException(err.msg);
+      throw ServiceException(err.msg, err);
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
-      throw ServiceException('Error ao realizar login');
+      throw ServiceException('$DEFAULT_MESSAGE realizar login', err);
     }
   }
 
@@ -67,11 +69,11 @@ class AuthService {
         }
         Navigator.pushReplacementNamed(context, RoutesService.AUTH_PAGE);
       } else {
-        throw ServiceException('Não foi possível navegar para AUTH_PAGE');
+        throw ServiceException('$DEFAULT_MESSAGE navegar para pagina de login');
       }
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
-      throw ServiceException('Error ao sair conta');
+      throw ServiceException('$DEFAULT_MESSAGE sair conta', err);
     }
   }
 
@@ -84,27 +86,44 @@ class AuthService {
       return token.payload.exp.isAfter(DateTime.now());
     } catch (err, stack) {
       Catcher.reportCheckedError(err, stack);
-      throw ServiceException('Error ao verificar o token');
+      throw ServiceException('$DEFAULT_MESSAGE verificar o JWT', err);
     }
   }
 
   Future<void> initListeningLocation(final UserProvider userProvider, final BuildContext context) async {
-    await SocketLocationService.init(userProvider);
-    SocketLocationService.listenLocation(context);
+    try {
+      await SocketLocationService.init(userProvider);
+      SocketLocationService.listenLocation(context);
+    } on SocketException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE iniciar compartilhamento da localização', err);
+    }
   }
 
   Future<void> initItinerary(final List<Itinerary> list, final UserProvider userProvider, final BuildContext context) async{
-    final hasItineraryActivated = list.any((item) => item.isAtivo == true);
-    if (hasItineraryActivated) {
-      await _driverService.checkGPSPermission(context);
-      final isConnected = SocketLocationService.isConnected(false);
-      final itineraryActivated = list.singleWhere((item) => item.isAtivo == true);
-      if (isConnected) {
-        SocketLocationService.close();
+    try {
+      final hasItineraryActivated = list.any((item) => item.isAtivo == true);
+      if (hasItineraryActivated) {
+        await _driverService.checkGPSPermission(context);
+        final isConnected = SocketLocationService.isConnected(false);
+        final itineraryActivated = list.singleWhere((item) => item.isAtivo == true);
+        if (isConnected) {
+          SocketLocationService.close();
+        }
+        await SocketLocationService.init(userProvider, itineraryActivated);
+        SocketLocationService.sendLocation();
+        await _childService.updateStatusWaiting(itineraryActivated.id);
       }
-      await SocketLocationService.init(userProvider, itineraryActivated);
-      SocketLocationService.sendLocation();
-      await _childService.updateStatusWaiting(itineraryActivated.id);
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } on SocketException catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE iniciar o socket', err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE iniciar o itinerário', err);
     }
   }
 
@@ -158,6 +177,5 @@ class AuthService {
     } else {
       throw ServiceException('UserType Not Found');
     }
-
   }
 }
