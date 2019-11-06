@@ -34,7 +34,7 @@ class AuthResource {
       }
 
       if (err.response.statusCode == 401) {
-        throw new ResourceException(err.response.data['message'], err);
+        throw new ResourceException.fromServer(err);
       }
 
       Catcher.reportCheckedError(err, stack);

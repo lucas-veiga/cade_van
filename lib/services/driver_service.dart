@@ -119,7 +119,7 @@ class DriverService {
          builder: (final BuildContext ctx) =>
            DefaultAlertDialog(
              ctx,
-             stringTitle: 'Iniciar o itineraio: ${itinerary.description}',
+             stringTitle: 'Iniciar o itinerário: ${itinerary.description}',
              stringContent: 'Tem certeza certeza que quer iniciar uma viagem?',
              actions: _buildModalInitItineraryActions(blockUIStream, context, ctx, itinerary),
            ),

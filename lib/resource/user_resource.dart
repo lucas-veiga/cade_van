@@ -31,7 +31,7 @@ class UserResource {
       }
 
       if (err.response.statusCode == 400) {
-        throw ResourceException(err.response.data['message'], err);
+        throw ResourceException.fromServer(err);
       }
 
       Catcher.reportCheckedError(err, stack);

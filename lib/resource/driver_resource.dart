@@ -49,6 +49,15 @@ class DriverResource {
 
       await _dio.get(url);
     } on DioError catch(err, stack) {
+      if (err.response == null) {
+        Catcher.reportCheckedError(err, stack);
+        throw ResourceException('$DEFAULT_MESSAGE pegar a resposta do initItinerary', err);
+      }
+
+      if (err.response.statusCode == 400) {
+        throw new ResourceException.fromServer(err);
+      }
+
       Catcher.reportCheckedError(err, stack);
       throw ResourceException('$DEFAULT_MESSAGE iniciar itinerario | ItineraryId: $itineraryId', err);
     }

@@ -6,6 +6,9 @@ class ResourceException implements Exception {
 
   ResourceException(this.msg,  [ this.err ]);
 
+  ResourceException.fromServer(final DioError error, [ this.err ]):
+    msg = error.response.data['message'];
+
   @override
   String toString() {
     StringBuffer buffer = StringBuffer();
