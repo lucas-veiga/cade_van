@@ -9,7 +9,7 @@ class Toast {
     {
       final ApplicationColorEnum backgroundColor = ApplicationColorEnum.ERROR,
       final Color backgroundColorCustom,
-      final int durationSeconds = 2,
+      final int durationSeconds = 3,
     }) {
 
     return Scaffold.of(context).showSnackBar(
