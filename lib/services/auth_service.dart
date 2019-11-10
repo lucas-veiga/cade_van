@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../provider/user_provider.dart';
 import '../provider/child_provider.dart';
@@ -34,7 +33,6 @@ class AuthService {
   final DriverService _driverService            = DriverService();
 
   static const String DEFAULT_MESSAGE = 'Não foi possivel ';
-  final FirebaseMessaging _fcm      = FirebaseMessaging();
 
   Future<void> login(final User user, final BuildContext context, [final bool delay = false]) async {
     if (delay) {
@@ -43,6 +41,7 @@ class AuthService {
     try {
       await _handleToken(user);
       final userFromServer = await _handleUser(context);
+      _userService.handleDeviceToken();
       _handleHomePage(userFromServer, context);
     } on ResourceException catch(err) {
       throw ServiceException(err.msg, err);
@@ -154,21 +153,19 @@ class AuthService {
   }
 
   void _handleHomePage(final User userFromServer, final BuildContext context) async {
-    String fcmToken = await _fcm.getToken();
-    print('TOKENNNNNNNNNNNNNNNNNNN\t' + fcmToken);
-    _fcm?.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print("onMessage: $message");
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print("onLaunch: $message");
-//         TODO optional
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print("onResume: $message");
-//         TODO optional
-      },
-    );
+//    _fcm?.configure(
+//      onMessage: (Map<String, dynamic> message) async {
+//        print("onMessage: $message");
+//      },
+//      onLaunch: (Map<String, dynamic> message) async {
+//        print("onLaunch: $message");
+////         TODO optional
+//      },
+//      onResume: (Map<String, dynamic> message) async {
+//        print("onResume: $message");
+////         TODO optional
+//      },
+//    );
 
     if (userFromServer.type == UserTypeEnum.RESPONSIBLE) {
       Navigator.pushReplacementNamed(context, RoutesService.HOME_RESPONSIBLE_PAGE);

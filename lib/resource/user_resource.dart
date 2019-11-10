@@ -39,6 +39,18 @@ class UserResource {
     }
   }
 
+  Future<void> saveDeviceToken(final Map<String, String> user) async {
+    final url = '$RESOURCE_URL/device-token';
+    print('POST Request to $url');
+
+    try {
+      await _dioWithInterceptors.post(url, data: json.encode(user));
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE salvar o token do aparelho', err);
+    }
+  }
+
   Future<User> getUser(final String email) async {
     try {
       final url = '$RESOURCE_URL/$email';

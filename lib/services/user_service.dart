@@ -1,4 +1,5 @@
 import 'package:catcher/core/catcher.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 import '../resource/user_resource.dart';
 import '../resource/resource_exception.dart';
@@ -13,6 +14,7 @@ class UserService {
 
   static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   final TokenUtil _tokenUtil = TokenUtil();
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   Future<void> create(final User user, [final bool delay = false]) async {
     if (delay) {
@@ -67,5 +69,25 @@ class UserService {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('$DEFAULT_MESSAGE carregar usuario do servidor', err);
     }
+  }
+
+  void handleDeviceToken() {
+    _firebaseMessaging.getToken()
+      .then(_saveDeviceToken)
+      .catchError((err) {
+      Catcher.reportCheckedError(err, 'handleDeviceToken');
+    });
+  }
+
+  void _saveDeviceToken(final String token) {
+    final map = {
+      'deviceToken': token,
+    };
+
+    _userResource.saveDeviceToken(map)
+      .then((_) {})
+      .catchError((err) {
+      Catcher.reportCheckedError(err, '_saveDeviceToken');
+    });
   }
 }

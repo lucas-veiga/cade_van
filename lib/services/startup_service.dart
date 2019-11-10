@@ -83,6 +83,7 @@ class StartUpService {
   Future<void> _handleHomePage(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
     try {
       final user = await _userService.setCurrentUserFromServer(userProvider);
+      _userService.handleDeviceToken();
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
         await _responsibleService.setMyDrivers(userProvider);
