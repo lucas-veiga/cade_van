@@ -1,70 +1,21 @@
 {
   "project_info": {
-    "project_number": "83439041810",
-    "firebase_url": "https://cade-onibus-prod.firebaseio.com",
-    "project_id": "cade-onibus-prod",
-    "storage_bucket": "cade-onibus-prod.appspot.com"
+    "project_number": "152873904847",
+    "firebase_url": "https://cade-van.firebaseio.com",
+    "project_id": "cade-van",
+    "storage_bucket": "cade-van.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:83439041810:android:50ac34e0be644612",
-        "android_client_info": {
-          "package_name": "com.cade.cade_onibus_mobile"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "83439041810-3mcp1c0k6d4vfnn9v1r5rusnikqgvc75.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cade.cade_onibus_mobile",
-            "certificate_hash": "825661aa48dd0fbe1d6bb1a24f1427740cba2844"
-          }
-        },
-        {
-          "client_id": "83439041810-ugfnge1n17hb256lmn95lh8g2ak8i2gr.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cade.cade_onibus_mobile",
-            "certificate_hash": "18bc3022506a288a52dc2eb9e1941c844b22dfec"
-          }
-        },
-        {
-          "client_id": "83439041810-pocn5pkpg8d65e7t6nhunqau6aludved.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.cade.cade_onibus_mobile",
-            "certificate_hash": "e1fb13a6c076fd6888fdc51f51cb1bb2c7074572"
-          }
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAJogKXqEyor0euhWd4QOv7KE5ankR8Fho"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "83439041810-bnmf6jsjl2ep6f5l0uqqlv5ikdfq9usr.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:83439041810:android:5169677a9aee074c0407cb",
+        "mobilesdk_app_id": "1:152873904847:android:56a6fa5af56e401ed065ba",
         "android_client_info": {
           "package_name": "com.cade.cade_van_mobile"
         }
       },
       "oauth_client": [
         {
-          "client_id": "83439041810-8s0ce8hslhcr1rlrhelg3lpaicr0sope.apps.googleusercontent.com",
+          "client_id": "152873904847-giqnf8fas6i7b7c8tch903tbsggn1sn5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.cade.cade_van_mobile",
@@ -74,17 +25,12 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAh3peGhYWplXDgzaI_ixCf9IOjqOcZ1Us"
+          "current_key": "AIzaSyCBolIyGv3e-8pyTAfFu5lpWA9U4_YnFQQ"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "83439041810-bnmf6jsjl2ep6f5l0uqqlv5ikdfq9usr.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
