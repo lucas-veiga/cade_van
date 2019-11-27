@@ -45,11 +45,13 @@ class SignUp extends StatelessWidget {
                 ),
               ),
             ),
-            body: TabBarView(
-              children: <Widget>[
-                ResponsibleTab(_isLoadingStream),
-                DriverTab(_isLoadingStream),
-              ],
+            body: Builder(
+              builder: (ctx) => TabBarView(
+                children: <Widget>[
+                  ResponsibleTab(_isLoadingStream),
+                  DriverTab(_isLoadingStream),
+                ],
+              ),
             ),
           ),
         ),

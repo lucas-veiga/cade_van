@@ -35,7 +35,7 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
   final ChildService _childService    = ChildService();
 
   final Toast _toast = Toast();
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  BuildContext contextScaffold;
 
   @override
   Scaffold build(BuildContext context) {
@@ -45,12 +45,15 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
   Scaffold _scaffold(final BuildContext context) {
     if (widget.isViewing) {
       return Scaffold(
-        key: _scaffoldKey,
-        body: _getBody(context),
+        body: Builder(
+          builder: (ctx) {
+            contextScaffold = ctx;
+            return _getBody(context);
+          },
+        ),
       );
     }
     return Scaffold(
-      key: _scaffoldKey,
       bottomNavigationBar: DefaultPadding(
         noVertical: true,
         child: DefaultButton(
@@ -58,7 +61,12 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
           function: () => _finishItinerary(context),
         ),
       ),
-      body: _getBody(context),
+      body: Builder(
+        builder: (ctx) {
+          contextScaffold = ctx;
+          return _getBody(context);
+        },
+      ),
     );
   }
 
@@ -113,7 +121,7 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
                   InkWell(
                     onTap: () {
                       if (!widget.isViewing) {
-                        _deliveryChild(child, true);
+                        _deliveryChild(child, context, true);
                       }
                     },
                     child: _childItem(child),
@@ -186,7 +194,7 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
             caption: 'Entregue',
             color: Colors.blue,
             icon: Icons.check,
-            onTap: () => _deliveryChild(child),
+            onTap: () => _deliveryChild(child, context),
           ),
         ],
         child: DefaultPadding(
@@ -300,7 +308,7 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
     }
   }
 
-  Future<void> _deliveryChild(final Child child, [isOnTab = false]) async {
+  Future<void> _deliveryChild(final Child child, final BuildContext context, [isOnTab = false]) async {
     try {
       if (isOnTab) {
         final answer = await showDialog(
@@ -349,7 +357,8 @@ class _ItineraryDetailPageState extends State<ItineraryDetailPage> {
       await _driverService.setAllItinerary(driverProvider);
       setState(() => widget._itinerary.itineraryChildren[index].child = childSaved);
     } on ServiceException catch(err) {
-      _toast.show(err.msg, _scaffoldKey.currentState.context);
+      print('CONTEX -> \n${err.msg}');
+      _toast.show(err.msg, contextScaffold);
     }
   }
 }
