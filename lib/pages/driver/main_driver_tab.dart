@@ -23,6 +23,7 @@ import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
 import '../chat.dart';
 import './home_driver_tab.dart';
+import '../../animations/animate_transition.dart';
 
 class MainDriverTab extends StatefulWidget {
   @override
@@ -35,9 +36,9 @@ class _MainDriverTabState extends State<MainDriverTab>
   final DriverService _driverService = DriverService();
   final RoutesService _routesService = RoutesService();
 
-  final CustomMask _customMask = CustomMask();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Toast _toast = Toast();
+  final StreamController<bool> _controller = StreamController<bool>();
 
   StreamController<bool> _blockUIStream;
   TabController _tabController;
@@ -50,6 +51,13 @@ class _MainDriverTabState extends State<MainDriverTab>
     _tabController =
         TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
 
+    _tabController.addListener(() {
+      if (_tabController.index == 1) {
+        _controller.add(true);
+      } else {
+        _controller.add(false);
+      }
+    });
     super.initState();
   }
 
@@ -84,25 +92,29 @@ class _MainDriverTabState extends State<MainDriverTab>
             ),
             elevation: 0,
           ),
-          floatingActionButton: SpeedDial(
-            animatedIcon: AnimatedIcons.menu_close,
-            children: [
-              SpeedDialChild(
+          floatingActionButton: AnimateTransition(
+            controller: _controller,
+            secondChild: Container(),
+            firstChild: SpeedDial(
+              animatedIcon: AnimatedIcons.menu_close,
+              children: [
+                SpeedDialChild(
                   onTap: _onSharingDriverCode,
                   backgroundColor: Colors.blue,
                   child: Icon(Icons.share),
                   label: 'Compartilhar Código'),
-              SpeedDialChild(
+                SpeedDialChild(
                   onTap: _onCreatingItinerary,
                   backgroundColor: Colors.green,
                   child: Icon(Icons.add),
                   label: 'Novo itinerário'),
-              SpeedDialChild(
+                SpeedDialChild(
                   onTap: _logout,
                   backgroundColor: Colors.red,
                   child: Icon(Icons.close),
                   label: 'Sair')
-            ],
+              ],
+            ),
           ),
           bottomNavigationBar: _buildTabBar(context),
           body: TabBarView(
