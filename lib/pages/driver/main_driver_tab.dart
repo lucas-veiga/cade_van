@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -15,6 +17,7 @@ import '../../services/service_exception.dart';
 import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
+import '../../utils/mask.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
@@ -30,6 +33,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   final DriverService _driverService = DriverService();
   final RoutesService _routesService = RoutesService();
 
+  final CustomMask _customMask = CustomMask();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Toast _toast = Toast();
 
@@ -82,32 +86,28 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
             ),
             elevation: 0,
           ),
-          floatingActionButton: Consumer<DriverProvider>(
-            builder: (_, final DriverProvider provider, __) =>
-              SpeedDial(
-                animatedIcon: AnimatedIcons.menu_close,
-                backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
-                children: [
-//                SpeedDialChild(
-//                  onTap: () => _onStarDriving(provider.itinerary),
-//                  backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
-//                  child: Icon(_isSharing(provider.itinerary) ? Icons.gps_off : Icons.gps_fixed),
-//                  label: _isSharing(provider.itinerary) ? 'Parar Viagem' : 'Iniciar Viagem',
-//                ),
-                  SpeedDialChild(
-                    onTap: _onCreatingItinerary,
-                    backgroundColor: Colors.green,
-                    child: Icon(Icons.add),
-                    label: 'Novo itinerário'
-                  ),
-                  SpeedDialChild(
-                    onTap: _logout,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.close),
-                    label: 'Sair'
-                  )
-                ],
+          floatingActionButton: SpeedDial(
+            animatedIcon: AnimatedIcons.menu_close,
+            children: [
+              SpeedDialChild(
+                onTap: _onSharingDriverCode,
+                backgroundColor: Colors.blue,
+                child: Icon(Icons.share),
+                label: 'Compartilhar Código'
               ),
+              SpeedDialChild(
+                onTap: _onCreatingItinerary,
+                backgroundColor: Colors.green,
+                child: Icon(Icons.add),
+                label: 'Novo itinerário'
+              ),
+              SpeedDialChild(
+                onTap: _logout,
+                backgroundColor: Colors.red,
+                child: Icon(Icons.close),
+                label: 'Sair'
+              )
+            ],
           ),
           bottomNavigationBar: _buildTabBar(context),
           body: TabBarView(
@@ -190,6 +190,22 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
       _driverService.initItinerary(context, driverProvider, itinerary, _blockUIStream);
     } on ServiceException catch(err) {
       _toast.show(err.msg, _scaffoldKey.currentState.context);
+    }
+  }
+
+  _onSharingDriverCode() async {
+    try {
+      final String code = await _driverService.findMyCode();
+      WcFlutterShare.share(
+        sharePopupTitle: 'Compartilhar via',
+        text: code,
+        mimeType: 'text/plain',
+      ).catchError((err) {
+        _toast.show('Não foi possivel compartilhar seu código', context);
+        Catcher.reportCheckedError(err, 'NoStackTrace | method: _onSharingDriverCode - class MainDriverTab');
+      });
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, context);
     }
   }
 

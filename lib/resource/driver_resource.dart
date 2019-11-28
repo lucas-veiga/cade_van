@@ -31,6 +31,22 @@ class DriverResource {
     }
   }
 
+  Future<String> findMyCode() async {
+    try {
+      final url = '$RESOURCE_URL/code';
+      print('GET Request to $url');
+
+      final res = await _dio.get(url);
+      return res.data;
+    } on DioError catch(err, stack) {
+      if (err?.response?.statusCode == 404) {
+        throw ResourceException.fromServer(err);
+      }
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar o código do motorista', err);
+    }
+  }
+
   Future<void> saveItinerary(final String itineraryJSON) async {
     try {
       print('POST Request to $ITINERARY_RESOURCE');
