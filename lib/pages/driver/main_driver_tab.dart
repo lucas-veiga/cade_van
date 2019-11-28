@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
+import 'package:wc_flutter_share/wc_flutter_share.dart';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -15,6 +17,7 @@ import '../../services/service_exception.dart';
 import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
+import '../../utils/mask.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
@@ -26,11 +29,13 @@ class MainDriverTab extends StatefulWidget {
   _MainDriverTabState createState() => _MainDriverTabState();
 }
 
-class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateMixin {
+class _MainDriverTabState extends State<MainDriverTab>
+    with TickerProviderStateMixin {
   final AuthService _authService = AuthService();
   final DriverService _driverService = DriverService();
   final RoutesService _routesService = RoutesService();
 
+  final CustomMask _customMask = CustomMask();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final Toast _toast = Toast();
 
@@ -41,11 +46,9 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   @override
   void initState() {
     _blockUIStream = StreamController.broadcast();
-    _myTabs = [
-      HomeDriverPage(_blockUIStream),
-      ChatScreen()
-    ];
-    _tabController = TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
+    _myTabs = [HomeDriverPage(_blockUIStream), ChatScreen()];
+    _tabController =
+        TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
 
     super.initState();
   }
@@ -70,9 +73,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
             centerTitle: true,
             title: Text(
               Environment.APP_NAME,
-              style: TextStyle(
-                color: Theme.of(context).primaryColor
-              ),
+              style: TextStyle(color: Theme.of(context).primaryColor),
             ),
             backgroundColor: Colors.transparent,
             actionsIconTheme: IconThemeData(
@@ -83,33 +84,25 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
             ),
             elevation: 0,
           ),
-          // TODO mover para Tab HomeDriverPage
-          floatingActionButton: Consumer<DriverProvider>(
-            builder: (_, final DriverProvider provider, __) =>
-              SpeedDial(
-                animatedIcon: AnimatedIcons.menu_close,
-                backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
-                children: [
-//                SpeedDialChild(
-//                  onTap: () => _onStarDriving(provider.itinerary),
-//                  backgroundColor: _isSharing(provider.itinerary) ? Colors.orange : null,
-//                  child: Icon(_isSharing(provider.itinerary) ? Icons.gps_off : Icons.gps_fixed),
-//                  label: _isSharing(provider.itinerary) ? 'Parar Viagem' : 'Iniciar Viagem',
-//                ),
-                  SpeedDialChild(
-                    onTap: _onCreatingItinerary,
-                    backgroundColor: Colors.green,
-                    child: Icon(Icons.add),
-                    label: 'Novo itinerário'
-                  ),
-                  SpeedDialChild(
-                    onTap: _logout,
-                    backgroundColor: Colors.red,
-                    child: Icon(Icons.close),
-                    label: 'Sair'
-                  )
-                ],
-              ),
+          floatingActionButton: SpeedDial(
+            animatedIcon: AnimatedIcons.menu_close,
+            children: [
+              SpeedDialChild(
+                  onTap: _onSharingDriverCode,
+                  backgroundColor: Colors.blue,
+                  child: Icon(Icons.share),
+                  label: 'Compartilhar Código'),
+              SpeedDialChild(
+                  onTap: _onCreatingItinerary,
+                  backgroundColor: Colors.green,
+                  child: Icon(Icons.add),
+                  label: 'Novo itinerário'),
+              SpeedDialChild(
+                  onTap: _logout,
+                  backgroundColor: Colors.red,
+                  child: Icon(Icons.close),
+                  label: 'Sair')
+            ],
           ),
           bottomNavigationBar: _buildTabBar(context),
           body: TabBarView(
@@ -122,76 +115,96 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     );
   }
 
-  TabBar _buildTabBar(BuildContext context) =>
-    TabBar(
-      controller: _tabController,
-      tabs: <Widget>[
-        Tab(
-          icon: Icon(
-            Icons.home,
-            color: Theme.of(context).primaryColor,
+  TabBar _buildTabBar(BuildContext context) => TabBar(
+        controller: _tabController,
+        tabs: <Widget>[
+          Tab(
+            icon: Icon(
+              Icons.home,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
-        ),
-        Tab(
-          icon: Icon(
-            Icons.chat,
-            color: Theme.of(context).primaryColor,
-          ),
-        )
-      ],
-    );
+          Tab(
+            icon: Icon(
+              Icons.chat,
+              color: Theme.of(context).primaryColor,
+            ),
+          )
+        ],
+      );
 
   bool _isSharing(final List<Itinerary> list) =>
-    list.any((item) => item.isAtivo == true);
+      list.any((item) => item.isAtivo == true);
 
   void _onStarDriving(final List<Itinerary> list) {
     final Picker picker = Picker(
-      onConfirm: (one, two) => _onItinerarySelected(one, list[two.first]),
-      confirmText: 'Confirmar',
-      cancelText: 'Cancelar',
-      adapter: PickerDataAdapter(
-        data: list.map((item) => PickerItem(
-          text: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: item.description,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 25,
-                  ),
-                ),
-                TextSpan(
-                  text: ' | ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 25,
-                  ),
-                ),
-                TextSpan(
-                  text: DecodeItineraryTypeEnum.getDescription(item.type),
-                  style: TextStyle(
-                    color: DecodeItineraryTypeEnum.getColor(item.type),
-                    fontSize: 25,
-                  ),
-                )
-              ],
-            ),
-          ),
-        )).toList()
-      )
-    );
+        onConfirm: (one, two) => _onItinerarySelected(one, list[two.first]),
+        confirmText: 'Confirmar',
+        cancelText: 'Cancelar',
+        adapter: PickerDataAdapter(
+            data: list
+                .map((item) => PickerItem(
+                      text: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: item.description,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 25,
+                              ),
+                            ),
+                            TextSpan(
+                              text: ' | ',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 25,
+                              ),
+                            ),
+                            TextSpan(
+                              text: DecodeItineraryTypeEnum.getDescription(
+                                  item.type),
+                              style: TextStyle(
+                                color:
+                                    DecodeItineraryTypeEnum.getColor(item.type),
+                                fontSize: 25,
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ))
+                .toList()));
     picker.show(_scaffoldKey.currentState);
   }
 
   void _onItinerarySelected(final Picker picker, final Itinerary itinerary) {
     try {
-      final DriverProvider driverProvider = Provider.of<DriverProvider>(context);
+      final DriverProvider driverProvider =
+          Provider.of<DriverProvider>(context);
       picker.doCancel(context);
-      _driverService.initItinerary(context, driverProvider, itinerary, _blockUIStream);
-    } on ServiceException catch(err) {
+      _driverService.initItinerary(
+          context, driverProvider, itinerary, _blockUIStream);
+    } on ServiceException catch (err) {
       _toast.show(err.msg, _scaffoldKey.currentState.context);
+    }
+  }
+
+  _onSharingDriverCode() async {
+    try {
+      final String code = await _driverService.findMyCode();
+      WcFlutterShare.share(
+        sharePopupTitle: 'Compartilhar via',
+        text: code,
+        mimeType: 'text/plain',
+      ).catchError((err) {
+        _toast.show('Não foi possivel compartilhar seu código', context);
+        Catcher.reportCheckedError(err,
+            'NoStackTrace | method: _onSharingDriverCode - class MainDriverTab');
+      });
+    } on ServiceException catch (err) {
+      _toast.show(err.msg, context);
     }
   }
 
@@ -199,7 +212,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     try {
       final children = await _driverService.findMyChildren();
       _routesService.goToItineraryFormPage(context, children);
-    } on ServiceException catch(err) {
+    } on ServiceException catch (err) {
       _toast.show(err.msg, _scaffoldKey.currentState.context);
     }
   }
@@ -207,7 +220,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
   Future<void> _logout() async {
     try {
       await _authService.logout(_scaffoldKey.currentState.context);
-    } on ServiceException catch(err) {
+    } on ServiceException catch (err) {
       _toast.show(err.msg, _scaffoldKey.currentState.context);
     }
   }

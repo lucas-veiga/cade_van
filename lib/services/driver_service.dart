@@ -28,9 +28,9 @@ import '../socket/socket_exception.dart';
 import '../widgets/default_alert_dialog.dart';
 
 class DriverService {
-  DriverResource _driverResource  = DriverResource();
-  ChildService _childService      = ChildService();
-  RoutesService _routesService    = RoutesService();
+  final DriverResource _driverResource  = DriverResource();
+  final ChildService _childService      = ChildService();
+  final RoutesService _routesService    = RoutesService();
 
   static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   Location _location = Location();
@@ -43,6 +43,17 @@ class DriverService {
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('$DEFAULT_MESSAGE pegar suas crianças', err);
+    }
+  }
+
+  Future<String> findMyCode() async {
+    try {
+      return await _driverResource.findMyCode();
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE pegar seu código', err);
     }
   }
 
