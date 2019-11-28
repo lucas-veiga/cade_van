@@ -83,7 +83,7 @@ class UserService {
     final map = {
       'deviceToken': token,
     };
-
+    print('tokennnnnnnnnnnnnnnnnnnnnn ' + token);
     _userResource.saveDeviceToken(map)
       .then((_) {})
       .catchError((err) {

@@ -18,6 +18,7 @@ import '../../widgets/block_ui.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
+import '../chat.dart';
 import './home_driver_tab.dart';
 
 class MainDriverTab extends StatefulWidget {
@@ -42,7 +43,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
     _blockUIStream = StreamController.broadcast();
     _myTabs = [
       HomeDriverPage(_blockUIStream),
-      Container(color: Colors.blue),
+      ChatScreen()
     ];
     _tabController = TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
 
@@ -82,6 +83,7 @@ class _MainDriverTabState extends State<MainDriverTab> with TickerProviderStateM
             ),
             elevation: 0,
           ),
+          // TODO mover para Tab HomeDriverPage
           floatingActionButton: Consumer<DriverProvider>(
             builder: (_, final DriverProvider provider, __) =>
               SpeedDial(
