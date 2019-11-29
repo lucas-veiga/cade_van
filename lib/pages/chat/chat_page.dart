@@ -36,7 +36,7 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.all(15),
                     itemCount: widget._chat.chatMessages.length,
                     itemBuilder: (ctx, i) {
-                      if (widget._chat.chatMessages.isNotEmpty && widget._chat.chatMessages[i].userId == userProvider.user.userId) {
+                      if (widget._chat.chatMessages.isNotEmpty && widget._chat.chatMessages[i].userId != userProvider.user.userId) {
                         return ReceivedMessage(widget._chat.chatMessages[i]);
                       } else {
                         return SentMessage(widget._chat.chatMessages[i]);
