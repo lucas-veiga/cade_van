@@ -24,10 +24,8 @@ class Chat {
       return List<ChatMessage>();
     }
 
-    return List<ChatMessage>
-      .from(json)
-      .map((item) => ChatMessage.fromJSON(item))
-      .toList();
+    final list = json.map((item) => ChatMessage.fromJSON(item)).toList();
+    return List<ChatMessage>.from(list);
   }
 
   @override
@@ -52,6 +50,15 @@ class ChatMessage {
   String text;
   DateTime createdAt;
 
+  ChatMessage();
+
+  ChatMessage.copy(final ChatMessage chatMessage):
+    id = chatMessage.id,
+    userId = chatMessage.userId,
+    chatId = chatMessage.chatId,
+    text = chatMessage.text,
+    createdAt = chatMessage.createdAt;
+
   ChatMessage.fromJSON(final dynamic json):
       id = json['id'],
       userId = json['userId'],
@@ -65,7 +72,7 @@ class ChatMessage {
       'userId': chatMessage.userId,
       'chatId': chatMessage.chatId,
       'text': chatMessage.text,
-      'createdAt': chatMessage.createdAt.toIso8601String(),
+      'createdAt': chatMessage?.createdAt?.toIso8601String(),
     };
 
   @override
@@ -76,7 +83,7 @@ class ChatMessage {
     buffer.write('userId: $userId, ');
     buffer.write('chatId: $chatId, ');
     buffer.write('text: "$text", ');
-    buffer.write('createdAt: "${createdAt.toIso8601String()}", ');
+    buffer.write('createdAt: "${createdAt?.toIso8601String()}", ');
     buffer.write(' }');
     return buffer.toString();
   }

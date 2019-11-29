@@ -17,7 +17,7 @@ import '../../services/service_exception.dart';
 import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
-import '../chat/chat_list_page.dart';
+import 'chat_list_page.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';

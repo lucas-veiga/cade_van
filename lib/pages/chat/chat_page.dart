@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 
+import 'package:provider/provider.dart';
+
 import 'package:cade_van/global.dart';
 import '../../widgets/widgets.dart';
 import '../../models/chat.dart';
+import '../../services/socket_chat_service.dart';
+import '../../provider/user_provider.dart';
 
 class ChatPage extends StatefulWidget {
   final Chat _chat;
@@ -14,9 +18,12 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  final ChatMessage _chatMessage = ChatMessage();
+  final TextEditingController _editingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     print('CHAT -> ${widget._chat}');
     return Scaffold(
       body: Stack(
@@ -29,10 +36,10 @@ class _ChatPageState extends State<ChatPage> {
                     padding: const EdgeInsets.all(15),
                     itemCount: widget._chat.chatMessages.length,
                     itemBuilder: (ctx, i) {
-                      if (messages[i]['status'] == MessageType.received) {
-                        return ReceivedMessage(i: i);
+                      if (widget._chat.chatMessages.isNotEmpty && widget._chat.chatMessages[i].userId == userProvider.user.userId) {
+                        return ReceivedMessage(widget._chat.chatMessages[i]);
                       } else {
-                        return SentMessage(i: i);
+                        return SentMessage(widget._chat.chatMessages[i]);
                       }
                     },
                   ),
@@ -61,6 +68,8 @@ class _ChatPageState extends State<ChatPage> {
                               ),
                               Expanded(
                                 child: TextField(
+                                  controller: _editingController,
+                                  onChanged: (item) => _chatMessage.text = item,
                                   decoration: InputDecoration(
                                     hintText: "Digite sua mensagem",
                                     border: InputBorder.none),
@@ -72,7 +81,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       SizedBox(width: 10),
                       GestureDetector(
-                        onTap: () => _onSendingMsg(),
+                        onTap: () => _onSendingMsg(userProvider),
                         child: Container(
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
@@ -97,8 +106,17 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
   
-  void _onSendingMsg() {
-    print('SEND');
+  Future _onSendingMsg(final UserProvider userProvider) async {
+    if (_chatMessage.text == null) return;
+    await SocketChatService.init();
+
+    _chatMessage.chatId = widget._chat.id;
+    _chatMessage.userId = userProvider.user.userId;
+    _chatMessage.createdAt = DateTime.now();
+    SocketChatService.sendMessage(widget._chat.id, _chatMessage);
+    setState(() => widget._chat.chatMessages.add(ChatMessage.copy(_chatMessage)));
+    _chatMessage.text = null;
+    _editingController.clear();
   }
 }
 

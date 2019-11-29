@@ -10,5 +10,5 @@ export './driver/itinerary_form_page.dart';
 export './driver/itinerary_detail_page.dart';
 
 export './auth/main_auth.dart';
-export './chat/chat_list_page.dart';
+export 'driver/chat_list_page.dart';
 export './chat/chat_page.dart';

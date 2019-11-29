@@ -20,6 +20,7 @@ class ChatResource {
 
     try {
       final res = await _dio.get(url, queryParameters: params);
+      print('\n\nRES -> ${res.data}');
       return Chat.fromJSON(res.data);
     } on DioError catch(err, stack) {
       Catcher.reportCheckedError(err, stack);

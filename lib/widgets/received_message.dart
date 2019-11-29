@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cade_van/global.dart';
 
-import 'mycircleavatar.dart';
+import '../models/chat.dart';
+
 class ReceivedMessage extends StatelessWidget {
-  final int i;
-  const ReceivedMessage({
-    Key key,
-    @required this.i,
-  }) : super(key: key);
+  final ChatMessage chatMessage;
+
+  const ReceivedMessage(this.chatMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class ReceivedMessage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(
-                "${messages[i]['contactName']}",
+                chatMessage.userId.toString(),
                 style: Theme.of(context).textTheme.caption,
               ),
               Container(
@@ -35,7 +33,7 @@ class ReceivedMessage extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  "${messages[i]['message']}",
+                  chatMessage.text,
                   style: Theme.of(context).textTheme.body2.apply(
                         color: Colors.black87,
                       ),
@@ -45,7 +43,7 @@ class ReceivedMessage extends StatelessWidget {
           ),
           SizedBox(width: 15),
           Text(
-            "${messages[i]['time']}",
+            chatMessage.createdAt.toIso8601String(),
             style: Theme.of(context).textTheme.body2.apply(color: Colors.grey),
           ),
         ],

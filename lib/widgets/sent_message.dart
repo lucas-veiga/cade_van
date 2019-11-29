@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:cade_van/global.dart';
+
+import '../models/chat.dart';
 
 class SentMessage extends StatelessWidget {
-  final int i;
-  const SentMessage({
-    Key key,
-    this.i,
-  }) : super(key: key);
+  final ChatMessage chatMessage;
+
+  const SentMessage(this.chatMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +15,7 @@ class SentMessage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Text(
-            "${messages[i]['time']}",
+            '${chatMessage.createdAt.toIso8601String()}',
             style: Theme.of(context).textTheme.body2.apply(color: Colors.grey),
           ),
           SizedBox(width: 15),
@@ -33,7 +32,7 @@ class SentMessage extends StatelessWidget {
               ),
             ),
             child: Text(
-              "${messages[i]['message']}",
+              '${chatMessage.text}',
               style: Theme.of(context).textTheme.body2.apply(
                     color: Colors.white,
                   ),

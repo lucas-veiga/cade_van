@@ -8,6 +8,7 @@ import '../../services/routes_service.dart';
 
 import './home_responsible_tab.dart';
 import '../../environments/environment.dart';
+import './chat_list_page.dart';
 
 class MainResponsibleTab extends StatefulWidget {
   @override
@@ -22,7 +23,7 @@ class _MainResponsibleTabState extends State<MainResponsibleTab> with TickerProv
 
   final List<Widget> _myTabs = [
     HomeResponsibleTab(),
-    Container(color: Colors.amber),
+    ChatListPageDois(),
   ];
 
   @override

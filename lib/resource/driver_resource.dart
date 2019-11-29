@@ -114,7 +114,6 @@ class DriverResource {
       final res = await _dio.get(ITINERARY_RESOURCE);
       final untypedList = res.data.map((item) => Itinerary.fromJSON(item)).toList();
       final list = List<Itinerary>.from(untypedList);
-      print('Response: \t$list');
       return list;
     } on DioError catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
