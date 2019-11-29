@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child.dart';
+import '../models/chat.dart';
 import '../pages/export_pages.dart';
 
 class RoutesService {
@@ -21,25 +22,44 @@ class RoutesService {
     AUTH_PAGE: (final BuildContext ctx) => MainAuthPage(),
   };
 
-  static Map<String, WidgetBuilder> get availableRoutes => Map.from(_availableRoutes);
+  static Map<String, WidgetBuilder> get availableRoutes =>
+      Map.from(_availableRoutes);
 
-  Future<dynamic> goToItineraryFormPage(final BuildContext context, final List<Child> children) async {
-    return await Navigator.push(context, MaterialPageRoute(
-      builder: (_) => ItineraryFormPage(children),
-    ));
+  Future<dynamic> goToItineraryFormPage(
+      final BuildContext context, final List<Child> children) async {
+    return await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ItineraryFormPage(children),
+        ));
   }
 
-  Future<dynamic> goToItineraryDetail(final BuildContext context, final Itinerary itinerary, [ final bool isViewing = false ]) async {
-    return await Navigator.push(context, MaterialPageRoute(
-      builder: (_) => ItineraryDetailPage(itinerary, isViewing),
-    ));
+  Future<dynamic> goToItineraryDetail(
+      final BuildContext context, final Itinerary itinerary,
+      [final bool isViewing = false]) async {
+    return await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ItineraryDetailPage(itinerary, isViewing),
+        ));
   }
 
-  Future<dynamic> goToChildDetailPage(final BuildContext context, final int index) async {
+  Future<dynamic> goToChildDetailPage(
+      final BuildContext context, final int index) async {
     List<CameraDescription> cameras = await availableCameras();
-    Navigator.push(context, PageRouteBuilder(
-      transitionDuration: Duration(milliseconds: 700),
-      pageBuilder: (_, __, ___) => ChildDetailPage(index, cameras),
-    ));
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+          transitionDuration: Duration(milliseconds: 700),
+          pageBuilder: (_, __, ___) => ChildDetailPage(index, cameras),
+        ));
+  }
+
+  Future goToChatPage(final BuildContext context, final Chat chat) {
+    return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => ChatPage(chat),
+        ));
   }
 }

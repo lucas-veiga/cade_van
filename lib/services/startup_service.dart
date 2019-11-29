@@ -90,6 +90,7 @@ class StartUpService {
         await _authService.initListeningLocation(userProvider, context);
       } else {
         final list = await _driverService.setAllItinerary(driverProvider);
+        await _driverService.setMyResponsible(userProvider);
         _authService.initItinerary(list, userProvider, context);
       }
 

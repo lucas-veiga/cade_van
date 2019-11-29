@@ -6,6 +6,7 @@ import './provider_exception.dart';
 class UserProvider with ChangeNotifier {
   User _user;
   final List<User> _myDrivers = [];
+  final List<User> _myResponsible = [];
 
   User get user => User.copy(_user);
 
@@ -16,6 +17,8 @@ class UserProvider with ChangeNotifier {
   }
 
   List<User> get myDrivers => List.unmodifiable(_myDrivers);
+
+  List<User> get myResponsible => List.unmodifiable(_myResponsible);
 
   void setMyDrivers(final bool single, { final User driver, final List<User> drivers }) {
     if (single == true && driver != null) {
@@ -35,6 +38,29 @@ class UserProvider with ChangeNotifier {
       }
 
       _myDrivers.addAll(drivers);
+      notifyListeners();
+      return;
+    }
+  }
+
+  void setMyResponsible(final bool single, { final User responsible, final List<User> responsibles}){
+    if (single == true && responsible != null) {
+      if (responsible.type != UserTypeEnum.RESPONSIBLE) {
+        throw ProviderException('User is not a responsible');
+      }
+
+      _myResponsible.add(responsible);
+      notifyListeners();
+      return;
+    }
+
+    if (single == false && responsibles != null && responsibles.isNotEmpty) {
+      final containsDriver = responsibles.every((item) => item.type == UserTypeEnum.DRIVER);
+      if (!containsDriver) {
+        throw ProviderException('Responsibles contains an Driver');
+      }
+
+      _myResponsible.addAll(responsibles);
       notifyListeners();
       return;
     }
