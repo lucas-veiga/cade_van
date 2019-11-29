@@ -60,7 +60,7 @@ class DriverService {
 
   Future<void> setMyResponsible(final UserProvider userProvider) async {
     try {
-      final int id = userProvider.user.userId;
+      final int id = userProvider.user.driverId;
       final List<User> responsibles = await _driverResource.findMyResponsible(id);
       userProvider.setMyResponsible(false, responsibles: responsibles);
     } on ResourceException catch(err) {
