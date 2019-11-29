@@ -17,11 +17,10 @@ import '../../services/service_exception.dart';
 import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
-import '../../utils/mask.dart';
+import '../chat/chat_list_page.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
-import '../chat.dart';
 import './home_driver_tab.dart';
 import '../../animations/animate_transition.dart';
 
@@ -47,7 +46,7 @@ class _MainDriverTabState extends State<MainDriverTab>
   @override
   void initState() {
     _blockUIStream = StreamController.broadcast();
-    _myTabs = [HomeDriverPage(_blockUIStream), ChatScreen()];
+    _myTabs = [HomeDriverPage(_blockUIStream), ChatListPage()];
     _tabController =
         TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
 

@@ -2,6 +2,7 @@ import 'package:cade_van/models/itinerary.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child.dart';
+import '../models/chat.dart';
 import '../pages/export_pages.dart';
 
 class RoutesService {
@@ -34,10 +35,16 @@ class RoutesService {
     ));
   }
 
-  Future<dynamic> goToChildDetailPage(final BuildContext context, final int index) async {
-    Navigator.push(context, PageRouteBuilder(
+  Future goToChildDetailPage(final BuildContext context, final int index){
+    return Navigator.push(context, PageRouteBuilder(
       transitionDuration: Duration(milliseconds: 700),
       pageBuilder: (_, __, ___) => ChildDetailPage(index),
+    ));
+  }
+
+  Future goToChatPage(final BuildContext context, final Chat chat) {
+    return Navigator.push(context, MaterialPageRoute(
+      builder: (_) => ChatPage(chat),
     ));
   }
 }

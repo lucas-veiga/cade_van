@@ -6,7 +6,9 @@ import './model_exception.dart';
 enum UserTypeEnum { DRIVER, RESPONSIBLE }
 
 class User {
-  int id;
+  int userId;
+  int responsibleId;
+  int driverId;
   String email;
   String password;
   String name;
@@ -19,7 +21,9 @@ class User {
   LocationData userLocation;
 
   User({
-    @required this.id,
+    @required this.userId,
+    @required this.driverId,
+    @required this.responsibleId,
     @required this.email,
     @required this.password,
     @required this.name,
@@ -35,7 +39,9 @@ class User {
   User.empty();
 
   User.copy(final User user):
-      id = user.id,
+      userId = user.userId,
+      responsibleId = user.responsibleId,
+      driverId = user.driverId,
       email = user.email,
       password = user.password,
       name = user.name,
@@ -48,7 +54,9 @@ class User {
 
 
   User.fromJSON(final dynamic json):
-      this.id = json['id'],
+      this.userId = json['userId'],
+      this.responsibleId = json['responsibleId'],
+      this.driverId = json['driverId'],
       this.name = json['name'],
       this.nickname = json['nickname'],
       this.email = json['email'],
@@ -59,7 +67,9 @@ class User {
 
   static Map<String, dynamic> toJSON(User user) =>
     {
-      'id': user.id,
+      'userId': user.userId,
+      'responsibleId': user.responsibleId,
+      'driverId': user.driverId,
       'email': user.email,
       'password': user.password,
       'name': user.name,
@@ -106,7 +116,9 @@ class User {
     StringBuffer buffer = StringBuffer();
     buffer.write('User: ');
     buffer.write('{ ');
-    buffer.write('id: $id, ');
+    buffer.write('userId: $userId, ');
+    buffer.write('responsibleId: $responsibleId, ');
+    buffer.write('driverId: $driverId, ');
     buffer.write('email: "$email", ');
     buffer.write('password: "$password", ');
     buffer.write('name: "$name", ');
@@ -126,7 +138,9 @@ class User {
 
   @override
   int get hashCode =>
-    id.hashCode^
+    userId.hashCode^
+    responsibleId.hashCode^
+    driverId.hashCode^
     email.hashCode^
     password.hashCode^
     name.hashCode^
@@ -141,18 +155,20 @@ class User {
 
   bool operator ==(other) =>
     other is User && (
-      id == other.id &&
-      email == other.email &&
-      password == other.password &&
-      name == other.name &&
-      phone == other.phone &&
-      cpf == other.cpf &&
-      nickname == other.nickname &&
-      isDriving == other.isDriving &&
-      code == other.code &&
-      type == other.type &&
-      _latitude == other._latitude &&
-      _longitude == other._longitude
+      userId == other.userId &&
+        driverId == other.driverId &&
+        responsibleId == other.responsibleId &&
+        email == other.email &&
+        password == other.password &&
+        name == other.name &&
+        phone == other.phone &&
+        cpf == other.cpf &&
+        nickname == other.nickname &&
+        isDriving == other.isDriving &&
+        code == other.code &&
+        type == other.type &&
+        _latitude == other._latitude &&
+        _longitude == other._longitude
     );
 
   double get _latitude {

@@ -147,6 +147,7 @@ class AuthService {
       await initListeningLocation(userProvider, context);
     } else {
       final list = await _driverService.setAllItinerary(driverProvider);
+      await _driverService.setMyResponsible(userProvider);
       initItinerary(list, userProvider, context);
     }
     return user;

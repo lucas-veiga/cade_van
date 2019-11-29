@@ -85,7 +85,7 @@ class SocketLocationService {
       final randId = new Random().nextInt(9999).toString();
       _stomp.subscribeJson(
         randId,
-        _buildListeningEventMessage(item.id),
+        _buildListeningEventMessage(item.userId),
           (_, msg) => _handleReceivingMsg(driverProvider, context, msg)
       );
     });
@@ -122,7 +122,7 @@ class SocketLocationService {
 
     final driverLocationMap =
     DriverLocation.toJSON(
-      DriverLocation.create(position, isDriving, _userProvider.user.id, _itinerary.id, _userProvider.user.name),
+      DriverLocation.create(position, isDriving, _userProvider.user.userId, _itinerary.id, _userProvider.user.name),
     );
     _userProvider.isDriving = isDriving;
     _stomp.sendJson(_buildSendEventMessage(position), driverLocationMap);
@@ -149,7 +149,7 @@ class SocketLocationService {
   }
 
   static String _buildSendEventMessage(final LocationData locationData) =>
-    '${SocketEvents.convertEnum(SocketEventsEnum.SEND_LOCATION)}/${_userProvider.user.id}';
+    '${SocketEvents.convertEnum(SocketEventsEnum.SEND_LOCATION)}/${_userProvider.user.userId}';
 
   static String _buildListeningEventMessage(final int driverId) =>
     '/topic/location/$driverId';

@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 
 import '../models/itinerary.dart';
 import '../models/child.dart';
+import '../models/user.dart';
 
 import '../config/dio_config.dart';
 import '../environments/environment.dart';
@@ -28,6 +29,21 @@ class DriverResource {
     } on DioError catch(err, stack) {
         Catcher.reportCheckedError(err, stack);
         throw ResourceException('$DEFAULT_MESSAGE pegar suas criancas', err);
+    }
+  }
+
+  Future<List<User>> findMyResponsible(final int driverId) async {
+    try {
+      final url = '$RESOURCE_URL/my-responsibles/$driverId';
+      print('GET Request to $url');
+
+      final res = await _dio.get(url);
+      final untypedList = res.data.map((item) => User.fromJSON(item)).toList();
+      final responsibles = List<User>.from(untypedList);
+      return responsibles.map((item) => item..type = UserTypeEnum.DRIVER).toList();
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar seus responsaveis', err);
     }
   }
 

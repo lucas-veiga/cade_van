@@ -9,6 +9,7 @@ import 'package:location/location.dart';
 
 import '../models/child.dart';
 import '../models/itinerary.dart';
+import '../models/user.dart';
 
 import './service_exception.dart';
 import './socket_location_service.dart';
@@ -54,6 +55,19 @@ class DriverService {
     } catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ServiceException('$DEFAULT_MESSAGE pegar seu código', err);
+    }
+  }
+
+  Future<void> setMyResponsible(final UserProvider userProvider) async {
+    try {
+      final int id = userProvider.user.userId;
+      final List<User> responsibles = await _driverResource.findMyResponsible(id);
+      userProvider.setMyResponsible(false, responsibles: responsibles);
+    } on ResourceException catch(err) {
+      throw ServiceException(err.msg, err);
+    } catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ServiceException('$DEFAULT_MESSAGE pegar seus Responsaveis', err);
     }
   }
 
