@@ -23,7 +23,7 @@ class ChatListPage extends StatelessWidget {
           itemBuilder:
           (_, final int i) =>
             InkWell(
-              onTap: () => _openChat(provider.user.responsibleId, provider.myResponsible[i].driverId, context),
+              onTap: () => _openChat(provider.user.driverId, provider.myResponsible[i].responsibleId, context),
               child: DefaultPadding(
                 child: Row(
                   children: <Widget>[
@@ -54,7 +54,6 @@ class ChatListPage extends StatelessWidget {
   }
 
   Future _openChat(final int driverId, final int responsibleId, final BuildContext context) async {
-    print('driver id -> $driverId | resId -> $responsibleId');
     final chat = await _chatService.findAllMessages(driverId, responsibleId);
     _routesService.goToChatPage(context, chat);
   }
