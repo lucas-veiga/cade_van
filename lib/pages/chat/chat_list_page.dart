@@ -15,7 +15,7 @@ class ChatListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(object
+    return Consumer<UserProvider>(
       builder: (_, final UserProvider provider, __) =>
         ListView.separated(
           separatorBuilder: (_, __) => CustomDivider(height: 0),
