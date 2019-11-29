@@ -1,4 +1,5 @@
 import 'package:cade_van/models/itinerary.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
 import '../models/child.dart';
@@ -35,9 +36,10 @@ class RoutesService {
   }
 
   Future<dynamic> goToChildDetailPage(final BuildContext context, final int index) async {
+    List<CameraDescription> cameras = await availableCameras();
     Navigator.push(context, PageRouteBuilder(
       transitionDuration: Duration(milliseconds: 700),
-      pageBuilder: (_, __, ___) => ChildDetailPage(index),
+      pageBuilder: (_, __, ___) => ChildDetailPage(index, cameras),
     ));
   }
 }

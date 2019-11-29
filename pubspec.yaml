@@ -52,6 +52,8 @@ dependencies:
   catcher: ^0.2.4
   rxdart: ^0.22.2
   wc_flutter_share: ^0.1.1
+  camera: ^0.5.7
+  path_provider: ^1.4.5
 
   firebase_core: ^0.4.0
   firebase_messaging: 5.0.2
