@@ -23,7 +23,7 @@ class ChatListPageDois extends StatelessWidget {
           itemBuilder:
           (_, final int i) =>
             InkWell(
-              onTap: () => _openChat(provider.user.driverId, provider.myDrivers[i].driverId, context),
+              onTap: () => _openChat(provider.myDrivers[i].driverId, provider.user.responsibleId, context),
               child: DefaultPadding(
                 child: Row(
                   children: <Widget>[
