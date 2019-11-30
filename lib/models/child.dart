@@ -46,7 +46,7 @@ class Child {
       birthDate = DateTime.parse(json['birthDate']),
       period = json['period'],
       status = _statusFromJSON(json['status']),
-      responsible = User.fromJSON(json['responsible']),
+      responsible = User.fromJSON(json['userResponse']),
       driverCode = json['driverCode'],
       driverId = json['driverId'];
 
@@ -58,7 +58,7 @@ class Child {
       'birthDate': child.birthDate.toIso8601String(),
       'period': child.period,
       'status': _statusToJSON(child.status),
-      'responsible': User.toJSON(child.responsible),
+      'userResponse': User.toJSON(child.responsible),
       'driverCode': child.driverCode,
       'driverId': child.driverId,
     };

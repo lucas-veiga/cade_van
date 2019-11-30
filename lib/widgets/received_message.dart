@@ -43,11 +43,17 @@ class ReceivedMessage extends StatelessWidget {
           ),
           SizedBox(width: 15),
           Text(
-            chatMessage.createdAt.toIso8601String(),
+            _getTime,
             style: Theme.of(context).textTheme.body2.apply(color: Colors.grey),
           ),
         ],
       ),
     );
+  }
+
+  String get _getTime {
+    final time = chatMessage.createdAt;
+
+    return '${time.day}/${time.month} - ${time.hour}:${time.minute}';
   }
 }

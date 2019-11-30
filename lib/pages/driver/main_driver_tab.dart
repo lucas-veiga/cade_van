@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cade_van/models/user.dart';
 import 'package:catcher/core/catcher.dart';
 import 'package:flutter/material.dart';
 import 'package:wc_flutter_share/wc_flutter_share.dart';
@@ -17,7 +18,7 @@ import '../../services/service_exception.dart';
 import '../../widgets/toast.dart';
 import '../../widgets/block_ui.dart';
 
-import 'chat_list_page.dart';
+import '../chat/chat_list_page.dart';
 import '../../provider/driver_provider.dart';
 import '../../models/itinerary.dart';
 import '../../environments/environment.dart';
@@ -46,7 +47,7 @@ class _MainDriverTabState extends State<MainDriverTab>
   @override
   void initState() {
     _blockUIStream = StreamController.broadcast();
-    _myTabs = [HomeDriverPage(_blockUIStream), ChatListPage()];
+    _myTabs = [HomeDriverPage(_blockUIStream), ChatListPage(UserTypeEnum.DRIVER)];
     _tabController =
         TabController(length: _myTabs.length, initialIndex: 0, vsync: this);
 

@@ -27,7 +27,6 @@ class _ChatPageState extends State<ChatPage> {
       _scrollController.jumpTo(_scrollController.position.maxScrollExtent + 70.0));
 
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-    print('CHAT -> ${widget._chat}');
     return Scaffold(
       body: Stack(
         children: <Widget>[

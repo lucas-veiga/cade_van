@@ -15,7 +15,7 @@ class SentMessage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Text(
-            getTime,
+            _getTime,
             style: Theme.of(context).textTheme.body2.apply(color: Colors.grey),
           ),
           SizedBox(width: 15),
@@ -43,7 +43,7 @@ class SentMessage extends StatelessWidget {
     );
   }
 
-  String get getTime {
+  String get _getTime {
     final time = chatMessage.createdAt;
 
     return '${time.day}/${time.month} - ${time.hour}:${time.minute}';
