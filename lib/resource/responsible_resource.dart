@@ -15,7 +15,7 @@ class ResponsibleResource {
   Future<List<User>> getMyDrivers() async {
     try {
       final url = '$RESOURCE_URL/my-drivers';
-      print('GET Requesto to $url');
+      print('GET Request to $url');
 
       final res = await _dio.get(url);
       final untypedList = res.data.map((item) => User.fromJSON(item)).toList();
