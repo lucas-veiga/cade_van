@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:cade_van/global.dart';
 import '../../widgets/widgets.dart';
 import '../../models/chat.dart';
 import '../../services/socket_chat_service.dart';
@@ -10,9 +9,9 @@ import '../../provider/user_provider.dart';
 
 class ChatPage extends StatefulWidget {
   final Chat _chat;
-  
+
   ChatPage(this._chat);
-  
+
   @override
   _ChatPageState createState() => _ChatPageState();
 }
@@ -20,9 +19,13 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   final ChatMessage _chatMessage = ChatMessage();
   final TextEditingController _editingController = TextEditingController();
+  final ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent + 70.0));
+
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     print('CHAT -> ${widget._chat}');
     return Scaffold(
@@ -33,6 +36,7 @@ class _ChatPageState extends State<ChatPage> {
               children: <Widget>[
                 Expanded(
                   child: ListView.builder(
+                    controller: _scrollController,
                     padding: const EdgeInsets.all(15),
                     itemCount: widget._chat.chatMessages.length,
                     itemBuilder: (ctx, i) {
@@ -105,7 +109,7 @@ class _ChatPageState extends State<ChatPage> {
       ),
     );
   }
-  
+
   Future _onSendingMsg(final UserProvider userProvider) async {
     if (_chatMessage.text == null) return;
     await SocketChatService.init();

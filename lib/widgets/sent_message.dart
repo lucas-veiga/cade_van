@@ -5,7 +5,7 @@ import '../models/chat.dart';
 class SentMessage extends StatelessWidget {
   final ChatMessage chatMessage;
 
-  const SentMessage(this.chatMessage);
+  SentMessage(this.chatMessage);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class SentMessage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: <Widget>[
           Text(
-            '${chatMessage.createdAt.toIso8601String()}',
+            getTime,
             style: Theme.of(context).textTheme.body2.apply(color: Colors.grey),
           ),
           SizedBox(width: 15),
@@ -41,5 +41,11 @@ class SentMessage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String get getTime {
+    final time = chatMessage.createdAt;
+
+    return '${time.day}/${time.month} - ${time.hour}:${time.minute}';
   }
 }
