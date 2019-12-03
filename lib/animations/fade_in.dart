@@ -26,7 +26,6 @@ class FadeIn extends StatelessWidget {
       tween: tween,
       child: child,
       builderWithChild: (context, child, animation) {
-        print('ANIMATION -> $animation');
         return Opacity(
           opacity: double.parse(animation['opacity'].toString()),
           child: Transform.translate(

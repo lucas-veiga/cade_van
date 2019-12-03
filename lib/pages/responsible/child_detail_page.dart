@@ -4,14 +4,17 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
+import '../../utils/validations.dart';
+import '../../models/child.dart';
 import '../../utils/default_padding.dart';
-import '../../widgets/fade_in.dart';
+import '../../animations/fade_in.dart';
 
 class ChildDetailPage extends StatefulWidget {
   final int index;
   final List<CameraDescription> cameras;
+  final Child child;
 
-  ChildDetailPage(this.index, this.cameras);
+  ChildDetailPage(this.index, this.cameras, this.child);
 
   @override
   _ChildDetailPageState createState() => _ChildDetailPageState();
@@ -19,6 +22,9 @@ class ChildDetailPage extends StatefulWidget {
 
 class _ChildDetailPageState extends State<ChildDetailPage> {
   final bool startToAnimate = true;
+  static final TextEditingController _driverCodeController = TextEditingController();
+  static final GlobalKey<FormState> _formKey = GlobalKey();
+
   CameraController controller;
   String imagePath;
 
@@ -71,60 +77,63 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
             ),
             Padding(
               padding: EdgeInsets.only(
-                  top: 210,
-                  left: DefaultPadding.horizontal,
-                  right: DefaultPadding.horizontal),
-              child: ListView(
-                children: <Widget>[
-                  FadeIn(
-                    delay: 1,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Nome da Crianca',
+                top: 210,
+                left: DefaultPadding.horizontal,
+                right: DefaultPadding.horizontal),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      FadeIn(
+                        delay: 1,
+                        child: TextFormField(
+                          onSaved: (value) => widget.child.name = value,
+                          initialValue: widget.child.name,
+                          textCapitalization: TextCapitalization.words,
+                          validator: (value) => Validations.isRequired(input: value),
+                          decoration: InputDecoration(
+                            labelText: 'Nome',
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  FadeIn(
-                    delay: 2,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Escola',
+                      FadeIn(
+                        delay: 2,
+                        child: TextFormField(
+                          onSaved: (value) => widget.child.school = value,
+                          initialValue: widget.child.school,
+                          validator: (value) => Validations.isRequired(input: value),
+                          decoration: InputDecoration(
+                            labelText: 'Escola',
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  FadeIn(
-                    delay: 2.5,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Periodo',
+                      FadeIn(
+                        delay: 2.5,
+                        child: TextFormField(
+                          onSaved: (value) => widget.child.period = value,
+                          initialValue: widget.child.period,
+                          validator: (value) => Validations.isRequired(input: value),
+                          decoration: InputDecoration(
+                            labelText: 'Período',
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  FadeIn(
-                    delay: 3,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Nome da Crianca',
+                      FadeIn(
+                        delay: 3,
+                        child: TextFormField(
+                          controller: _driverCodeController,
+//                          initialValue: widget.child.driverCode,
+                          onSaved: (value) => widget.child.driverCode = value,
+                          validator: (value) => Validations.isRequired(input: value),
+                          decoration: InputDecoration(
+                            labelText: 'Código do Motorista'
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                  FadeIn(
-                    delay: 3.5,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Idade',
-                      ),
-                    ),
-                  ),
-                  FadeIn(
-                    delay: 4,
-                    child: TextField(
-                      decoration: InputDecoration(
-                        labelText: 'Motorista',
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -142,16 +151,16 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
               padding: const EdgeInsets.all(1.0),
               child: Center(
                 child: AspectRatio(
-                    aspectRatio: controller.value.aspectRatio,
-                    child: CameraPreview(controller)),
+                  aspectRatio: controller.value.aspectRatio,
+                  child: CameraPreview(controller)),
               ),
             ),
             decoration: BoxDecoration(
               color: Colors.black,
               border: Border.all(
                 color: controller != null && controller.value.isRecordingVideo
-                    ? Colors.redAccent
-                    : Colors.grey,
+                  ? Colors.redAccent
+                  : Colors.grey,
                 width: 3.0,
               ),
             ),
@@ -165,10 +174,10 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
               icon: Icon(Icons.camera_alt),
               color: Colors.blue,
               onPressed: controller != null &&
-                      controller.value.isInitialized &&
-                      !controller.value.isRecordingVideo
-                  ? onTakePictureButtonPressed
-                  : null,
+                controller.value.isInitialized &&
+                !controller.value.isRecordingVideo
+                ? onTakePictureButtonPressed
+                : null,
             ),
           ],
         )
@@ -223,9 +232,9 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     if (snap.connectionState == ConnectionState.done) {
       return Padding(
         padding: EdgeInsets.only(
-            top: 200,
-            left: DefaultPadding.horizontal,
-            right: DefaultPadding.horizontal),
+          top: 200,
+          left: DefaultPadding.horizontal,
+          right: DefaultPadding.horizontal),
         child: Column(
           children: <Widget>[
             TextField(

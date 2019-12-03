@@ -45,13 +45,13 @@ class RoutesService {
   }
 
   Future<dynamic> goToChildDetailPage(
-      final BuildContext context, final int index) async {
+      final BuildContext context, final int index, final Child child) async {
     List<CameraDescription> cameras = await availableCameras();
     Navigator.push(
         context,
         PageRouteBuilder(
           transitionDuration: Duration(milliseconds: 700),
-          pageBuilder: (_, __, ___) => ChildDetailPage(index, cameras),
+          pageBuilder: (_, __, ___) => ChildDetailPage(index, cameras, child),
         ));
   }
 

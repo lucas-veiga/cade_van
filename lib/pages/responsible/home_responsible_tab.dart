@@ -26,7 +26,7 @@ class HomeResponsibleTab extends StatelessWidget {
           itemBuilder:
             (_, int i) =>
             InkWell(
-              onLongPress: () => _routesService.goToChildDetailPage(context, i),
+              onLongPress: () => _routesService.goToChildDetailPage(context, i, provider.children[i]),
               onTap: () => _navigateToMap(context, provider.children[i]),
               child: DefaultPadding(
                 child: ChildItem(provider.children[i], i),
