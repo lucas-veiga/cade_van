@@ -66,7 +66,7 @@ class DefaultAlertDialog extends StatelessWidget {
     }
 
     return Text(
-      'Conteudo da Modal',
+      'Clique em ok para voltar.',
       textAlign: TextAlign.start,
     );
   }

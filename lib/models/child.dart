@@ -127,7 +127,7 @@ class Child {
     buffer.write('id: $id, ');
     buffer.write('name: "$name", ');
     buffer.write('school: "$school", ');
-    buffer.write('dateBirth: "${birthDate.toString()}", ');
+    buffer.write('birthDate: "${birthDate.toString()}", ');
     buffer.write('period: "$period", ');
     buffer.write('status: "$status", ');
     buffer.write('responsible: ${responsible.toString()}, ');

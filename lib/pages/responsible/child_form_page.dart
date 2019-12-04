@@ -123,7 +123,7 @@ class ChildFormPage extends StatelessWidget {
     );
 
   Future _submit(final BuildContext context) async {
-    if (!_formKey.currentState.validate()) return;
+    if (!_formKey.currentState.validate() || _child.birthDate == null) return;
     _formKey.currentState.save();
 
     _blockUIStream.add(true);
