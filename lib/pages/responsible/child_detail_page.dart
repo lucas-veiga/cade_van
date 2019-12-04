@@ -1,8 +1,17 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:cade_van/provider/child_provider.dart';
+import 'package:cade_van/provider/user_provider.dart';
+import 'package:cade_van/services/child_service.dart';
+import 'package:cade_van/services/service_exception.dart';
+import 'package:cade_van/widgets/block_ui.dart';
+import 'package:cade_van/widgets/default_button.dart';
+import 'package:cade_van/widgets/toast.dart';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../../utils/validations.dart';
 import '../../models/child.dart';
@@ -24,6 +33,9 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   final bool startToAnimate = true;
   static final TextEditingController _driverCodeController = TextEditingController();
   static final GlobalKey<FormState> _formKey = GlobalKey();
+  final StreamController<bool> _blockUIStream = StreamController.broadcast();
+  final ChildService _childService = ChildService();
+  final Toast _toast = Toast();
 
   CameraController controller;
   String imagePath;
@@ -52,91 +64,84 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (controller == null || !controller.value.isInitialized) {
-      return Scaffold(
-        body: Stack(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(top: 30),
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: GestureDetector(
-                  child: Hero(
-                    tag: 'child_avatar_${widget.index}',
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(500),
-                      child: CircleAvatar(
-                        backgroundColor: imagePath != null ? Colors.transparent : null,
-                        child: imagePath != null ? Image.file(File(imagePath)) : null,
-                        radius: 100,
+      return BlockUI(
+        blockUIController: _blockUIStream,
+        child: Scaffold(
+          body: Stack(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(top: 30),
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: GestureDetector(
+                    child: Hero(
+                      tag: 'child_avatar_${widget.index}',
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(500),
+                        child: CircleAvatar(
+                          backgroundColor: imagePath != null ? Colors.transparent : null,
+                          child: imagePath != null ? Image.file(File(imagePath)) : null,
+                          radius: 100,
+                        ),
                       ),
                     ),
-                  ),
-                  onTap: activateCamera,
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                top: 210,
-                left: DefaultPadding.horizontal,
-                right: DefaultPadding.horizontal),
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      FadeIn(
-                        delay: 1,
-                        child: TextFormField(
-                          onSaved: (value) => widget.child.name = value,
-                          initialValue: widget.child.name,
-                          textCapitalization: TextCapitalization.words,
-                          validator: (value) => Validations.isRequired(input: value),
-                          decoration: InputDecoration(
-                            labelText: 'Nome',
-                          ),
-                        ),
-                      ),
-                      FadeIn(
-                        delay: 2,
-                        child: TextFormField(
-                          onSaved: (value) => widget.child.school = value,
-                          initialValue: widget.child.school,
-                          validator: (value) => Validations.isRequired(input: value),
-                          decoration: InputDecoration(
-                            labelText: 'Escola',
-                          ),
-                        ),
-                      ),
-                      FadeIn(
-                        delay: 2.5,
-                        child: TextFormField(
-                          onSaved: (value) => widget.child.period = value,
-                          initialValue: widget.child.period,
-                          validator: (value) => Validations.isRequired(input: value),
-                          decoration: InputDecoration(
-                            labelText: 'Período',
-                          ),
-                        ),
-                      ),
-                      FadeIn(
-                        delay: 3,
-                        child: TextFormField(
-                          controller: _driverCodeController,
-//                          initialValue: widget.child.driverCode,
-                          onSaved: (value) => widget.child.driverCode = value,
-                          validator: (value) => Validations.isRequired(input: value),
-                          decoration: InputDecoration(
-                            labelText: 'Código do Motorista'
-                          ),
-                        ),
-                      ),
-                    ],
+                    onTap: activateCamera,
                   ),
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 210,
+                  left: DefaultPadding.horizontal,
+                  right: DefaultPadding.horizontal),
+                child: SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: <Widget>[
+                        FadeIn(
+                          delay: 1,
+                          child: TextFormField(
+                            onSaved: (value) => widget.child.name = value,
+                            initialValue: widget.child.name,
+                            textCapitalization: TextCapitalization.words,
+                            validator: (value) => Validations.isRequired(input: value),
+                            decoration: InputDecoration(
+                              labelText: 'Nome',
+                            ),
+                          ),
+                        ),
+                        FadeIn(
+                          delay: 2,
+                          child: TextFormField(
+                            onSaved: (value) => widget.child.school = value,
+                            initialValue: widget.child.school,
+                            validator: (value) => Validations.isRequired(input: value),
+                            decoration: InputDecoration(
+                              labelText: 'Escola',
+                            ),
+                          ),
+                        ),
+                        FadeIn(
+                          delay: 2.5,
+                          child: TextFormField(
+                            onSaved: (value) => widget.child.period = value,
+                            initialValue: widget.child.period,
+                            validator: (value) => Validations.isRequired(input: value),
+                            decoration: InputDecoration(
+                              labelText: 'Período',
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        DefaultButton(text: 'SALVAR', function: () => _submit(context)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -273,4 +278,27 @@ class _ChildDetailPageState extends State<ChildDetailPage> {
     }
     return Center(child: CircularProgressIndicator());
   }
+
+  Future _submit(final BuildContext context) async {
+    if (!_formKey.currentState.validate()) return;
+    _formKey.currentState.save();
+
+    _blockUIStream.add(true);
+    final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
+    final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      await Future.delayed(Duration(seconds: 3));
+      widget.child.status = ChildStatusEnum.LEFT_HOME;
+      widget.child.responsible = userProvider.user;
+      await _childService.saveChild(widget.child);
+      await _childService.setAllChildren(childProvider);
+      Navigator.pop(context);
+    } on ServiceException catch(err) {
+      _toast.show(err.msg, context);
+    } finally {
+      _blockUIStream.add(false);
+    }
+  }
+
 }
