@@ -55,11 +55,11 @@ class RoutesService {
         ));
   }
 
-  Future goToChatPage(final BuildContext context, final Chat chat) {
+  Future goToChatPage(final BuildContext context) {
     return Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ChatPage(chat),
+          builder: (_) => ChatPage(),
         ));
   }
 }

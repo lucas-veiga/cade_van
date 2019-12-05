@@ -5,9 +5,11 @@ import 'package:provider/provider.dart';
 import '../../services/chat_service.dart';
 import '../../services/routes_service.dart';
 
+import '../../provider/user_provider.dart';
+import '../../provider/chat_provider.dart';
+
 import '../../widgets/custom_divider.dart';
 import '../../utils/default_padding.dart';
-import '../../provider/user_provider.dart';
 import '../../models/user.dart';
 
 class ChatListPage extends StatelessWidget {
@@ -61,8 +63,10 @@ class ChatListPage extends StatelessWidget {
   }
 
   Future _openChat(final int driverId, final int responsibleId, final BuildContext context) async {
-    final chat = await _chatService.findAllMessages(driverId, responsibleId);
-    _routesService.goToChatPage(context, chat);
+    final ChatProvider chatProvider = Provider.of<ChatProvider>(context, listen: false);
+
+    await _chatService.findAllMessages(driverId, responsibleId, chatProvider);
+    _routesService.goToChatPage(context);
   }
 
   String _getAvatarIcon(final String text) {

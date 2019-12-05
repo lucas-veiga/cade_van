@@ -4,11 +4,20 @@ class Chat {
   int responsibleId;
   List<ChatMessage> chatMessages;
 
+  Chat():
+    chatMessages = [];
+
   Chat.fromJSON(final dynamic json):
       id = json['id'],
       driverId = json['driverId'],
       responsibleId = json['responsibleId'],
       chatMessages = _chatMessagesFromJSON(json['messages']);
+
+  Chat.copy(final Chat chat):
+      id = chat.id,
+      driverId = chat.driverId,
+      responsibleId = chat.responsibleId,
+      chatMessages = List.unmodifiable(chat.chatMessages);
 
   static Map<String, dynamic> toJSON(final Chat chat) =>
     {
@@ -16,7 +25,7 @@ class Chat {
       'driverId': chat.driverId,
       'responsibleId': chat.responsibleId,
       'messages': chat.chatMessages
-      .map((item) => ChatMessage.toJSON(item)),
+        .map((item) => ChatMessage.toJSON(item)),
     };
 
   static List<ChatMessage> _chatMessagesFromJSON(final dynamic json) {
@@ -53,11 +62,11 @@ class ChatMessage {
   ChatMessage();
 
   ChatMessage.copy(final ChatMessage chatMessage):
-    id = chatMessage.id,
-    userId = chatMessage.userId,
-    chatId = chatMessage.chatId,
-    text = chatMessage.text,
-    createdAt = chatMessage.createdAt;
+      id = chatMessage.id,
+      userId = chatMessage.userId,
+      chatId = chatMessage.chatId,
+      text = chatMessage.text,
+      createdAt = chatMessage.createdAt;
 
   ChatMessage.fromJSON(final dynamic json):
       id = json['id'],

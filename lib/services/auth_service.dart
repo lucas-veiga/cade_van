@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../provider/user_provider.dart';
 import '../provider/child_provider.dart';
 import '../provider/driver_provider.dart';
+import '../provider/chat_provider.dart';
 
 import '../models/token.dart';
 import '../models/user.dart';
@@ -18,6 +19,8 @@ import './service_exception.dart';
 import './responsible_service.dart';
 import './driver_service.dart';
 import './socket_location_service.dart';
+import './chat_service.dart';
+import './socket_chat_service.dart';
 
 import '../resource/resource_exception.dart';
 import '../resource/auth_resource.dart';
@@ -31,6 +34,7 @@ class AuthService {
   final AuthResource _authResource              = AuthResource();
   final ResponsibleService _responsibleService  = ResponsibleService();
   final DriverService _driverService            = DriverService();
+  final ChatService _chatService                = ChatService();
 
   static const String DEFAULT_MESSAGE = 'Não foi possivel ';
 
@@ -137,9 +141,12 @@ class AuthService {
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
     final ChildProvider childProvider = Provider.of<ChildProvider>(context, listen: false);
     final DriverProvider driverProvider = Provider.of<DriverProvider>(context, listen: false);
+    final ChatProvider chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     final user = await _userService.getUserLoggedIn();
     _userService.setCurrentUser(userProvider, user);
+
+    final chatIds = await _chatService.findAllChatIds();
 
     if (user.type == UserTypeEnum.RESPONSIBLE) {
       await _childService.setAllChildren(childProvider);
@@ -150,6 +157,10 @@ class AuthService {
       await _driverService.setMyResponsible(userProvider);
       initItinerary(list, userProvider, context);
     }
+
+    await SocketChatService.init();
+    SocketChatService.listingMessage(chatIds, chatProvider);
+
     return user;
   }
 

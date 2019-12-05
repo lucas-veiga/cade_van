@@ -20,11 +20,23 @@ class ChatResource {
 
     try {
       final res = await _dio.get(url, queryParameters: params);
-      print('\n\nRES -> ${res.data}');
       return Chat.fromJSON(res.data);
     } on DioError catch(err, stack) {
       Catcher.reportCheckedError(err, stack);
       throw ResourceException('$DEFAULT_MESSAGE pegar a lista de convercaas', err);
+    }
+  }
+
+  Future<List<int>> findAllChatIds() async {
+    final url = '$RESOURCE_URL/user';
+    print('GET Request to $url');
+
+    try {
+      final res = await _dio.get(url);
+      return List<int>.from(res.data);
+    } on DioError catch(err, stack) {
+      Catcher.reportCheckedError(err, stack);
+      throw ResourceException('$DEFAULT_MESSAGE pegar a lista de chats', err);
     }
   }
 }

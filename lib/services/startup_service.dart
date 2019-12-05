@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cade_van/services/socket_chat_service.dart' as prefix0;
 import 'package:flutter/material.dart';
 
 import 'package:catcher/core/catcher.dart';
@@ -12,6 +13,7 @@ import '../pages/auth/main_auth.dart';
 import '../provider/child_provider.dart';
 import '../provider/user_provider.dart';
 import '../provider/driver_provider.dart';
+import '../provider/chat_provider.dart';
 
 import './child_service.dart';
 import './user_service.dart';
@@ -19,6 +21,8 @@ import './auth_service.dart';
 import './service_exception.dart';
 import './driver_service.dart';
 import './responsible_service.dart';
+import './socket_chat_service.dart';
+import './chat_service.dart';
 
 import '../models/user.dart';
 import '../resource/resource_exception.dart';
@@ -32,6 +36,7 @@ class StartUpService {
   final ChildService _childService                   = ChildService();
   final DriverService _driverService                 = DriverService();
   final ResponsibleService _responsibleService       = ResponsibleService();
+  final ChatService _chatService                      = ChatService();
 
   static const String DEFAULT_MESSAGE = 'Não foi possivel ';
   final StreamController<StartupState> startupStatus = StreamController.broadcast();
@@ -51,13 +56,18 @@ class StartUpService {
     }
   }
 
-  Future<void> beforeAppInit(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
+  Future<void> beforeAppInit(
+    final BuildContext context,
+    final UserProvider userProvider,
+    final ChildProvider childProvider,
+    final DriverProvider driverProvider,
+    final ChatProvider chatProvider) async {
     try {
       await Future.delayed(Duration(seconds: 2));
       final res = await _authService.canEnter();
       switch (res) {
         case true: {
-          await _handleHomePage(context, userProvider, childProvider, driverProvider);
+          await _handleHomePage(context, userProvider, childProvider, driverProvider, chatProvider);
           break;
         }
         case false: {
@@ -80,10 +90,17 @@ class StartUpService {
     }
   }
 
-  Future<void> _handleHomePage(final BuildContext context, final UserProvider userProvider, final ChildProvider childProvider, final DriverProvider driverProvider) async {
+  Future<void> _handleHomePage(
+    final BuildContext context,
+    final UserProvider userProvider,
+    final ChildProvider childProvider,
+    final DriverProvider driverProvider,
+    final ChatProvider chatProvider) async {
     try {
       final user = await _userService.setCurrentUserFromServer(userProvider);
       _userService.handleDeviceToken();
+
+      final chatIds = await _chatService.findAllChatIds();
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         await _childService.setAllChildren(childProvider);
         await _responsibleService.setMyDrivers(userProvider);
@@ -93,6 +110,9 @@ class StartUpService {
         await _driverService.setMyResponsible(userProvider);
         _authService.initItinerary(list, userProvider, context);
       }
+
+      await SocketChatService.init();
+      SocketChatService.listingMessage(chatIds, chatProvider);
 
       if (user.type == UserTypeEnum.RESPONSIBLE) {
         startupStatus.add(StartupState.HOME_RESPONSIBLE_PAGE);

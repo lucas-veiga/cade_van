@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import './provider/user_provider.dart';
 import './provider/child_provider.dart';
 import './provider/driver_provider.dart';
+import './provider/chat_provider.dart';
 
 import './services/startup_service.dart';
 import './stateful_wrapper.dart';
@@ -25,11 +26,12 @@ void main() {
 }
 
 class CadeVan extends StatelessWidget {
-  final StartUpService _startUpService = StartUpService();
+  final StartUpService _startUpService  = StartUpService();
 
-  final UserProvider _userProvider = UserProvider();
-  final ChildProvider _childProvider = ChildProvider();
-  final DriverProvider _driverProvider = DriverProvider();
+  final UserProvider _userProvider      = UserProvider();
+  final ChildProvider _childProvider    = ChildProvider();
+  final DriverProvider _driverProvider  = DriverProvider();
+  final ChatProvider _chatProvider      = ChatProvider();
 
   final _navigatorKey = GlobalKey<NavigatorState>();
 
@@ -46,6 +48,9 @@ class CadeVan extends StatelessWidget {
         ChangeNotifierProvider<DriverProvider>.value(
           value: _driverProvider,
         ),
+        ChangeNotifierProvider<ChatProvider>.value(
+          value: _chatProvider,
+        ),
       ],
       child: MaterialApp(
         navigatorKey: _navigatorKey,
@@ -54,7 +59,12 @@ class CadeVan extends StatelessWidget {
           primarySwatch: ApplicationColor.MAIN,
         ),
         home: StatefulWrapper(
-          onInit: () => _startUpService.beforeAppInit(_navigatorKey.currentState.overlay.context, _userProvider, _childProvider, _driverProvider),
+          onInit: () => _startUpService.beforeAppInit(
+            _navigatorKey.currentState.overlay.context,
+            _userProvider,
+            _childProvider,
+            _driverProvider,
+            _chatProvider),
           child: StreamBuilder<StartupState>(
             stream: _startUpService.startupStatus.stream,
             initialData: StartupState.BUSY,

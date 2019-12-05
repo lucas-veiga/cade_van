@@ -2,31 +2,27 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import '../../provider/user_provider.dart';
+import '../../provider/chat_provider.dart';
+
 import '../../widgets/widgets.dart';
 import '../../models/chat.dart';
 import '../../services/socket_chat_service.dart';
-import '../../provider/user_provider.dart';
 
-class ChatPage extends StatefulWidget {
-  final Chat _chat;
-
-  ChatPage(this._chat);
-
-  @override
-  _ChatPageState createState() => _ChatPageState();
-}
-
-class _ChatPageState extends State<ChatPage> {
+class ChatPage extends StatelessWidget {
   final ChatMessage _chatMessage = ChatMessage();
   final TextEditingController _editingController = TextEditingController();
   final ScrollController _scrollController = new ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) =>
-      _scrollController.jumpTo(_scrollController.position.maxScrollExtent + 70.0));
-
     final UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+    final ChatProvider chatProvider = Provider.of<ChatProvider>(context);
+    final height = MediaQuery.of(context).size.height;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) =>
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent + height));
+
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -37,12 +33,12 @@ class _ChatPageState extends State<ChatPage> {
                   child: ListView.builder(
                     controller: _scrollController,
                     padding: const EdgeInsets.all(15),
-                    itemCount: widget._chat.chatMessages.length,
+                    itemCount: chatProvider.chat.chatMessages.length,
                     itemBuilder: (ctx, i) {
-                      if (widget._chat.chatMessages.isNotEmpty && widget._chat.chatMessages[i].userId != userProvider.user.userId) {
-                        return ReceivedMessage(widget._chat.chatMessages[i]);
+                      if (chatProvider.chat.chatMessages.isNotEmpty && chatProvider.chat.chatMessages[i].userId != userProvider.user.userId) {
+                        return ReceivedMessage(chatProvider.chat.chatMessages[i]);
                       } else {
-                        return SentMessage(widget._chat.chatMessages[i]);
+                        return SentMessage(chatProvider.chat.chatMessages[i]);
                       }
                     },
                   ),
@@ -84,7 +80,7 @@ class _ChatPageState extends State<ChatPage> {
                       ),
                       SizedBox(width: 10),
                       GestureDetector(
-                        onTap: () => _onSendingMsg(userProvider),
+                        onTap: () => _onSendingMsg(userProvider, chatProvider),
                         child: Container(
                           padding: const EdgeInsets.all(12.0),
                           decoration: BoxDecoration(
@@ -109,15 +105,15 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  Future _onSendingMsg(final UserProvider userProvider) async {
+  Future _onSendingMsg(final UserProvider userProvider, final ChatProvider chatProvider) async {
     if (_chatMessage.text == null) return;
     await SocketChatService.init();
 
-    _chatMessage.chatId = widget._chat.id;
+    _chatMessage.chatId = chatProvider.chat.id;
     _chatMessage.userId = userProvider.user.userId;
     _chatMessage.createdAt = DateTime.now();
-    SocketChatService.sendMessage(widget._chat.id, _chatMessage);
-    setState(() => widget._chat.chatMessages.add(ChatMessage.copy(_chatMessage)));
+    SocketChatService.sendMessage(chatProvider.chat.id, _chatMessage);
+    chatProvider.addMessage = ChatMessage.copy(_chatMessage);
     _chatMessage.text = null;
     _editingController.clear();
   }
