@@ -113,7 +113,6 @@ class ChatPage extends StatelessWidget {
     _chatMessage.userId = userProvider.user.userId;
     _chatMessage.createdAt = DateTime.now();
     SocketChatService.sendMessage(chatProvider.chat.id, _chatMessage);
-    chatProvider.addMessage = ChatMessage.copy(_chatMessage);
     _chatMessage.text = null;
     _editingController.clear();
   }
